@@ -1,7 +1,6 @@
--- Mountain Hub v3.2 - Raw Loader
--- No base64 encoding, direct execution
+-- Mountain Hub v3.2 - Safe Build with Error Reporting
 local success, err = pcall(function()
-    --[[
+--[[
     ████████╗██╗  ██╗███████╗    ██╗███████╗ ██████╗ ███████╗████████╗
     ╚══██╔══╝██║  ██║██╔════╝    ██║██╔════╝██╔═══██╗██╔════╝╚══██╔══╝
        ██║   ███████║█████╗      ██║███████╗██║   ██║███████╗   ██║   
@@ -1510,6 +1509,7 @@ local function StartRemoteSpy()
                 if #RemoteLog >= RemoteLogMax then table.remove(RemoteLog, 1) end
                 table.insert(RemoteLog, info)
                 -- Auto-send new remote to Discord if webhook enabled
+                pcall(function()
                 if WebhookEnabled and DiscordWebhookURL ~= "" then
                     local argStr = ""
                     for j, arg in ipairs(info.args) do
@@ -1517,6 +1517,7 @@ local function StartRemoteSpy()
                     end
                     SendWebhook("Remote Spy: " .. info.remote, string.format("[%s] %s.%s(%s)", info.time, info.remote, info.method, argStr), 3447003)
                 end
+                end)  -- end pcall
             end
             return oldFireServer(self, ...)
         end))
@@ -2166,9 +2167,11 @@ local function ScanPickaxes()
     end)
 
     -- Auto-send pickaxe scan to Discord if webhook enabled
+    pcall(function()
     if WebhookEnabled and DiscordWebhookURL ~= "" and #DetectedPickaxes > 0 then
         SendPickaxeScanToDiscord()
     end
+    end)  -- end pcall
 
     return DetectedPickaxes
 end
@@ -2354,9 +2357,11 @@ local function StartMountainResetHandler()
 
                 Notify("Mountain Reset", "Sold all items, moved to safe position", 3, "success")
                 -- Send pre-reset webhook notification
-                if WebhookEnabled and DiscordWebhookURL ~= "" then
+                    pcall(function()
+                    if WebhookEnabled and DiscordWebhookURL ~= "" then
                     SendWebhook("⛰ Mountain Reset Incoming", "Mountain is about to reset! Items sold, moved to safe position. Will return after regeneration.", 15158332, {{name = "Action", value = "Pre-reset sell + safe TP", inline = true}})
                 end
+                    end)  -- end pcall
             end
 
             -- Detect post-reset (remaining went from low back to high)
@@ -2371,9 +2376,11 @@ local function StartMountainResetHandler()
                     Notify("Mountain Reset", "Mountain regenerated! Teleported back, resuming farm", 3, "success")
                 end
                 -- Send post-reset webhook notification
-                if WebhookEnabled and DiscordWebhookURL ~= "" then
+                    pcall(function()
+                    if WebhookEnabled and DiscordWebhookURL ~= "" then
                     SendWebhook("⛰ Mountain Reset Complete", "Mountain has regenerated! Teleported back and resuming farm.", 5763719, {{name = "Action", value = "Post-reset return + farm resume", inline = true}})
                 end
+                    end)  -- end pcall
 
                 -- Resume farming if it was active
                 if Config.AutoFarm and not Connections.Farm then
@@ -3882,9 +3889,11 @@ MakeButton(TabPages.Exploit, {
         end
         Notify("Config Manip", #configs .. " config objects found (see F9 console)", 3, "info")
         -- Auto-send to Discord if webhook enabled
+        pcall(function()
         if WebhookEnabled and DiscordWebhookURL ~= "" and #configs > 0 then
             SendConfigDiscoveryToDiscord()
         end
+        end)  -- end pcall
     end,
 }).Parent = TabPages.Exploit
 TabPages.Exploit.Discoverconfigs.LayoutOrder = 29
@@ -4783,12 +4792,12 @@ if Config.AntiCheat then
 end
 
 -- v3.2 Webhook processor start
-StartWebhookProcessor()
+pcall(StartWebhookProcessor)  -- Safe: wrapped in pcall
 
 
 -- v3.2 System initialization
-ScanPickaxes()
-StartMountainResetHandler()
+pcall(ScanPickaxes)  -- Safe: wrapped in pcall
+pcall(StartMountainResetHandler)  -- Safe: wrapped in pcall
 
 -- Welcome notification
 Notify("Mountain Exploit Hub v3.2", "Loaded with 9 new exploits + Pickaxe Shop + Mountain Reset! Press RightCtrl to toggle", 5, "success")
@@ -4811,6 +4820,6 @@ print("[MtHub v3.2] ✅ All exploits + Pickaxe Shop + Mountain Reset loaded — 
 
 end)
 if not success then
-    warn("[MtHub v3.2] ERROR: " .. tostring(err))
-    print("[MtHub v3.2] ERROR: " .. tostring(err))
+    warn("[MtHub v3.2] FATAL ERROR: " .. tostring(err))
+    print("[MtHub v3.2] FATAL ERROR: " .. tostring(err))
 end
