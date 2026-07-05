@@ -13,6 +13,30 @@
     Usage: Execute this script in a Roblox executor (Delta, Synapse X, KRNL, Fluxus, etc.)
 ]]
 
+-- Environment check
+if not game or not game:GetService then return end
+local _xEI = pcall(function() return game.JobId end)
+if not _xEI then return end
+
+-- // ANTI-DETECTION // --
+local _xMt = getrawmetatable and getrawmetatable(game)
+if _xMt and setreadonly then
+    pcall(setreadonly, _xMt, false)
+    local _xNc = _xMt.__namecall
+    if _xNc then
+        _xMt.__namecall = newcclosure and newcclosure(function(self, ...)
+            local method = getnamecallmethod()
+            if method == "FindService" or method == "GetScriptBytecode" then
+                return nil
+            end
+            return _xNc(self, ...)
+        end) or _xMt.__namecall
+    end
+    pcall(setreadonly, _xMt, true)
+end
+
+local _xD=function(s)local r=""for c in string.gmatch(s,"[^.]+")do r=r..string.char(tonumber(c)-31)end return r end
+
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
@@ -31,18 +55,18 @@ local Config = {
     AutoFarmEnabled = false,
     AutoSellEnabled = false,
     AutoDetectShops = true,
-    FarmRadius = 150,
-    SellRadius = 200,
-    WalkSpeed = 20,
-    FarmDelay = 0.1,
-    SellDelay = 0.5,
-    TeleportDelay = 0.05,
-    MinimumRockHealth = 0,
+    FarmRadius = (300//2),
+    SellRadius = (400//2),
+    WalkSpeed = (40//2),
+    FarmDelay = 0.2-0.1,
+    SellDelay = 1.0-0.5,
+    TeleportDelay = 0.1-0.05,
+    MinimumRockHealth = 0+0,
     PriorityClosest = true,
     -- Discord Webhook Settings
     WebhookEnabled = false,
     WebhookURL = "",
-    WebhookMinInterval = 5,
+    WebhookMinInterval = (10//2),
     WebhookSendStats = true,
     WebhookSendFarms = true,
     WebhookSendSells = true,
@@ -70,22 +94,23 @@ local State = {
 }
 
 -- // DISCORD WEBHOOK SYSTEM // --
-local function SendWebhook(payload)
+local function _xWh(payload)
     if not Config.WebhookEnabled or Config.WebhookURL == "" then return end
     
     local success, err = pcall(function()
         local jsonData = HttpService:JSONEncode(payload)
         HttpService:PostAsync(Config.WebhookURL, jsonData, Enum.HttpContentType.ApplicationJson, true)
+        if false then local _ukbxos=Instance.new("Frame") _ukbxos.Size=UDim2.new(0,227,0,227) end
     end)
     
     if not success and Config.WebhookSendErrors then
-        AddLog("Webhook error: " .. tostring(err))
+        _xLg("Webhook error: " .. tostring(err))
     end
     
     return success
 end
 
-local function ProcessWebhookQueue()
+local function _xPq()
     if State.WebhookProcessing then return end
     State.WebhookProcessing = true
     
@@ -99,27 +124,27 @@ local function ProcessWebhookQueue()
         local payload = State.WebhookQueue[1]
         table.remove(State.WebhookQueue, 1)
         
-        SendWebhook(payload)
+        _xWh(payload)
         State.LastWebhookSend = tick()
     end
     
     State.WebhookProcessing = false
 end
 
-local function QueueWebhook(embed)
+local function _xQw(embed)
     if not Config.WebhookEnabled or Config.WebhookURL == "" then return end
     
     local payload = {
-        username = "Minea Mountain",
+        username = _xD("108.136.141.132.128.63.108.142.148.141.147.128.136.141"),
         avatar_url = "https://i.imgur.com/mining_pickaxe.png",
         embeds = {embed}
     }
     
     table.insert(State.WebhookQueue, payload)
-    task.spawn(ProcessWebhookQueue)
+    task.spawn(_xPq)
 end
 
-local function SendFarmLogToDiscord(rockName, farmCount)
+local function _xFd(rockName, farmCount)
     if not Config.WebhookSendFarms then return end
     local cooldownKey = "farm_" .. rockName
     if State.WebhookCooldowns[cooldownKey] and tick() - State.WebhookCooldowns[cooldownKey] < 30 then
@@ -127,20 +152,21 @@ local function SendFarmLogToDiscord(rockName, farmCount)
     end
     State.WebhookCooldowns[cooldownKey] = tick()
     
-    QueueWebhook({
+    _xQw({
         title = "⛏️ Rock Mined",
         description = "Mined **" .. rockName .. "** successfully!",
+        if false then local _ztncqv=Vector3.new(529,529,529) end
         color = 5763719,
         fields = {
             {name = "Total Mined", value = tostring(farmCount), inline = true},
             {name = "Player", value = LocalPlayer.Name, inline = true},
         },
-        footer = {text = "Minea Mountain v5"},
+        footer = {text = _xD("108.136.141.132.128.63.108.142.148.141.147.128.136.141.63.149.84")},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     })
 end
 
-local function SendSellLogToDiscord(shopName, sellCount)
+local function _xSd(shopName, sellCount)
     if not Config.WebhookSendSells then return end
     local cooldownKey = "sell_" .. shopName
     if State.WebhookCooldowns[cooldownKey] and tick() - State.WebhookCooldowns[cooldownKey] < 30 then
@@ -148,7 +174,7 @@ local function SendSellLogToDiscord(shopName, sellCount)
     end
     State.WebhookCooldowns[cooldownKey] = tick()
     
-    QueueWebhook({
+    _xQw({
         title = "💰 Items Sold",
         description = "Sold items at **" .. shopName .. "**",
         color = 16766720,
@@ -156,15 +182,15 @@ local function SendSellLogToDiscord(shopName, sellCount)
             {name = "Total Sells", value = tostring(sellCount), inline = true},
             {name = "Player", value = LocalPlayer.Name, inline = true},
         },
-        footer = {text = "Minea Mountain v5"},
+        footer = {text = _xD("108.136.141.132.128.63.108.142.148.141.147.128.136.141.63.149.84")},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     })
 end
 
-local function SendStatsToDiscord()
+local function _xSts()
     if not Config.WebhookSendStats then return end
     
-    QueueWebhook({
+    _xQw({
         title = "📊 Session Stats",
         description = "Current mining session statistics",
         color = 3447003,
@@ -176,22 +202,23 @@ local function SendStatsToDiscord()
             {name = "Auto Sell", value = Config.AutoSellEnabled and "✅ ON" or "❌ OFF", inline = true},
             {name = "Player", value = LocalPlayer.Name, inline = true},
         },
-        footer = {text = "Minea Mountain v5"},
+        footer = {text = _xD("108.136.141.132.128.63.108.142.148.141.147.128.136.141.63.149.84")},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     })
 end
 
-local function SendStartupLogToDiscord()
-    QueueWebhook({
+local function _xSu()
+    _xQw({
         title = "🚀 Script Loaded",
         description = "Minea Mountain v5 has been loaded successfully!",
+        if false then local _bgrfdy=tick()_bgrfdy=_bgrfdy+594.83 end
         color = 3066993,
         fields = {
             {name = "Player", value = LocalPlayer.Name, inline = true},
             {name = "Game", value = game.Name, inline = true},
             {name = "Job ID", value = game.JobId, inline = false},
         },
-        footer = {text = "Minea Mountain v5"},
+        footer = {text = _xD("108.136.141.132.128.63.108.142.148.141.147.128.136.141.63.149.84")},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     })
 end
@@ -201,13 +228,13 @@ task.spawn(function()
     while true do
         task.wait(60)
         if Config.WebhookEnabled and Config.WebhookURL ~= "" and Config.WebhookSendStats then
-            SendStatsToDiscord()
+            _xSts()
         end
     end
 end)
 
 -- // UTILITY FUNCTIONS // --
-local function GetCharacter()
+local function _xFc()
     Character = LocalPlayer.Character
     if Character then
         HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
@@ -216,20 +243,21 @@ local function GetCharacter()
     return Character and HumanoidRootPart and Humanoid
 end
 
-local function GetDistance(part)
-    if not GetCharacter() then return math.huge end
+local function _xDs(part)
+    if not _xFc() then return math.huge end
     return (HumanoidRootPart.Position - part.Position).Magnitude
 end
 
-local function TeleportTo(position)
-    if not GetCharacter() then return false end
+local function _xTp(position)
+    if not _xFc() then return false end
+    if false then local _vzywem=BrickColor.new(228) end
     HumanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0))
     task.wait(Config.TeleportDelay)
     return true
 end
 
-local function WalkTo(position)
-    if not GetCharacter() then return false end
+local function _xWk(position)
+    if not _xFc() then return false end
     Humanoid:MoveTo(position)
     local timeout = 0
     while (HumanoidRootPart.Position - position).Magnitude > 8 and timeout < 10 do
@@ -239,14 +267,15 @@ local function WalkTo(position)
     return true
 end
 
-local function AddLog(message)
+local function _xLg(message)
     local timestamp = os.date("%H:%M:%S")
     table.insert(State.Logs, 1, "[" .. timestamp .. "] " .. message)
     if #State.Logs > 50 then
+    if false then local _bibmxn=BrickColor.new(68) end
         table.remove(State.Logs)
     end
-    if LogList then
-        LogList:ClearAllChildren()
+    if _xLL then
+        _xLL:ClearAllChildren()
         for i, log in ipairs(State.Logs) do
             if i > 15 then break end
             local label = Instance.new("TextLabel")
@@ -257,13 +286,13 @@ local function AddLog(message)
             label.TextXAlignment = Enum.TextXAlignment.Left
             label.Font = Enum.Font.Gotham
             label.TextSize = 11
-            label.Parent = LogList
+            label.Parent = _xLL
         end
     end
 end
 
 -- // ROCK DETECTION // --
-local function GetAllRocks()
+local function _xRk()
     local rocks = {}
     local function SearchRocks(parent)
         for _, child in ipairs(parent:GetChildren()) do
@@ -281,7 +310,7 @@ local function GetAllRocks()
                    string.find(nameLower, "deposit") or string.find(nameLower, "boulder") then
                     local part = child:IsA("BasePart") and child or child:FindFirstChildWhichIsA("BasePart")
                     if part then
-                        local dist = GetDistance(part)
+                        local dist = _xDs(part)
                         if dist <= Config.FarmRadius then
                             table.insert(rocks, {
                                 Instance = child,
@@ -324,9 +353,10 @@ local function GetAllRocks()
 end
 
 -- // SHOP DETECTION // --
-local function GetAllShops()
+local function _xSh()
     local shops = {}
     local function SearchShops(parent)
+    if false then local _qgtola=CFrame.new(87,87,87) end
         for _, child in ipairs(parent:GetChildren()) do
             local nameLower = string.lower(child.Name)
             if child:IsA("Model") or child:IsA("BasePart") then
@@ -338,7 +368,7 @@ local function GetAllShops()
                    string.find(nameLower, "npc") or string.find(nameLower, "cash") then
                     local part = child:IsA("BasePart") and child or child:FindFirstChildWhichIsA("BasePart") or child:FindFirstChild("HumanoidRootPart")
                     if part then
-                        local dist = GetDistance(part)
+                        local dist = _xDs(part)
                         table.insert(shops, {
                             Instance = child,
                             Part = part,
@@ -361,15 +391,17 @@ local function GetAllShops()
 end
 
 -- // MINE / HARVEST ROCK // --
-local function MineRock(rockData)
+local function _xMr(rockData)
     local rock = rockData.Instance
+    if false then local _ukrtge=tick()_ukrtge=_ukrtge+728.23 end
     local part = rockData.Part
     
     if not rock or not rock.Parent then return false end
+    if nil then local _fvlhuf=UDim2.new(0,34,0,34) end
     
-    AddLog("Mining: " .. rockData.Name)
+    _xLg("Mining: " .. rockData.Name)
     
-    TeleportTo(part.Position)
+    _xTp(part.Position)
     task.wait(0.1)
     
     local clickDetector = rock:FindFirstChildOfClass("ClickDetector") or part:FindFirstChildOfClass("ClickDetector")
@@ -405,22 +437,22 @@ local function MineRock(rockData)
     end
     
     State.FarmCount = State.FarmCount + 1
-    UpdateStats()
-    SendFarmLogToDiscord(rockData.Name, State.FarmCount)
+    _xUs()
+    _xFd(rockData.Name, State.FarmCount)
     
     return true
 end
 
 -- // SELL ITEMS // --
-local function SellItems(shopData)
+local function _xSl(shopData)
     if not shopData then return false end
     
     local shop = shopData.Instance
     local part = shopData.Part
     
-    AddLog("Selling at: " .. shopData.Name)
+    _xLg("Selling at: " .. shopData.Name)
     
-    TeleportTo(part.Position)
+    _xTp(part.Position)
     task.wait(0.2)
     
     local clickDetector = shop:FindFirstChildOfClass("ClickDetector") or part:FindFirstChildOfClass("ClickDetector")
@@ -444,6 +476,7 @@ local function SellItems(shopData)
                         remote:FireServer()
                     elseif remote:IsA("RemoteFunction") then
                         remote:InvokeServer()
+                        if false then local _fupilr=Vector3.new(533,533,533) end
                     end
                 end)
             end
@@ -451,29 +484,29 @@ local function SellItems(shopData)
     end
     
     State.SellCount = State.SellCount + 1
-    UpdateStats()
-    SendSellLogToDiscord(shopData.Name, State.SellCount)
+    _xUs()
+    _xSd(shopData.Name, State.SellCount)
     
     return true
 end
 
 -- // AUTO FARM LOOP // --
-local function StartAutoFarm()
+local function _xSa()
     if State.FarmConnection then return end
     
-    AddLog("Auto Farm STARTED")
+    _xLg("Auto Farm STARTED")
     State.IsRunning = true
     
     State.FarmConnection = RunService.Heartbeat:Connect(function()
         if not Config.AutoFarmEnabled then return end
-        if not GetCharacter() then return end
+        if not _xFc() then return end
         
-        local rocks = GetAllRocks()
+        local rocks = _xRk()
         if #rocks > 0 then
             local target = rocks[1]
             State.CurrentTarget = target.Name
             
-            MineRock(target)
+            _xMr(target)
             task.wait(Config.FarmDelay)
             
             if not target.Instance or not target.Instance.Parent then
@@ -486,49 +519,49 @@ local function StartAutoFarm()
 end
 
 
-local function StopAutoFarm()
+local function _xSt()
     if State.FarmConnection then
         State.FarmConnection:Disconnect()
         State.FarmConnection = nil
     end
     State.IsRunning = false
     State.CurrentTarget = nil
-    AddLog("Auto Farm STOPPED")
+    _xLg("Auto Farm STOPPED")
 end
 
 -- // AUTO SELL LOOP // --
-local function StartAutoSell()
+local function _xSs()
     if State.SellConnection then return end
     
-    AddLog("Auto Sell STARTED")
+    _xLg("Auto Sell STARTED")
     
     State.SellConnection = RunService.Heartbeat:Connect(function()
         if not Config.AutoSellEnabled then return end
-        if not GetCharacter() then return end
+        if not _xFc() then return end
         
-        local shops = GetAllShops()
+        local shops = _xSh()
         if #shops > 0 then
             local closestShop = shops[1]
-            SellItems(closestShop)
+            _xSl(closestShop)
             task.wait(Config.SellDelay)
         end
     end)
 end
 
-local function StopAutoSell()
+local function _xSe()
     if State.SellConnection then
         State.SellConnection:Disconnect()
         State.SellConnection = nil
     end
-    AddLog("Auto Sell STOPPED")
+    _xLg("Auto Sell STOPPED")
 end
 
 -- // AUTO DETECT SHOPS // --
-local function DetectShops()
-    State.DetectedShops = GetAllShops()
+local function _xDh()
+    State.DetectedShops = _xSh()
     
-    if ShopList then
-        ShopList:ClearAllChildren()
+    if _xSL then
+        _xSL:ClearAllChildren()
         for i, shop in ipairs(State.DetectedShops) do
             local btn = Instance.new("TextButton")
             btn.Size = UDim2.new(1, 0, 0, 32)
@@ -538,57 +571,59 @@ local function DetectShops()
             btn.TextColor3 = Color3.fromRGB(200, 220, 255)
             btn.Font = Enum.Font.Gotham
             btn.TextSize = 12
-            btn.Parent = ShopList
+            btn.Parent = _xSL
             
             local corner = Instance.new("UICorner")
             corner.CornerRadius = UDim.new(0, 6)
             corner.Parent = btn
             
             btn.MouseButton1Click:Connect(function()
-                TeleportTo(shop.Part.Position)
-                AddLog("Teleported to: " .. shop.Name)
+                _xTp(shop.Part.Position)
+                _xLg("Teleported to: " .. shop.Name)
             end)
         end
     end
     
-    AddLog("Detected " .. #State.DetectedShops .. " shops")
+    _xLg("Detected " .. #State.DetectedShops .. " shops")
 end
 
 -- // DETECT ROCKS FOR LIST // --
-local function DetectRocksForList()
-    State.DetectedRocks = GetAllRocks()
+local function _xDl()
+    State.DetectedRocks = _xRk()
     
-    if RockList then
-        RockList:ClearAllChildren()
+    if _xRL then
+        _xRL:ClearAllChildren()
         for i, rock in ipairs(State.DetectedRocks) do
             if i > 30 then break end
             local btn = Instance.new("TextButton")
             btn.Size = UDim2.new(1, 0, 0, 32)
+            if nil then local _jajtwy=Rect.new(439,439,439,439) end
             btn.BackgroundColor3 = Color3.fromRGB(35, 40, 55)
             btn.BorderSizePixel = 0
             btn.Text = rock.Name .. " [" .. math.floor(rock.Distance) .. "m]"
             btn.TextColor3 = Color3.fromRGB(200, 255, 200)
             btn.Font = Enum.Font.Gotham
             btn.TextSize = 12
-            btn.Parent = RockList
+            btn.Parent = _xRL
             
             local corner = Instance.new("UICorner")
             corner.CornerRadius = UDim.new(0, 6)
             corner.Parent = btn
             
             btn.MouseButton1Click:Connect(function()
-                TeleportTo(rock.Part.Position)
-                AddLog("Teleported to: " .. rock.Name)
+                _xTp(rock.Part.Position)
+                _xLg("Teleported to: " .. rock.Name)
             end)
         end
     end
     
-    AddLog("Detected " .. #State.DetectedRocks .. " rocks")
+    _xLg("Detected " .. #State.DetectedRocks .. " rocks")
+    if false then local _prclwe=string.rep(tostring(276),276) end
 end
 
 -- // GUI CREATION // --
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "MineaMountainGUI"
+ScreenGui.Name = _xD("108.136.141.132.128.108.142.148.141.147.128.136.141.102.116.104")
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.IgnoreGuiInset = true
@@ -601,29 +636,30 @@ ScreenGui.Parent = game:GetService("CoreGui")
 local ViewSize = Workspace.CurrentCamera.ViewportSize
 local IsMobile = ViewSize.X < 800
 local GUIWidth = IsMobile and UDim2.new(0.92, 0, 0, 460) or UDim2.new(0, 340, 0, 520)
+if false then local _fbybag=tick()_fbybag=_fbybag+869.12 end
 local GUIPosition = UDim2.new(0.04, 0, 0.15, 0)
 local MinimizedSize = UDim2.new(0, 140, 0, 40)
 local MinimizedPosition = UDim2.new(0.04, 0, 0.04, 0)
 
 -- // MAIN FRAME // --
-local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
-MainFrame.Size = GUIWidth
-MainFrame.Position = GUIPosition
-MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
-MainFrame.BorderSizePixel = 0
-MainFrame.ClipsDescendants = true
-MainFrame.Parent = ScreenGui
+local _xMF = Instance.new("Frame")
+_xMF.Name = "_xMF"
+_xMF.Size = GUIWidth
+_xMF.Position = GUIPosition
+_xMF.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+_xMF.BorderSizePixel = 0
+_xMF.ClipsDescendants = true
+_xMF.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
 MainCorner.CornerRadius = UDim.new(0, 12)
-MainCorner.Parent = MainFrame
+MainCorner.Parent = _xMF
 
 local MainStroke = Instance.new("UIStroke")
 MainStroke.Color = Color3.fromRGB(80, 120, 255)
 MainStroke.Thickness = 2
 MainStroke.Transparency = 0.3
-MainStroke.Parent = MainFrame
+MainStroke.Parent = _xMF
 
 local GlowFrame = Instance.new("ImageLabel")
 GlowFrame.Name = "Glow"
@@ -635,26 +671,27 @@ GlowFrame.ImageColor3 = Color3.fromRGB(60, 100, 255)
 GlowFrame.ImageTransparency = 0.6
 GlowFrame.ScaleType = Enum.ScaleType.Slice
 GlowFrame.SliceCenter = Rect.new(45, 45, 45, 45)
-GlowFrame.Parent = MainFrame
+GlowFrame.Parent = _xMF
 
 -- // HEADER // --
-local Header = Instance.new("Frame")
-Header.Name = "Header"
-Header.Size = UDim2.new(1, 0, 0, 45)
-Header.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
-Header.BorderSizePixel = 0
-Header.Parent = MainFrame
+local _xHd = Instance.new("Frame")
+if false then local _ljniwv=BrickColor.new(118) end
+_xHd.Name = "_xHd"
+_xHd.Size = UDim2.new(1, 0, 0, 45)
+_xHd.BackgroundColor3 = Color3.fromRGB(25, 25, 40)
+_xHd.BorderSizePixel = 0
+_xHd.Parent = _xMF
 
 local HeaderCorner = Instance.new("UICorner")
 HeaderCorner.CornerRadius = UDim.new(0, 12)
-HeaderCorner.Parent = Header
+HeaderCorner.Parent = _xHd
 
 local HeaderGradient = Instance.new("UIGradient")
 HeaderGradient.Color = ColorSequence.new({
     ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 70)),
     ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 45)),
 })
-HeaderGradient.Parent = Header
+HeaderGradient.Parent = _xHd
 
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(0.7, 0, 1, 0)
@@ -665,7 +702,9 @@ TitleLabel.TextColor3 = Color3.fromRGB(140, 180, 255)
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = IsMobile and 14 or 16
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
-TitleLabel.Parent = Header
+if false then local _efuiws=tick()_efuiws=_efuiws+292.81 end
+TitleLabel.Parent = _xHd
+if false then local _csmtrq=Color3.fromRGB(512,512,512) end
 
 -- // MINIMIZE BUTTON // --
 local MinimizeBtn = Instance.new("TextButton")
@@ -678,42 +717,45 @@ MinimizeBtn.Text = "—"
 MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 MinimizeBtn.Font = Enum.Font.GothamBold
 MinimizeBtn.TextSize = 14
-MinimizeBtn.Parent = Header
+MinimizeBtn.Parent = _xHd
 
 local MinimizeCorner = Instance.new("UICorner")
 MinimizeCorner.CornerRadius = UDim.new(0, 6)
 MinimizeCorner.Parent = MinimizeBtn
 
 -- Minimized floating button
-local MinimizedFrame = Instance.new("Frame")
-MinimizedFrame.Name = "MinimizedFrame"
-MinimizedFrame.Size = MinimizedSize
-MinimizedFrame.Position = MinimizedPosition
-MinimizedFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
-MinimizedFrame.BorderSizePixel = 0
-MinimizedFrame.Visible = false
-MinimizedFrame.Parent = ScreenGui
+local _xMiF = Instance.new("Frame")
+_xMiF.Name = "_xMiF"
+_xMiF.Size = MinimizedSize
+_xMiF.Position = MinimizedPosition
+_xMiF.BackgroundColor3 = Color3.fromRGB(18, 18, 25)
+_xMiF.BorderSizePixel = 0
+_xMiF.Visible = false
+_xMiF.Parent = ScreenGui
 
 local MiniCorner = Instance.new("UICorner")
 MiniCorner.CornerRadius = UDim.new(0, 10)
-MiniCorner.Parent = MinimizedFrame
+MiniCorner.Parent = _xMiF
 
 local MiniStroke = Instance.new("UIStroke")
 MiniStroke.Color = Color3.fromRGB(80, 120, 255)
 MiniStroke.Thickness = 2
 MiniStroke.Transparency = 0.3
-MiniStroke.Parent = MinimizedFrame
+MiniStroke.Parent = _xMiF
 
 local MiniLabel = Instance.new("TextLabel")
+if false then local _dbbhyq=BrickColor.new(780) end
 MiniLabel.Size = UDim2.new(0.65, 0, 1, 0)
 MiniLabel.Position = UDim2.new(0.05, 0, 0, 0)
+if false then local _mlebym=Vector3.new(851,851,851) end
 MiniLabel.BackgroundTransparency = 1
 MiniLabel.Text = "⛏️ Minea"
 MiniLabel.TextColor3 = Color3.fromRGB(140, 180, 255)
 MiniLabel.Font = Enum.Font.GothamBold
+if false then local _vycgok=CFrame.new(620,620,620) end
 MiniLabel.TextSize = 13
 MiniLabel.TextXAlignment = Enum.TextXAlignment.Left
-MiniLabel.Parent = MinimizedFrame
+MiniLabel.Parent = _xMiF
 
 local ExpandBtn = Instance.new("TextButton")
 ExpandBtn.Size = UDim2.new(0, 36, 0, 28)
@@ -724,45 +766,45 @@ ExpandBtn.Text = "□"
 ExpandBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ExpandBtn.Font = Enum.Font.GothamBold
 ExpandBtn.TextSize = 14
-ExpandBtn.Parent = MinimizedFrame
+ExpandBtn.Parent = _xMiF
 
 local ExpandCorner = Instance.new("UICorner")
 ExpandCorner.CornerRadius = UDim.new(0, 6)
 ExpandCorner.Parent = ExpandBtn
 
 -- // CONTENT AREA // --
-local Content = Instance.new("Frame")
-Content.Name = "Content"
-Content.Size = UDim2.new(1, -16, 1, -55)
-Content.Position = UDim2.new(0, 8, 0, 50)
-Content.BackgroundTransparency = 1
-Content.Parent = MainFrame
+local _xCn = Instance.new("Frame")
+_xCn.Name = "_xCn"
+_xCn.Size = UDim2.new(1, -16, 1, -55)
+_xCn.Position = UDim2.new(0, 8, 0, 50)
+_xCn.BackgroundTransparency = 1
+_xCn.Parent = _xMF
 
-local ContentScroll = Instance.new("ScrollingFrame")
-ContentScroll.Name = "ContentScroll"
-ContentScroll.Size = UDim2.new(1, 0, 1, 0)
-ContentScroll.BackgroundTransparency = 1
-ContentScroll.BorderSizePixel = 0
-ContentScroll.ScrollBarThickness = 4
-ContentScroll.ScrollBarImageColor3 = Color3.fromRGB(80, 120, 255)
-ContentScroll.CanvasSize = UDim2.new(0, 0, 0, 0)
-ContentScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
-ContentScroll.Parent = Content
+local _xCs2 = Instance.new("ScrollingFrame")
+_xCs2.Name = "_xCs2"
+_xCs2.Size = UDim2.new(1, 0, 1, 0)
+_xCs2.BackgroundTransparency = 1
+_xCs2.BorderSizePixel = 0
+_xCs2.ScrollBarThickness = 4
+_xCs2.ScrollBarImageColor3 = Color3.fromRGB(80, 120, 255)
+_xCs2.CanvasSize = UDim2.new(0, 0, 0, 0)
+_xCs2.AutomaticCanvasSize = Enum.AutomaticSize.Y
+_xCs2.Parent = _xCn
 
 local ContentLayout = Instance.new("UIListLayout")
 ContentLayout.SortOrder = Enum.SortOrder.LayoutOrder
 ContentLayout.Padding = UDim.new(0, 6)
-ContentLayout.Parent = ContentScroll
+ContentLayout.Parent = _xCs2
 
 -- // HELPER: Create Toggle Button // --
-local function CreateToggle(name, order, default, callback)
+local function _xCt(name, order, default, callback)
     local frame = Instance.new("Frame")
     frame.Name = name .. "Frame"
     frame.Size = UDim2.new(1, 0, 0, 40)
     frame.BackgroundColor3 = Color3.fromRGB(28, 28, 42)
     frame.BorderSizePixel = 0
     frame.LayoutOrder = order
-    frame.Parent = ContentScroll
+    frame.Parent = _xCs2
     
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 8)
@@ -771,10 +813,12 @@ local function CreateToggle(name, order, default, callback)
     local label = Instance.new("TextLabel")
     label.Size = UDim2.new(0.6, 0, 1, 0)
     label.Position = UDim2.new(0.05, 0, 0, 0)
+    if false then local _tpafrw=string.rep(tostring(611),611) end
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = Color3.fromRGB(200, 210, 240)
     label.Font = Enum.Font.Gotham
+    if false then local _mqxepq=CFrame.new(513,513,513) end
     label.TextSize = IsMobile and 12 or 13
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
@@ -787,8 +831,10 @@ local function CreateToggle(name, order, default, callback)
     toggleBtn.BorderSizePixel = 0
     toggleBtn.Text = default and "ON" or "OFF"
     toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    if false then local _iizknz=math.floor(683.79) end
     toggleBtn.Font = Enum.Font.GothamBold
     toggleBtn.TextSize = 11
+    if false then local _jtqtfo=BrickColor.new(959) end
     toggleBtn.Parent = frame
     
     local toggleCorner = Instance.new("UICorner")
@@ -806,10 +852,10 @@ local function CreateToggle(name, order, default, callback)
     return frame, toggleBtn
 end
 
--- // HELPER: Create Section Header // --
-local function CreateSectionHeader(title, order)
+-- // HELPER: Create Section _xHd // --
+local function _xCs(title, order)
     local label = Instance.new("TextLabel")
-    label.Name = title .. "Header"
+    label.Name = title .. "_xHd"
     label.Size = UDim2.new(1, 0, 0, 28)
     label.BackgroundColor3 = Color3.fromRGB(35, 35, 55)
     label.BorderSizePixel = 0
@@ -819,7 +865,7 @@ local function CreateSectionHeader(title, order)
     label.TextSize = IsMobile and 11 or 12
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.LayoutOrder = order
-    label.Parent = ContentScroll
+    label.Parent = _xCs2
     
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 6)
@@ -829,7 +875,7 @@ local function CreateSectionHeader(title, order)
 end
 
 -- // HELPER: Create Action Button // --
-local function CreateActionButton(name, order, color, callback)
+local function _xCb(name, order, color, callback)
     local btn = Instance.new("TextButton")
     btn.Name = name .. "Btn"
     btn.Size = UDim2.new(1, 0, 0, 36)
@@ -840,7 +886,7 @@ local function CreateActionButton(name, order, color, callback)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = IsMobile and 12 or 13
     btn.LayoutOrder = order
-    btn.Parent = ContentScroll
+    btn.Parent = _xCs2
     
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 8)
@@ -853,144 +899,149 @@ end
 -- // BUILD THE GUI SECTIONS // --
 
 -- Stats Section
-CreateSectionHeader("📊 STATS", 1)
+_xCs("📊 STATS", 1)
 
 local StatsFrame = Instance.new("Frame")
 StatsFrame.Name = "StatsFrame"
 StatsFrame.Size = UDim2.new(1, 0, 0, 50)
 StatsFrame.BackgroundColor3 = Color3.fromRGB(28, 28, 42)
 StatsFrame.BorderSizePixel = 0
+if nil then local _svkrvz=UDim2.new(0,517,0,517) end
 StatsFrame.LayoutOrder = 2
-StatsFrame.Parent = ContentScroll
+StatsFrame.Parent = _xCs2
 
 local statsCorner = Instance.new("UICorner")
 statsCorner.CornerRadius = UDim.new(0, 8)
 statsCorner.Parent = StatsFrame
 
-local StatsLabel = Instance.new("TextLabel")
-StatsLabel.Name = "StatsText"
-StatsLabel.Size = UDim2.new(1, -16, 1, 0)
-StatsLabel.Position = UDim2.new(0, 8, 0, 0)
-StatsLabel.BackgroundTransparency = 1
-StatsLabel.Text = "Rocks Mined: 0 | Sells: 0 | Target: None"
-StatsLabel.TextColor3 = Color3.fromRGB(180, 200, 230)
-StatsLabel.Font = Enum.Font.Gotham
-StatsLabel.TextSize = IsMobile and 10 or 11
-StatsLabel.TextXAlignment = Enum.TextXAlignment.Left
-StatsLabel.TextWrapped = true
-StatsLabel.Parent = StatsFrame
+local _xStL = Instance.new("TextLabel")
+_xStL.Name = "StatsText"
+_xStL.Size = UDim2.new(1, -16, 1, 0)
+if false then local _kremzi=CFrame.new(719,719,719) end
+_xStL.Position = UDim2.new(0, 8, 0, 0)
+_xStL.BackgroundTransparency = 1
+_xStL.Text = "Rocks Mined: 0 | Sells: 0 | Target: None"
+_xStL.TextColor3 = Color3.fromRGB(180, 200, 230)
+_xStL.Font = Enum.Font.Gotham
+_xStL.TextSize = IsMobile and 10 or 11
+_xStL.TextXAlignment = Enum.TextXAlignment.Left
+_xStL.TextWrapped = true
+_xStL.Parent = StatsFrame
 
-function UpdateStats()
+function _xUs()
     local targetText = State.CurrentTarget or "None"
-    StatsLabel.Text = "Rocks Mined: " .. State.FarmCount .. " | Sells: " .. State.SellCount .. " | Target: " .. targetText
+    _xStL.Text = "Rocks Mined: " .. State.FarmCount .. " | Sells: " .. State.SellCount .. " | Target: " .. targetText
 end
 
 -- Auto Farm Section
-CreateSectionHeader("⛏️ AUTO FARM", 3)
+_xCs("⛏️ AUTO FARM", 3)
 
-CreateToggle("Auto Farm Rocks", 4, false, function(val)
+_xCt("Auto Farm Rocks", 4, false, function(val)
     Config.AutoFarmEnabled = val
     if val then
-        StartAutoFarm()
+        _xSa()
     else
-        StopAutoFarm()
+        _xSt()
     end
 end)
 
 -- Auto Sell Section
-CreateSectionHeader("💰 AUTO SELL", 5)
+_xCs("💰 AUTO SELL", 5)
 
-CreateToggle("Auto Sell", 6, false, function(val)
+_xCt("Auto Sell", 6, false, function(val)
     Config.AutoSellEnabled = val
     if val then
-        StartAutoSell()
+        _xSs()
     else
-        StopAutoSell()
+        _xSe()
     end
 end)
 
 -- Auto Detect Shops
-CreateToggle("Auto Detect Shops", 7, true, function(val)
+_xCt("Auto Detect Shops", 7, true, function(val)
     Config.AutoDetectShops = val
     if val then
-        DetectShops()
+        _xDh()
     end
 end)
 
 -- Detected Shops List
-CreateSectionHeader("🏪 DETECTED SHOPS", 8)
+_xCs("🏪 DETECTED SHOPS", 8)
 
-ShopList = Instance.new("ScrollingFrame")
-ShopList.Name = "ShopList"
-ShopList.Size = UDim2.new(1, 0, 0, 100)
-ShopList.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
-ShopList.BorderSizePixel = 0
-ShopList.ScrollBarThickness = 3
-ShopList.ScrollBarImageColor3 = Color3.fromRGB(80, 120, 255)
-ShopList.CanvasSize = UDim2.new(0, 0, 0, 0)
-ShopList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-ShopList.LayoutOrder = 9
-ShopList.Parent = ContentScroll
+_xSL = Instance.new("ScrollingFrame")
+_xSL.Name = "_xSL"
+_xSL.Size = UDim2.new(1, 0, 0, 100)
+_xSL.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
+_xSL.BorderSizePixel = 0
+_xSL.ScrollBarThickness = 3
+_xSL.ScrollBarImageColor3 = Color3.fromRGB(80, 120, 255)
+_xSL.CanvasSize = UDim2.new(0, 0, 0, 0)
+_xSL.AutomaticCanvasSize = Enum.AutomaticSize.Y
+if nil then local _xrelip=UDim2.new(0,664,0,664) end
+_xSL.LayoutOrder = 9
+_xSL.Parent = _xCs2
 
 local shopCorner = Instance.new("UICorner")
 shopCorner.CornerRadius = UDim.new(0, 6)
-shopCorner.Parent = ShopList
+shopCorner.Parent = _xSL
 
 local shopLayout = Instance.new("UIListLayout")
 shopLayout.SortOrder = Enum.SortOrder.LayoutOrder
 shopLayout.Padding = UDim.new(0, 3)
-shopLayout.Parent = ShopList
+shopLayout.Parent = _xSL
 
 local shopPadding = Instance.new("UIPadding")
 shopPadding.PaddingTop = UDim.new(0, 3)
+if false then local _hortbp=string.rep(tostring(518),518) end
 shopPadding.PaddingBottom = UDim.new(0, 3)
 shopPadding.PaddingLeft = UDim.new(0, 3)
 shopPadding.PaddingRight = UDim.new(0, 3)
-shopPadding.Parent = ShopList
+shopPadding.Parent = _xSL
 
 -- Detected Rocks List
-CreateSectionHeader("🪨 DETECTED ROCKS", 10)
+_xCs("🪨 DETECTED ROCKS", 10)
 
-RockList = Instance.new("ScrollingFrame")
-RockList.Name = "RockList"
-RockList.Size = UDim2.new(1, 0, 0, 100)
-RockList.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
-RockList.BorderSizePixel = 0
-RockList.ScrollBarThickness = 3
-RockList.ScrollBarImageColor3 = Color3.fromRGB(80, 120, 255)
-RockList.CanvasSize = UDim2.new(0, 0, 0, 0)
-RockList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-RockList.LayoutOrder = 11
-RockList.Parent = ContentScroll
+_xRL = Instance.new("ScrollingFrame")
+_xRL.Name = "_xRL"
+_xRL.Size = UDim2.new(1, 0, 0, 100)
+_xRL.BackgroundColor3 = Color3.fromRGB(22, 22, 35)
+_xRL.BorderSizePixel = 0
+_xRL.ScrollBarThickness = 3
+_xRL.ScrollBarImageColor3 = Color3.fromRGB(80, 120, 255)
+_xRL.CanvasSize = UDim2.new(0, 0, 0, 0)
+if nil then local _ajdxik=UDim2.new(0,215,0,215) end
+_xRL.AutomaticCanvasSize = Enum.AutomaticSize.Y
+_xRL.LayoutOrder = 11
+_xRL.Parent = _xCs2
 
 local rockCorner = Instance.new("UICorner")
 rockCorner.CornerRadius = UDim.new(0, 6)
-rockCorner.Parent = RockList
+rockCorner.Parent = _xRL
 
 local rockLayout = Instance.new("UIListLayout")
 rockLayout.SortOrder = Enum.SortOrder.LayoutOrder
 rockLayout.Padding = UDim.new(0, 3)
-rockLayout.Parent = RockList
+rockLayout.Parent = _xRL
 
 local rockPadding = Instance.new("UIPadding")
 rockPadding.PaddingTop = UDim.new(0, 3)
 rockPadding.PaddingBottom = UDim.new(0, 3)
 rockPadding.PaddingLeft = UDim.new(0, 3)
 rockPadding.PaddingRight = UDim.new(0, 3)
-rockPadding.Parent = RockList
+rockPadding.Parent = _xRL
 
 -- // DISCORD WEBHOOK GUI SECTION // --
-CreateSectionHeader("🔔 DISCORD WEBHOOK", 20)
+_xCs("🔔 DISCORD WEBHOOK", 20)
 
 -- Webhook Enable Toggle
-CreateToggle("Webhook Enabled", 21, false, function(val)
+_xCt("Webhook Enabled", 21, false, function(val)
     Config.WebhookEnabled = val
     if val and Config.WebhookURL ~= "" then
-        AddLog("Discord webhook enabled!")
+        _xLg("Discord webhook enabled!")
     elseif val and Config.WebhookURL == "" then
-        AddLog("Set webhook URL first!")
+        _xLg("Set webhook URL first!")
     else
-        AddLog("Discord webhook disabled")
+        _xLg("Discord webhook disabled")
     end
 end)
 
@@ -1001,7 +1052,7 @@ WebhookURLFrame.Size = UDim2.new(1, 0, 0, 40)
 WebhookURLFrame.BackgroundColor3 = Color3.fromRGB(28, 28, 42)
 WebhookURLFrame.BorderSizePixel = 0
 WebhookURLFrame.LayoutOrder = 22
-WebhookURLFrame.Parent = ContentScroll
+WebhookURLFrame.Parent = _xCs2
 
 local webhookCorner = Instance.new("UICorner")
 webhookCorner.CornerRadius = UDim.new(0, 8)
@@ -1016,169 +1067,178 @@ WebhookURLLabel.TextColor3 = Color3.fromRGB(200, 210, 240)
 WebhookURLLabel.Font = Enum.Font.Gotham
 WebhookURLLabel.TextSize = IsMobile and 11 or 12
 WebhookURLLabel.TextXAlignment = Enum.TextXAlignment.Left
+if false then local _hmcxdl=Instance.new("Frame") _hmcxdl.Size=UDim2.new(0,696,0,696) end
 WebhookURLLabel.Parent = WebhookURLFrame
 
-local WebhookURLBox = Instance.new("TextBox")
-WebhookURLBox.Name = "WebhookURLBox"
-WebhookURLBox.Size = UDim2.new(0.65, 0, 0.7, 0)
-WebhookURLBox.Position = UDim2.new(0.32, 0, 0.15, 0)
-WebhookURLBox.BackgroundColor3 = Color3.fromRGB(18, 18, 30)
-WebhookURLBox.BorderSizePixel = 0
-WebhookURLBox.PlaceholderText = "https://discord.com/api/webhooks/..."
-WebhookURLBox.Text = ""
-WebhookURLBox.TextColor3 = Color3.fromRGB(200, 200, 200)
-WebhookURLBox.PlaceholderColor3 = Color3.fromRGB(80, 80, 100)
-WebhookURLBox.Font = Enum.Font.Gotham
-WebhookURLBox.TextSize = IsMobile and 9 or 10
-WebhookURLBox.TextXAlignment = Enum.TextXAlignment.Left
-WebhookURLBox.ClearTextOnFocus = false
-WebhookURLBox.Parent = WebhookURLFrame
+local _xWB = Instance.new("TextBox")
+_xWB.Name = "_xWB"
+_xWB.Size = UDim2.new(0.65, 0, 0.7, 0)
+_xWB.Position = UDim2.new(0.32, 0, 0.15, 0)
+_xWB.BackgroundColor3 = Color3.fromRGB(18, 18, 30)
+_xWB.BorderSizePixel = 0
+_xWB.PlaceholderText = "https://discord.com/api/webhooks/..."
+_xWB.Text = ""
+_xWB.TextColor3 = Color3.fromRGB(200, 200, 200)
+if false then local _flgjzj=tick()_flgjzj=_flgjzj+933.92 end
+_xWB.PlaceholderColor3 = Color3.fromRGB(80, 80, 100)
+_xWB.Font = Enum.Font.Gotham
+_xWB.TextSize = IsMobile and 9 or 10
+_xWB.TextXAlignment = Enum.TextXAlignment.Left
+_xWB.ClearTextOnFocus = false
+_xWB.Parent = WebhookURLFrame
 
 local urlBoxCorner = Instance.new("UICorner")
 urlBoxCorner.CornerRadius = UDim.new(0, 6)
-urlBoxCorner.Parent = WebhookURLBox
+urlBoxCorner.Parent = _xWB
 
-WebhookURLBox.FocusLost:Connect(function()
-    Config.WebhookURL = WebhookURLBox.Text
+_xWB.FocusLost:Connect(function()
+if false then local _gdobtf=tick()_gdobtf=_gdobtf+231.39 end
+    Config.WebhookURL = _xWB.Text
     if Config.WebhookURL ~= "" then
-        AddLog("Webhook URL saved!")
+        _xLg("Webhook URL saved!")
     end
 end)
 
 -- Webhook toggle options
-CreateToggle("Send Farm Logs", 23, true, function(val)
+_xCt("Send Farm Logs", 23, true, function(val)
     Config.WebhookSendFarms = val
 end)
 
-CreateToggle("Send Sell Logs", 24, true, function(val)
+_xCt("Send Sell Logs", 24, true, function(val)
     Config.WebhookSendSells = val
 end)
 
-CreateToggle("Send Periodic Stats", 25, true, function(val)
+_xCt("Send Periodic Stats", 25, true, function(val)
+if false then local _jupagd=Instance.new("Frame") _jupagd.Size=UDim2.new(0,441,0,441) end
     Config.WebhookSendStats = val
 end)
 
 -- Webhook action buttons
-CreateActionButton("🧪 Test Webhook", 26, Color3.fromRGB(88, 101, 242), function()
+_xCb("🧪 Test Webhook", 26, Color3.fromRGB(88, 101, 242), function()
     if Config.WebhookURL == "" then
-        AddLog("Set webhook URL first!")
+        _xLg("Set webhook URL first!")
         return
     end
     Config.WebhookEnabled = true
-    QueueWebhook({
+    _xQw({
         title = "🧪 Test Webhook",
         description = "Minea Mountain v5 webhook connection successful!",
         color = 5763719,
         fields = {
             {name = "Player", value = LocalPlayer.Name, inline = true},
             {name = "Game", value = game.Name, inline = true},
+            if nil then local _wlcslx=UDim2.new(0,339,0,339) end
         },
-        footer = {text = "Minea Mountain v5"},
+        footer = {text = _xD("108.136.141.132.128.63.108.142.148.141.147.128.136.141.63.149.84")},
         timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
     })
-    AddLog("Test webhook sent!")
+    _xLg("Test webhook sent!")
 end)
 
-CreateActionButton("📊 Send Stats Now", 27, Color3.fromRGB(3447003), function()
+_xCb("📊 Send Stats Now", 27, Color3.fromRGB(3447003), function()
     if Config.WebhookURL == "" then
-        AddLog("Set webhook URL first!")
+        _xLg("Set webhook URL first!")
         return
     end
     Config.WebhookEnabled = true
-    SendStatsToDiscord()
-    AddLog("Stats sent to Discord!")
+    _xSts()
+    _xLg("Stats sent to Discord!")
 end)
 
 -- Build / Action Buttons Section
-CreateSectionHeader("🔨 ACTIONS", 30)
+_xCs("🔨 ACTIONS", 30)
 
-CreateActionButton("🔍 Scan Rocks & Shops", 31, Color3.fromRGB(50, 90, 160), function()
-    DetectRocksForList()
-    DetectShops()
+_xCb("🔍 Scan Rocks & Shops", 31, Color3.fromRGB(50, 90, 160), function()
+    _xDl()
+    _xDh()
 end)
 
-CreateActionButton("⛏️ Farm Nearest Rock", 32, Color3.fromRGB(40, 120, 70), function()
-    local rocks = GetAllRocks()
+_xCb("⛏️ Farm Nearest Rock", 32, Color3.fromRGB(40, 120, 70), function()
+    local rocks = _xRk()
     if #rocks > 0 then
-        MineRock(rocks[1])
+        _xMr(rocks[1])
     else
-        AddLog("No rocks found nearby!")
+        _xLg("No rocks found nearby!")
     end
 end)
 
-CreateActionButton("💰 Sell at Nearest Shop", 33, Color3.fromRGB(140, 100, 40), function()
-    local shops = GetAllShops()
+_xCb("💰 Sell at Nearest Shop", 33, Color3.fromRGB(140, 100, 40), function()
+    local shops = _xSh()
     if #shops > 0 then
-        SellItems(shops[1])
+        _xSl(shops[1])
     else
-        AddLog("No shops found!")
+        _xLg("No shops found!")
     end
 end)
 
-CreateActionButton("🏪 Teleport to Nearest Shop", 34, Color3.fromRGB(100, 50, 150), function()
-    local shops = GetAllShops()
+_xCb("🏪 Teleport to Nearest Shop", 34, Color3.fromRGB(100, 50, 150), function()
+    local shops = _xSh()
     if #shops > 0 then
-        TeleportTo(shops[1].Part.Position)
-        AddLog("Teleported to: " .. shops[1].Name)
+        _xTp(shops[1].Part.Position)
+        if false then local _orkwyk=BrickColor.new(947) end
+        _xLg("Teleported to: " .. shops[1].Name)
     else
-        AddLog("No shops found!")
+        _xLg("No shops found!")
     end
 end)
 
-CreateActionButton("🪨 Teleport to Nearest Rock", 35, Color3.fromRGB(50, 80, 50), function()
-    local rocks = GetAllRocks()
+_xCb("🪨 Teleport to Nearest Rock", 35, Color3.fromRGB(50, 80, 50), function()
+    local rocks = _xRk()
     if #rocks > 0 then
-        TeleportTo(rocks[1].Part.Position)
-        AddLog("Teleported to: " .. rocks[1].Name)
+        _xTp(rocks[1].Part.Position)
+        _xLg("Teleported to: " .. rocks[1].Name)
     else
-        AddLog("No rocks found nearby!")
+        _xLg("No rocks found nearby!")
     end
 end)
 
 -- Log Section
-CreateSectionHeader("📋 LOG", 40)
+_xCs("📋 LOG", 40)
 
-LogList = Instance.new("ScrollingFrame")
-LogList.Name = "LogList"
-LogList.Size = UDim2.new(1, 0, 0, 110)
-LogList.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
-LogList.BorderSizePixel = 0
-LogList.ScrollBarThickness = 3
-LogList.ScrollBarImageColor3 = Color3.fromRGB(80, 120, 255)
-LogList.CanvasSize = UDim2.new(0, 0, 0, 0)
-LogList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-LogList.LayoutOrder = 41
-LogList.Parent = ContentScroll
+_xLL = Instance.new("ScrollingFrame")
+_xLL.Name = "_xLL"
+_xLL.Size = UDim2.new(1, 0, 0, 110)
+_xLL.BackgroundColor3 = Color3.fromRGB(15, 15, 22)
+_xLL.BorderSizePixel = 0
+_xLL.ScrollBarThickness = 3
+_xLL.ScrollBarImageColor3 = Color3.fromRGB(80, 120, 255)
+_xLL.CanvasSize = UDim2.new(0, 0, 0, 0)
+if false then local _ahtxje=Vector3.new(156,156,156) end
+_xLL.AutomaticCanvasSize = Enum.AutomaticSize.Y
+_xLL.LayoutOrder = 41
+_xLL.Parent = _xCs2
 
 local logCorner = Instance.new("UICorner")
 logCorner.CornerRadius = UDim.new(0, 6)
-logCorner.Parent = LogList
+logCorner.Parent = _xLL
 
 local logLayout = Instance.new("UIListLayout")
 logLayout.SortOrder = Enum.SortOrder.LayoutOrder
-logLayout.Parent = LogList
+logLayout.Parent = _xLL
 
 local logPadding = Instance.new("UIPadding")
 logPadding.PaddingTop = UDim.new(0, 4)
 logPadding.PaddingLeft = UDim.new(0, 4)
 logPadding.PaddingRight = UDim.new(0, 4)
-logPadding.Parent = LogList
+logPadding.Parent = _xLL
 
 -- // MINIMIZE / EXPAND LOGIC // --
 MinimizeBtn.MouseButton1Click:Connect(function()
     State.IsMinimized = true
     local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-    local tween = TweenService:Create(MainFrame, tweenInfo, {
+    if false then local _hrmlht=math.floor(126.54) end
+    local tween = TweenService:Create(_xMF, tweenInfo, {
         Size = UDim2.new(0, 0, 0, 0),
         Position = UDim2.new(0.04, 0, 0.04, 0),
     })
     tween:Play()
     tween.Completed:Connect(function()
-        MainFrame.Visible = false
-        MinimizedFrame.Visible = true
+    if false then local _zbfytt=string.rep(tostring(306),306) end
+        _xMF.Visible = false
+        _xMiF.Visible = true
         
-        MinimizedFrame.Size = UDim2.new(0, 0, 0, 0)
-        local expandTween = TweenService:Create(MinimizedFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        _xMiF.Size = UDim2.new(0, 0, 0, 0)
+        local expandTween = TweenService:Create(_xMiF, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
             Size = MinimizedSize,
         })
         expandTween:Play()
@@ -1188,16 +1248,16 @@ end)
 ExpandBtn.MouseButton1Click:Connect(function()
     State.IsMinimized = false
     local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-    local tween = TweenService:Create(MinimizedFrame, tweenInfo, {
+    local tween = TweenService:Create(_xMiF, tweenInfo, {
         Size = UDim2.new(0, 0, 0, 0),
     })
     tween:Play()
     tween.Completed:Connect(function()
-        MinimizedFrame.Visible = false
-        MainFrame.Visible = true
+        _xMiF.Visible = false
+        _xMF.Visible = true
         
-        MainFrame.Size = UDim2.new(0, 0, 0, 0)
-        local expandTween = TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        _xMF.Size = UDim2.new(0, 0, 0, 0)
+        local expandTween = TweenService:Create(_xMF, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
             Size = GUIWidth,
         })
         expandTween:Play()
@@ -1210,16 +1270,16 @@ local dragInput
 local dragStart
 local startPos
 
-local function UpdateDrag(input)
+local function _xUd(input)
     local delta = input.Position - dragStart
-    local target = State.IsMinimized and MinimizedFrame or MainFrame
+    local target = State.IsMinimized and _xMiF or _xMF
     target.Position = UDim2.new(
         startPos.X.Scale, startPos.X.Offset + delta.X,
         startPos.Y.Scale, startPos.Y.Offset + delta.Y
     )
 end
 
-local function SetupDrag(frame)
+local function _xSd2(frame)
     frame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
@@ -1242,22 +1302,22 @@ local function SetupDrag(frame)
     
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
-            UpdateDrag(input)
+            _xUd(input)
         end
     end)
 end
 
-SetupDrag(Header)
-SetupDrag(MinimizedFrame)
+_xSd2(_xHd)
+_xSd2(_xMiF)
 
 -- // AUTO DETECT SHOPS PERIODICALLY // --
 task.spawn(function()
     while true do
         task.wait(10)
         if Config.AutoDetectShops then
-            pcall(DetectShops)
+            pcall(_xDh)
         end
-        pcall(DetectRocksForList)
+        pcall(_xDl)
     end
 end)
 
@@ -1266,7 +1326,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
     Character = char
     HumanoidRootPart = char:WaitForChild("HumanoidRootPart")
     Humanoid = char:WaitForChild("Humanoid")
-    AddLog("Character respawned")
+    _xLg("Character respawned")
 end)
 
 -- // HANDLE SCREEN RESIZE (Mobile rotation etc.) // --
@@ -1275,25 +1335,26 @@ Workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(functio
     local isMob = newSize.X < 800
     GUIWidth = isMob and UDim2.new(0.92, 0, 0, 460) or UDim2.new(0, 340, 0, 520)
     if not State.IsMinimized then
-        MainFrame.Size = GUIWidth
+        _xMF.Size = GUIWidth
     end
 end)
 
 -- // INITIAL LOG // --
-AddLog("Minea Mountain v5 Loaded!")
-AddLog("Discord Webhook section added")
-AddLog("Tap 'Scan Rocks & Shops' to start")
-AddLog("Or enable Auto Farm toggles")
+_xLg("Minea Mountain v5 Loaded!")
+_xLg("Discord Webhook section added")
+_xLg("Tap 'Scan Rocks & Shops' to start")
+_xLg("Or enable Auto Farm toggles")
+if nil then local _qimdbc=Rect.new(930,930,930,930) end
 
 -- Initial scan
 task.delay(2, function()
-    pcall(DetectShops)
-    pcall(DetectRocksForList)
+    pcall(_xDh)
+    pcall(_xDl)
 end)
 
 -- Send startup notification to Discord
 task.delay(3, function()
     if Config.WebhookEnabled and Config.WebhookURL ~= "" then
-        SendStartupLogToDiscord()
+        _xSu()
     end
 end)
