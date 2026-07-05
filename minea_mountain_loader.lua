@@ -1,4 +1,3 @@
--- Mountain Hub v3.2 - Safe Build with Error Reporting
 local success, err = pcall(function()
 --[[
     ████████╗██╗  ██╗███████╗    ██╗███████╗ ██████╗ ███████╗████████╗
@@ -7,10 +6,10 @@ local success, err = pcall(function()
        ██║   ██╔══██║██╔══╝      ██║╚════██║██║   ██║╚════██║   ██║   
        ██║   ██║  ██║███████╗    ██║███████║╚██████╔╝███████║   ██║   
        ╚═╝   ╚═╝  ╚═╝╚══════╝    ╚═╝╚══════╝ ╚═════╝ ╚══════╝   ╚═╝   
-    🏔️ MOUNTAIN EXPLOIT HUB v3.2 🏔️
+    🏔️ MOUNTAIN EXPLOIT HUB v4 🏔️
     Game: Mine a Mountain (ID: 125927821145949)
     
-    v3.2 CHANGES:
+    v4 CHANGES:
     - Professional glassmorphism GUI with custom toggle switches
     - FIXED: Auto Farm now TP→MINE→COLLECT→SELL in proper loop
     - FIXED: Sell exploit fires from current position (no need to walk to shop)
@@ -19,6 +18,8 @@ local success, err = pcall(function()
     - NEW: Sell From Position exploit
     - NEW: Crystal value override exploit
     - Mobile responsive with proper touch targets
+    - NEW: Discord Webhook integration for remote/config/pickaxe logging
+    - NEW: Phone-friendly GUI sizing
 ]]
 
 -- ════════════════════════════════════════════════════════════════════════════
@@ -85,6 +86,7 @@ local VirtualUser = _r:GetService("VirtualUser")
 local TeleportService = _r:GetService("TeleportService")
 local CoreGui = _r:GetService("CoreGui")
 local HttpService = _r:GetService("HttpService")
+local HttpService = _r:GetService("HttpService")
 local Lighting = _r:GetService("Lighting")
 
 local LocalPlayer = Players.LocalPlayer
@@ -134,17 +136,6 @@ local Config = {
     FlySpeed = 80,
     -- Exploits
     SellFromPos = true,
-    -- v3.1 additions
-    InstantMine = false,
-    RemoteSpyEnabled = false,
-    SellBypassEnabled = false,
-    CapacityBypass = false,
-    ExtendedRange = false,
-    SpeedSpoof = false,
-    ConfigManip = false,
-    WarpSellEnabled = false,
-    AntiCheatFull = false,
-    MountainResetHandler = true,
     BackpackDupe = false,
     InventoryExploit = false,
     InstantMine = false,
@@ -1187,6 +1178,171 @@ local function StartAutoRejoin()
     end
 end
 
+
+-- ===========================================================================
+-- DISCORD WEBHOOK SYSTEM
+-- ===========================================================================
+local DiscordWebhookURL = ""
+local WebhookEnabled = false
+local WebhookQueue = {}
+local WebhookRateLimit = 1.5
+local LastWebhookSend = 0
+
+local function SendWebhook(title, description, color, fields)
+    if not WebhookEnabled or DiscordWebhookURL == "" then return end
+    if not DiscordWebhookURL:find("discord.com/api/webhooks") and not DiscordWebhookURL:find("discordapp.com/api/webhooks") then
+        return
+    end
+    local now = tick()
+    if now - LastWebhookSend < WebhookRateLimit then
+        table.insert(WebhookQueue, {title = title, description = description, color = color, fields = fields})
+        return
+    end
+    LastWebhookSend = now
+    local embedFields = {}
+    if fields then
+        for _, f in ipairs(fields) do
+            table.insert(embedFields, {
+                name = tostring(f.name or ""),
+                value = tostring(f.value or ""),
+                inline = f.inline or false,
+            })
+        end
+    end
+    local payload = {
+        username = "MtHub v4",
+        embeds = {{
+            title = title or "MtHub Event",
+            description = description or "",
+            color = color or 3447003,
+            fields = #embedFields > 0 and embedFields or nil,
+            footer = {
+                text = "MtHub v4 | " .. os.date("%H:%M:%S") .. " | " .. LocalPlayer.Name,
+            },
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
+        }}
+    }
+    spawn(function()
+        pcall(function()
+            HttpService:PostAsync(DiscordWebhookURL, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson, true)
+        end)
+    end)
+end
+
+local function ProcessWebhookQueue()
+    if not WebhookEnabled then return end
+    if #WebhookQueue == 0 then return end
+    local now = tick()
+    if now - LastWebhookSend < WebhookRateLimit then return end
+    local entry = table.remove(WebhookQueue, 1)
+    LastWebhookSend = now
+    SendWebhook(entry.title, entry.description, entry.color, entry.fields)
+end
+
+local function StartWebhookProcessor()
+    spawn(function()
+        while wait(WebhookRateLimit) do
+            pcall(ProcessWebhookQueue)
+        end
+    end)
+end
+
+-- Send remote log to Discord
+local function SendRemoteLogToDiscord()
+    if not WebhookEnabled or DiscordWebhookURL == "" then
+        Notify("Webhook", "Set your Discord webhook URL first!", 2, "error")
+        return
+    end
+    if #RemoteLog == 0 then
+        Notify("Webhook", "No remote log to send", 2, "warning")
+        return
+    end
+    local lines_text = {}
+    for i, entry in ipairs(RemoteLog) do
+        if i > 20 then break end
+        local argStr = ""
+        for j, arg in ipairs(entry.args or {}) do
+            argStr = argStr .. (j > 1 and ", " or "") .. tostring(arg.type or "?") .. ":" .. tostring(arg.value or "?")
+        end
+        table.insert(lines_text, "[" .. tostring(entry.time) .. "] " .. tostring(entry.remote) .. "." .. tostring(entry.method) .. "(" .. argStr .. ")")
+    end
+    SendWebhook("Remote Spy Log (" .. #RemoteLog .. " entries)", table.concat(lines_text, "\n"), 3447003)
+    Notify("Webhook", #RemoteLog .. " remote entries sent!", 2, "success")
+end
+
+-- Send pickaxe scan to Discord
+local function SendPickaxeScanToDiscord()
+    if not WebhookEnabled or DiscordWebhookURL == "" then
+        Notify("Webhook", "Set your Discord webhook URL first!", 2, "error")
+        return
+    end
+    if #DetectedPickaxes == 0 then
+        Notify("Webhook", "No pickaxes found - scan first", 2, "warning")
+        return
+    end
+    local fields = {}
+    for _, p in ipairs(DetectedPickaxes) do
+        if #fields >= 25 then break end
+        table.insert(fields, {name = p.name, value = "Price: $" .. tostring(p.price) .. " | Tier: " .. tostring(p.tier), inline = true})
+    end
+    SendWebhook("Pickaxe Scan Results", #DetectedPickaxes .. " pickaxes found", 5763719, fields)
+    Notify("Webhook", #DetectedPickaxes .. " pickaxes sent!", 2, "success")
+end
+
+-- Send config discovery to Discord
+local function SendConfigDiscoveryToDiscord()
+    if not WebhookEnabled or DiscordWebhookURL == "" then
+        Notify("Webhook", "Set your Discord webhook URL first!", 2, "error")
+        return
+    end
+    local configs = DiscoverGameConfigs()
+    if #configs == 0 then
+        Notify("Webhook", "No config objects found", 2, "warning")
+        return
+    end
+    local fields = {}
+    for _, cfg in ipairs(configs) do
+        if #fields >= 25 then break end
+        table.insert(fields, {name = cfg.name, value = "[" .. cfg.type .. "] " .. cfg.path, inline = false})
+    end
+    SendWebhook("Game Config Discovery", #configs .. " config objects found", 15158332, fields)
+    Notify("Webhook", #configs .. " configs sent!", 2, "success")
+end
+
+
+local function DiscoverGameConfigs()
+    local configs = {}
+    pcall(function()
+        for _, obj in ipairs(RS:GetDescendants()) do
+            if obj:IsA("IntValue") or obj:IsA("NumberValue") or obj:IsA("StringValue") or obj:IsA("BoolValue") then
+                local n = obj.Name:lower()
+                if n:find("price") or n:find("cost") or n:find("value") or n:find("damage") or n:find("speed") or n:find("rate") or n:find("multiplier") or n:find("cooldown") then
+                    table.insert(configs, {
+                        name = obj.Name,
+                        type = obj.ClassName,
+                        value = obj.Value,
+                        path = obj:GetFullName(),
+                    })
+                end
+            end
+        end
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            if obj:IsA("IntValue") or obj:IsA("NumberValue") or obj:IsA("StringValue") or obj:IsA("BoolValue") then
+                local n = obj.Name:lower()
+                if n:find("price") or n:find("cost") or n:find("value") or n:find("damage") or n:find("cooldown") then
+                    table.insert(configs, {
+                        name = obj.Name,
+                        type = obj.ClassName,
+                        value = obj.Value,
+                        path = obj:GetFullName(),
+                    })
+                end
+            end
+        end
+    end)
+    return configs
+end
+
 local function SaveConfig()
     pcall(function()
         local saveData = {}
@@ -1206,1203 +1362,6 @@ local function LoadConfig()
 end
 
 -- ══════════════════════════════════════════════════════════════════════════════
--- ══════════════════════════════════════════════════════════════════════════════
--- v3.2 ADDITIONS: ALL EXPLOITS + PICKAXE SHOP + MOUNTAIN RESET + DISCORD WEBHOOK
--- ===========================================================================
--- DISCORD WEBHOOK SYSTEM
--- ===========================================================================
-local DiscordWebhookURL = ""  -- User sets this via GUI
-local WebhookEnabled = false
-local WebhookQueue = {}        -- Messages waiting to be sent
-local WebhookRateLimit = 1.5   -- Seconds between webhook sends (Discord rate limit)
-local LastWebhookSend = 0
-local WebhookSendConnections = nil
-
-local function SendWebhook(title, description, color, fields)
-    if not WebhookEnabled or DiscordWebhookURL == "" then return end
-    if not DiscordWebhookURL:find("discord.com/api/webhooks") and not DiscordWebhookURL:find("discordapp.com/api/webhooks") then
-        return
-    end
-
-    -- Rate limit
-    local now = tick()
-    if now - LastWebhookSend < WebhookRateLimit then
-        -- Queue it
-        table.insert(WebhookQueue, {title = title, description = description, color = color, fields = fields})
-        return
-    end
-    LastWebhookSend = now
-
-    -- Build embed
-    local embedFields = {}
-    if fields then
-        for _, f in ipairs(fields) do
-            table.insert(embedFields, {
-                name = tostring(f.name or ""),
-                value = tostring(f.value or ""),
-                inline = f.inline or false,
-            })
-        end
-    end
-
-    local payload = {
-        username = "MtHub v3.2",
-        avatar_url = "https://i.imgur.com/mountainicon.png",
-        embeds = {{
-            title = title or "MtHub Event",
-            description = description or "",
-            color = color or 3447003,  -- Default blue
-            fields = #embedFields > 0 and embedFields or nil,
-            footer = {
-                text = "MtHub v3.2 | " .. os.date("%H:%M:%S") .. " | Player: " .. LocalPlayer.Name,
-            },
-            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
-        }}
-    }
-
-    spawn(function()
-        pcall(function()
-            HttpService:PostAsync(DiscordWebhookURL, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson, true)
-        end)
-    end)
-end
-
--- Process queued webhook messages
-local function ProcessWebhookQueue()
-    if not WebhookEnabled then return end
-    if #WebhookQueue == 0 then return end
-    local now = tick()
-    if now - LastWebhookSend < WebhookRateLimit then return end
-
-    local entry = table.remove(WebhookQueue, 1)
-    LastWebhookSend = now
-
-    local embedFields = {}
-    if entry.fields then
-        for _, f in ipairs(entry.fields) do
-            table.insert(embedFields, {
-                name = tostring(f.name or ""),
-                value = tostring(f.value or ""),
-                inline = f.inline or false,
-            })
-        end
-    end
-
-    local payload = {
-        username = "MtHub v3.2",
-        embeds = {{
-            title = entry.title or "MtHub Event",
-            description = entry.description or "",
-            color = entry.color or 3447003,
-            fields = #embedFields > 0 and embedFields or nil,
-            footer = {
-                text = "MtHub v3.2 | " .. os.date("%H:%M:%S") .. " | " .. LocalPlayer.Name,
-            },
-            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ"),
-        }}
-    }
-
-    spawn(function()
-        pcall(function()
-            HttpService:PostAsync(DiscordWebhookURL, HttpService:JSONEncode(payload), Enum.HttpContentType.ApplicationJson, true)
-        end)
-    end)
-end
-
--- Start queue processor
-local function StartWebhookProcessor()
-    if WebhookSendConnections then return end
-    WebhookSendConnections = spawn(function()
-        while _w(WebhookRateLimit) do
-            if WebhookEnabled then
-                pcall(ProcessWebhookQueue)
-            end
-        end
-    end)
-end
-
--- Bulk send remote log to Discord (for when user clicks "Dump to Discord")
-local function SendRemoteLogToDiscord()
-    if not WebhookEnabled or DiscordWebhookURL == "" then
-        Notify("Webhook", "Set your Discord webhook URL first!", 2, "error")
-        return
-    end
-
-    local lines = GetRemoteLogFormatted()
-    if #lines == 0 then
-        Notify("Webhook", "Remote log is empty - mine/sell something first", 2, "warning")
-        return
-    end
-
-    -- Discord has 4096 char limit per embed description, so chunk it
-    local chunk = ""
-    local chunkNum = 1
-    for i, line in ipairs(lines) do
-        if #chunk + #line + 1 > 3800 then
-            -- Send current chunk
-            SendWebhook(
-                "Remote Spy Log (Part " .. chunkNum .. ")",
-                "```\n" .. chunk .. "\n```",
-                16776960  -- Yellow
-            )
-            chunk = ""
-            chunkNum = chunkNum + 1
-            _w(WebhookRateLimit + 0.5)
-        end
-        chunk = chunk .. line .. "\n"
-    end
-    -- Send remaining
-    if #chunk > 0 then
-        SendWebhook(
-            "Remote Spy Log (Part " .. chunkNum .. ")",
-            "```\n" .. chunk .. "\n```",
-            16776960
-        )
-    end
-
-    Notify("Webhook", #lines .. " remote log entries sent to Discord!", 3, "success")
-end
-
--- Send pickaxe scan results to Discord
-local function SendPickaxeScanToDiscord()
-    if not WebhookEnabled or DiscordWebhookURL == "" then
-        Notify("Webhook", "Set your Discord webhook URL first!", 2, "error")
-        return
-    end
-
-    local fields = {}
-    for _, p in ipairs(DetectedPickaxes) do
-        table.insert(fields, {
-            name = p.name,
-            value = "Price: $" .. tostring(p.price) .. " | Tier: " .. tostring(p.tier) .. " | Location: " .. p.location,
-            inline = false,
-        })
-    end
-
-    if #fields == 0 then
-        Notify("Webhook", "No pickaxes found - scan first", 2, "warning")
-        return
-    end
-
-    SendWebhook(
-        "Pickaxe Scan Results",
-        #DetectedPickaxes .. " pickaxes detected in game",
-        5763719,  -- Green
-        fields
-    )
-    Notify("Webhook", #DetectedPickaxes .. " pickaxes sent to Discord!", 2, "success")
-end
-
--- Send game config discovery to Discord
-local function SendConfigDiscoveryToDiscord()
-    if not WebhookEnabled or DiscordWebhookURL == "" then
-        Notify("Webhook", "Set your Discord webhook URL first!", 2, "error")
-        return
-    end
-
-    local configs = DiscoverGameConfigs()
-    if #configs == 0 then
-        Notify("Webhook", "No config objects found", 2, "warning")
-        return
-    end
-
-    local fields = {}
-    for _, cfg in ipairs(configs) do
-        if #fields < 25 then  -- Discord limit
-            table.insert(fields, {
-                name = cfg.name .. " [" .. cfg.type .. "]",
-                value = cfg.path,
-                inline = false,
-            })
-        end
-    end
-
-    SendWebhook(
-        "Game Config Discovery",
-        #configs .. " config/mod objects found in ReplicatedStorage",
-        16753920,  -- Orange
-        fields
-    )
-    Notify("Webhook", #configs .. " config objects sent to Discord!", 2, "success")
-end
-
--- Send discovered remotes to Discord
-local function SendRemoteDiscoveryToDiscord()
-    if not WebhookEnabled or DiscordWebhookURL == "" then
-        Notify("Webhook", "Set your Discord webhook URL first!", 2, "error")
-        return
-    end
-
-    local remotes = DiscoverRemotes()
-    local fields = {}
-    local count = 0
-    for category, list in pairs(remotes) do
-        for _, r in ipairs(list) do
-            if count < 25 then
-                table.insert(fields, {
-                    name = r.name .. " [" .. r.class .. "]",
-                    value = "Category: " .. category .. " | Path: " .. r.path,
-                    inline = false,
-                })
-                count = count + 1
-            end
-        end
-    end
-
-    if #fields == 0 then
-        Notify("Webhook", "No remotes found", 2, "warning")
-        return
-    end
-
-    SendWebhook(
-        "Remote Discovery",
-        count .. " remotes discovered (showing up to 25)",
-        3447003,  -- Blue
-        fields
-    )
-    Notify("Webhook", count .. " remotes sent to Discord!", 2, "success")
-end
-
--- ===========================================================================
--- ══════════════════════════════════════════════════════════════════════════════
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 1. REMOTE SPY LOGGER
--- ══════════════════════════════════════════════════════════════════════════════
-local RemoteLog = {}
-local RemoteLogMax = 200
-local RemoteLogEnabled = false
-local LogConnections = {}
-
-local function StartRemoteSpy()
-    if LogConnections.Spy then return end
-    RemoteLogEnabled = true
-    RemoteLog = {}
-
-    -- Hook FireServer
-    local oldFireServer
-    if hookmetamethod then
-        oldFireServer = hookmetamethod(_r, "__namecall", _n(function(self, ...)
-            local method = getnamecallmethod()
-            if RemoteLogEnabled and (method == "FireServer") then
-                local args = {...}
-                local info = {
-                    time = os.date("%H:%M:%S"),
-                    remote = self.Name,
-                    fullPath = self:GetFullName(),
-                    class = self.ClassName,
-                    method = "FireServer",
-                    args = {}
-                }
-                for i, arg in ipairs(args) do
-                    local argType = typeof(arg)
-                    local argStr
-                    if argType == "Instance" then
-                        argStr = arg.Name .. " [" .. arg.ClassName .. "]"
-                    elseif argType == "CFrame" or argType == "Vector3" then
-                        argStr = tostring(arg)
-                    else
-                        argStr = tostring(arg)
-                    end
-                    info.args[i] = {type = argType, value = argStr}
-                end
-                if #RemoteLog >= RemoteLogMax then table.remove(RemoteLog, 1) end
-                table.insert(RemoteLog, info)
-                -- Auto-send new remote to Discord if webhook enabled
-                pcall(function()
-                if WebhookEnabled and DiscordWebhookURL ~= "" then
-                    local argStr = ""
-                    for j, arg in ipairs(info.args) do
-                        argStr = argStr .. (j > 1 and ", " or "") .. arg.type .. ":" .. arg.value
-                    end
-                    SendWebhook("Remote Spy: " .. info.remote, string.format("[%s] %s.%s(%s)", info.time, info.remote, info.method, argStr), 3447003)
-                end
-                end)  -- end pcall
-            end
-            return oldFireServer(self, ...)
-        end))
-    end
-
-    -- Hook InvokeServer
-    local oldInvokeServer
-    if hookmetamethod then
-        -- Already hooked above via __namecall, just need to log InvokeServer calls
-        -- The __namecall hook above covers both FireServer and InvokeServer
-    end
-
-    LogConnections.Spy = true
-    Notify("Remote Spy", "Logging all remote calls — mine/sell manually to capture signatures", 3, "info")
-end
-
-local function StopRemoteSpy()
-    RemoteLogEnabled = false
-    -- Note: We don't unhook the metamethod since that's complex and could break anti-cheat
-    -- Instead we just stop logging
-    Notify("Remote Spy", "Stopped logging", 2, "warning")
-end
-
-local function GetRemoteLogFormatted()
-    local lines = {}
-    for i, entry in ipairs(RemoteLog) do
-        local argStr = ""
-        for j, arg in ipairs(entry.args) do
-            argStr = argStr .. (j > 1 and ", " or "") .. arg.type .. ":" .. arg.value
-        end
-        table.insert(lines, _s.format("[%s] %s.%s(%s)", entry.time, entry.remote, entry.method, argStr))
-    end
-    return lines
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 2. INSTANT MINE / RAPID FIRE
--- ══════════════════════════════════════════════════════════════════════════════
-local RapidFireEnabled = false
-local RapidFireCount = 25  -- How many times to fire per frame
-
-local function StartRapidFire()
-    RapidFireEnabled = true
-    if Connections.RapidFire then Connections.RapidFire:Disconnect() end
-    Connections.RapidFire = RunService.Heartbeat:Connect(function()
-        if not RapidFireEnabled or not Config.InstantMine then return end
-        if not IsAlive() then return end
-        pcall(function()
-            local crystals = DiscoverCrystals()
-            for _, c in ipairs(crystals) do
-                local d = (c.position - RootPart.Position).Magnitude
-                if d < 25 then  -- Slightly extended range for rapid fire
-                    EquipPickaxe()
-                    local mineRemote = GetRemote("Mining")
-                    if mineRemote then
-                        for i = 1, RapidFireCount do
-                            FireRemote(mineRemote, c.object)
-                            FireRemote(mineRemote, c.object.Name)
-                            FireRemote(mineRemote, c.object, i)
-                            FireRemote(mineRemote, c.object.Name, i)
-                        end
-                    end
-                    -- Also spam tool remotes
-                    for _, tool in ipairs(Character:GetChildren()) do
-                        if tool:IsA("Tool") then
-                            for _, remote in ipairs(tool:GetDescendants()) do
-                                if remote:IsA("RemoteEvent") then
-                                    for i = 1, 10 do
-                                        remote:FireServer(c.object)
-                                        remote:FireServer(c.object.Name)
-                                    end
-                                end
-                            end
-                        end
-                    end
-                    Stats.CrystalsMined = Stats.CrystalsMined + RapidFireCount
-                    break  -- Only rapid-fire one crystal per frame
-                end
-            end
-        end)
-    end)
-    Notify("Rapid Fire", string.format("Spamming mine remote %dx per frame", RapidFireCount), 2, "success")
-end
-
-local function StopRapidFire()
-    RapidFireEnabled = false
-    if Connections.RapidFire then Connections.RapidFire:Disconnect() Connections.RapidFire = nil end
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 3. AUTO SELL TIMER BYPASS
--- ══════════════════════════════════════════════════════════════════════════════
-local SellBypassEnabled = false
-
-local function StartSellBypass()
-    SellBypassEnabled = true
-    if Connections.SellBypass then Connections.SellBypass:Disconnect() end
-    Connections.SellBypass = RunService.Heartbeat:Connect(function()
-        if not SellBypassEnabled or not Config.AutoSell then return end
-        if not IsAlive() then return end
-        pcall(function()
-            local sellRemote = GetRemote("Selling")
-            if sellRemote then
-                -- Fire sell every single frame with all argument patterns
-                FireRemote(sellRemote, "All")
-                FireRemote(sellRemote)
-                if Config.ValueManip then
-                    FireRemote(sellRemote, "All", Config.SellValueOverride)
-                    FireRemote(sellRemote, Config.SellValueOverride)
-                end
-            end
-        end)
-    end)
-    Notify("Sell Bypass", "Firing sell remote every frame — no cooldown", 2, "success")
-end
-
-local function StopSellBypass()
-    SellBypassEnabled = false
-    if Connections.SellBypass then Connections.SellBypass:Disconnect() Connections.SellBypass = nil end
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 4. INVENTORY CAPACITY BYPASS (Hook GetAttribute)
--- ══════════════════════════════════════════════════════════════════════════════
-local CapacityBypassActive = false
-
-local function StartCapacityBypass()
-    if CapacityBypassActive then return end
-    CapacityBypassActive = true
-
-    -- Set client-side attributes
-    LocalPlayer:SetAttribute("BackpackCapacity", 999999)
-    LocalPlayer:SetAttribute("CarryKG", 999999)
-    LocalPlayer:SetAttribute("MaxCarry", 999999)
-    LocalPlayer:SetAttribute("InventorySize", 999999)
-
-    -- Hook GetAttribute so server reads also see 999999
-    pcall(function()
-        if hookmetamethod then
-            local oldIndex
-            oldIndex = hookmetamethod(_r, "__index", _n(function(self, key)
-                if CapacityBypassActive and self == LocalPlayer and key == "GetAttribute" then
-                    -- Can't easily hook methods this way, use attribute changed instead
-                end
-                return oldIndex(self, key)
-            end))
-        end
-    end)
-
-    -- Continuously reset attributes in case game overwrites them
-    if Connections.CapBypass then Connections.CapBypass:Disconnect() end
-    Connections.CapBypass = RunService.Heartbeat:Connect(function()
-        if not CapacityBypassActive then return end
-        pcall(function()
-            LocalPlayer:SetAttribute("BackpackCapacity", 999999)
-            LocalPlayer:SetAttribute("CarryKG", 999999)
-            LocalPlayer:SetAttribute("MaxCarry", 999999)
-            LocalPlayer:SetAttribute("InventorySize", 999999)
-            -- Also set on Humanoid if present
-            if Humanoid then
-                Humanoid:SetAttribute("BackpackCapacity", 999999)
-                Humanoid:SetAttribute("MaxItems", 999999)
-            end
-        end)
-    end)
-
-    Notify("Capacity Bypass", "Backpack capacity set to 999999 — carry unlimited", 2, "success")
-end
-
-local function StopCapacityBypass()
-    CapacityBypassActive = false
-    if Connections.CapBypass then Connections.CapBypass:Disconnect() Connections.CapBypass = nil end
-    Notify("Capacity Bypass", "Disabled — capacity will reset on next game update", 2, "warning")
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 5. EXTENDED MINE RANGE (Hook distance/magnitude)
--- ══════════════════════════════════════════════════════════════════════════════
-local ExtendedRangeActive = false
-local FakeRange = 10  -- Server thinks you're this close
-
-local function StartExtendedRange()
-    if ExtendedRangeActive then return end
-    ExtendedRangeActive = true
-
-    pcall(function()
-        if hookmetamethod then
-            local oldIndex
-            oldIndex = hookmetamethod(_r, "__index", _n(function(self, key)
-                if ExtendedRangeActive and key == "Magnitude" then
-                    -- If this is a distance check between player and an object, fake it
-                    local val = oldIndex(self, key)
-                    if val and val > FakeRange and val < 5000 then
-                        return FakeRange  -- Always appear close
-                    end
-                    return val
-                end
-                return oldIndex(self, key)
-            end))
-        end
-    end)
-
-    Notify("Extended Range", string.format("Server thinks you're %d studs from everything", FakeRange), 2, "success")
-end
-
-local function StopExtendedRange()
-    ExtendedRangeActive = false
-    Notify("Extended Range", "Disabled — normal distance checks restored", 2, "warning")
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 6. WALKSPEED / JUMPPOWER SPOOFING
--- ══════════════════════════════════════════════════════════════════════════════
-local SpeedSpoofActive = false
-local FakeSpeed = 16  -- What the game reads
-local RealSpeed = 80  -- What you actually move at
-local FakeJump = 50   -- What the game reads
-local RealJump = 100  -- What you actually jump
-
-local function StartSpeedSpoof()
-    if SpeedSpoofActive then return end
-    SpeedSpoofActive = true
-
-    pcall(function()
-        -- Hook __newindex so when the game tries to reset our speed, it reads normal
-        if hookmetamethod then
-            local oldNewIndex
-            oldNewIndex = hookmetamethod(_r, "__newindex", _n(function(self, key, value)
-                if SpeedSpoofActive and self:IsA("Humanoid") then
-                    if key == "WalkSpeed" then
-                        -- Game is trying to set our speed — let it think it succeeded
-                        -- but we keep our real speed
-                        return oldNewIndex(self, key, RealSpeed)
-                    elseif key == "JumpPower" or key == "JumpHeight" then
-                        return oldNewIndex(self, key, RealJump)
-                    end
-                end
-                return oldNewIndex(self, key, value)
-            end))
-
-            -- Hook __index so when the game READS our speed, it sees 16
-            local oldIndex
-            oldIndex = hookmetamethod(_r, "__index", _n(function(self, key)
-                if SpeedSpoofActive and self:IsA("Humanoid") then
-                    if key == "WalkSpeed" then return FakeSpeed end
-                    if key == "JumpPower" then return FakeJump end
-                    if key == "JumpHeight" then return FakeJump / 2 end
-                end
-                return oldIndex(self, key)
-            end))
-        end
-
-        -- Set actual speed
-        if Humanoid then
-            Humanoid.WalkSpeed = RealSpeed
-            Humanoid.JumpPower = RealJump
-        end
-    end)
-
-    -- Keep re-applying in case something else resets it
-    if Connections.SpeedSpoof then Connections.SpeedSpoof:Disconnect() end
-    Connections.SpeedSpoof = RunService.Heartbeat:Connect(function()
-        if not SpeedSpoofActive then return end
-        pcall(function()
-            if Humanoid then
-                if Humanoid.WalkSpeed ~= RealSpeed then Humanoid.WalkSpeed = RealSpeed end
-                if Humanoid.JumpPower ~= RealJump then Humanoid.JumpPower = RealJump end
-            end
-        end)
-    end)
-
-    Notify("Speed Spoof", string.format("Moving at %d but server reads %d", RealSpeed, FakeSpeed), 2, "success")
-end
-
-local function StopSpeedSpoof()
-    SpeedSpoofActive = false
-    if Connections.SpeedSpoof then Connections.SpeedSpoof:Disconnect() Connections.SpeedSpoof = nil end
-    pcall(function()
-        if Humanoid then
-            Humanoid.WalkSpeed = 16
-            Humanoid.JumpPower = 50
-        end
-    end)
-    Notify("Speed Spoof", "Disabled — normal speed restored", 2, "warning")
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 7. REPLICATEDSTORAGE CONFIG MANIPULATION
--- ══════════════════════════════════════════════════════════════════════════════
-local ConfigManipActive = false
-
-local function DiscoverGameConfigs()
-    local configs = {}
-    pcall(function()
-        for _, obj in ipairs(RS:GetDescendants()) do
-            if obj:IsA("ModuleScript") or obj:IsA("Configuration") then
-                local n = obj.Name:lower()
-                if n:find("crystal") or n:find("ore") or n:find("mine") or n:find("pickaxe") or
-                   n:find("value") or n:find("price") or n:find("config") or n:find("setting") or
-                   n:find("data") or n:find("rarity") or n:find("health") or n:find("drop") then
-                    table.insert(configs, {
-                        name = obj.Name,
-                        path = obj:GetFullName(),
-                        type = obj.ClassName,
-                        object = obj,
-                    })
-                end
-            end
-            -- Also check IntValue/NumberValue for crystal configs
-            if obj:IsA("IntValue") or obj:IsA("NumberValue") or obj:IsA("StringValue") then
-                local n = obj.Name:lower()
-                if n:find("value") or n:find("price") or n:find("cost") or n:find("health") or
-                   n:find("damage") or n:find("rarity") or n:find("chance") or n:find("luck") then
-                    table.insert(configs, {
-                        name = obj.Name .. " = " .. tostring(obj.Value),
-                        path = obj:GetFullName(),
-                        type = obj.ClassName,
-                        object = obj,
-                    })
-                end
-            end
-        end
-    end)
-    return configs
-end
-
-local function StartConfigManip()
-    if ConfigManipActive then return end
-    ConfigManipActive = true
-
-    pcall(function()
-        -- Find and modify crystal value configs
-        for _, obj in ipairs(RS:GetDescendants()) do
-            local n = obj.Name:lower()
-            -- Set all crystal/ore values to maximum
-            if obj:IsA("IntValue") or obj:IsA("NumberValue") then
-                if n:find("value") or n:find("price") or n:find("sell") then
-                    if obj.Value < Config.OverrideValue then
-                        obj.Value = Config.OverrideValue
-                    end
-                end
-                -- Set crystal health to 1 for instant break
-                if n:find("health") or n:find("hp") or n:find("hits") or n:find("durability") then
-                    if obj.Value > 1 then
-                        obj.Value = 1
-                    end
-                end
-                -- Set luck/drop chance to maximum
-                if n:find("chance") or n:find("luck") or n:find("probability") or n:find("rarity") then
-                    obj.Value = 100
-                end
-            end
-        end
-    end)
-
-    -- Keep re-applying
-    if Connections.ConfigManip then Connections.ConfigManip:Disconnect() end
-    Connections.ConfigManip = RunService.Heartbeat:Connect(function()
-        if not ConfigManipActive then return end
-        pcall(function()
-            for _, obj in ipairs(RS:GetDescendants()) do
-                local n = obj.Name:lower()
-                if obj:IsA("IntValue") or obj:IsA("NumberValue") then
-                    if (n:find("health") or n:find("hp")) and obj.Value > 1 then obj.Value = 1 end
-                end
-            end
-        end)
-    end)
-
-    Notify("Config Manip", "Crystal values boosted, health set to 1, luck maximized", 2, "success")
-end
-
-local function StopConfigManip()
-    ConfigManipActive = false
-    if Connections.ConfigManip then Connections.ConfigManip:Disconnect() Connections.ConfigManip = nil end
-    Notify("Config Manip", "Disabled — configs will reset on rejoin", 2, "warning")
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 8. WARP-TO-SPAWN SELL LOOP (Ultra-fast sell cycle)
--- ══════════════════════════════════════════════════════════════════════════════
-local WarpSellActive = false
-local LastSellPos = nil
-
-local function StartWarpSell()
-    if WarpSellActive then return end
-    WarpSellActive = true
-
-    if Connections.WarpSell then Connections.WarpSell:Disconnect() end
-    Connections.WarpSell = RunService.Heartbeat:Connect(function()
-        if not WarpSellActive or not Config.AutoSell then return end
-        if not IsAlive() then return end
-
-        pcall(function()
-            LastSellPos = RootPart.Position
-
-            -- Find shop
-            local shops = DiscoverShops()
-            if #shops > 0 then
-                -- Save current position
-                local savedPos = RootPart.CFrame
-
-                -- Teleport to shop
-                RootPart.CFrame = CFrame.new(shops[1].position + Vector3.new(0, 3, 0))
-
-                -- Fire sell multiple times
-                local sellRemote = GetRemote("Selling")
-                if sellRemote then
-                    for i = 1, 5 do
-                        FireRemote(sellRemote, "All")
-                        FireRemote(sellRemote)
-                        if Config.ValueManip then
-                            FireRemote(sellRemote, "All", Config.SellValueOverride)
-                        end
-                    end
-                    Stats.CrystalsSold = Stats.CrystalsSold + 5
-                    Stats.TotalSells = Stats.TotalSells + 5
-                end
-
-                -- Teleport back to where we were
-                _w(0.05)
-                RootPart.CFrame = savedPos
-            else
-                -- No shop found — just fire sell from position
-                SellFromCurrentPos()
-            end
-        end)
-    end)
-    Notify("Warp Sell", "Ultra-fast: TP to shop → sell → TP back every frame", 2, "success")
-end
-
-local function StopWarpSell()
-    WarpSellActive = false
-    if Connections.WarpSell then Connections.WarpSell:Disconnect() Connections.WarpSell = nil end
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 9. ANTI-CHEAT FULL BYPASS
--- ══════════════════════════════════════════════════════════════════════════════
-local AntiCheatFullActive = false
-
-local function StartAntiCheatFull()
-    if AntiCheatFullActive then return end
-    AntiCheatFullActive = true
-    Config.AntiCheat = true
-
-    pcall(function()
-        -- 1. Hook Kick method — prevent being kicked
-        if hookmetamethod then
-            local oldNamecall
-            oldNamecall = hookmetamethod(_r, "__namecall", _n(function(self, ...)
-                local method = getnamecallmethod()
-                local args = {...}
-
-                if method == "Kick" then
-                    -- Block all kicks
-                    return nil
-                end
-
-                if method == "FireServer" or method == "InvokeServer" then
-                    local rn = self.Name:lower()
-                    -- Block detection/anti-cheat remotes
-                    if rn:find("detect") or rn:find("cheat") or rn:find("exploit") or
-                       rn:find("kick") or rn:find("ban") or rn:find("security") or
-                       rn:find("valid") or rn:find("anticheat") or rn:find("mod") or
-                       rn:find("report") or rn:find("flag") or rn:find("admin") or
-                       rn:find("log") or rn:find("track") or rn:find("monitor") then
-                        return nil
-                    end
-                    -- Block teleport-to-lobby remotes
-                    if rn:find("lobby") or rn:find("teleport") and rn:find("lobby") then
-                        return nil
-                    end
-                end
-
-                return oldNamecall(self, ...)
-            end))
-        end
-
-        -- 2. Hook Destroy on our GUI to prevent anti-cheat from removing it
-        if hookmetamethod then
-            local oldDestroy
-            oldDestroy = hookmetamethod(_r, "__namecall", _n(function(self, ...)
-                local method = getnamecallmethod()
-                if method == "Destroy" then
-                    local name = self.Name:lower()
-                    if name:find("mthub") or name:find("mountain") or name:find("exploit") then
-                        return nil  -- Don't let anti-cheat destroy our GUI
-                    end
-                end
-                return oldDestroy(self, ...)
-            end))
-        end
-
-        -- 3. Prevent attribute-based detection
-        if Connections.AntiCheatAttr then Connections.AntiCheatAttr:Disconnect() end
-        Connections.AntiCheatAttr = RunService.Heartbeat:Connect(function()
-            if not AntiCheatFullActive then return end
-            pcall(function()
-                -- Clear any detection attributes the game might set
-                LocalPlayer:SetAttribute("Suspicious", nil)
-                LocalPlayer:SetAttribute("Cheating", nil)
-                LocalPlayer:SetAttribute("Detected", nil)
-                LocalPlayer:SetAttribute("Exploiting", nil)
-                LocalPlayer:SetAttribute("Hacking", nil)
-                LocalPlayer:SetAttribute("SpeedHack", nil)
-                LocalPlayer:SetAttribute("TeleportDetected", nil)
-            end)
-        end)
-    end)
-
-    Notify("Anti-Cheat", "Full bypass active: Kick blocked, detection remotes blocked, GUI protected", 3, "success")
-end
-
-local function StopAntiCheatFull()
-    AntiCheatFullActive = false
-    if Connections.AntiCheatAttr then Connections.AntiCheatAttr:Disconnect() Connections.AntiCheatAttr = nil end
-    Notify("Anti-Cheat", "Full bypass disabled", 2, "warning")
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 10. PICKAXE SHOP SYSTEM — Auto-detect all pickaxes with prices + buy
--- ══════════════════════════════════════════════════════════════════════════════
-local DetectedPickaxes = {}
-local SelectedPickaxe = nil -- {name, object, price, tier, location}
-
-local function ScanPickaxes()
-    DetectedPickaxes = {}
-    pcall(function()
-        -- Scan ReplicatedStorage for pickaxe configurations
-        for _, obj in ipairs(RS:GetDescendants()) do
-            local n = obj.Name:lower()
-            if n:find("pick") or n:find("axe") then
-                local pickData = {
-                    name = obj.Name,
-                    object = obj,
-                    price = 0,
-                    tier = 1,
-                    location = "ReplicatedStorage",
-                    fullName = obj:GetFullName(),
-                }
-                -- Try to find price
-                if obj:IsA("IntValue") or obj:IsA("NumberValue") then
-                    pickData.price = obj.Value
-                end
-                -- Search children for price/value
-                for _, child in ipairs(obj:GetDescendants()) do
-                    local cn = child.Name:lower()
-                    if (cn:find("price") or cn:find("cost")) and (child:IsA("IntValue") or child:IsA("NumberValue")) then
-                        pickData.price = child.Value
-                    end
-                    if (cn:find("tier") or cn:find("level") or cn:find("rank")) and (child:IsA("IntValue") or child:IsA("NumberValue")) then
-                        pickData.tier = child.Value
-                    end
-                end
-                -- Search parent for price info
-                if obj.Parent then
-                    for _, sibling in ipairs(obj.Parent:GetChildren()) do
-                        local sn = sibling.Name:lower()
-                        if (sn:find("price") or sn:find("cost")) and (sibling:IsA("IntValue") or sibling:IsA("NumberValue")) then
-                            pickData.price = sibling.Value
-                        end
-                    end
-                end
-                table.insert(DetectedPickaxes, pickData)
-            end
-        end
-
-        -- Scan Workspace for pickaxe shop items
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            local n = obj.Name:lower()
-            if (n:find("pick") or n:find("axe")) and not n:find("pickaxe") == false then
-                local pickData = {
-                    name = obj.Name,
-                    object = obj,
-                    price = 0,
-                    tier = 1,
-                    location = "Workspace",
-                    fullName = obj:GetFullName(),
-                    position = obj:IsA("BasePart") and obj.Position or nil,
-                }
-                for _, child in ipairs(obj:GetDescendants()) do
-                    local cn = child.Name:lower()
-                    if (cn:find("price") or cn:find("cost")) and (child:IsA("IntValue") or child:IsA("NumberValue")) then
-                        pickData.price = child.Value
-                    end
-                    if (cn:find("tier") or cn:find("level")) and (child:IsA("IntValue") or child:IsA("NumberValue")) then
-                        pickData.tier = child.Value
-                    end
-                end
-                -- Check ProximityPrompt for price info
-                for _, prompt in ipairs(obj:GetDescendants()) do
-                    if prompt:IsA("ProximityPrompt") then
-                        pickData.price = tonumber(prompt.ObjectText) or pickData.price
-                        if pickData.price == 0 then pickData.price = tonumber(prompt.ActionText:match("%d+")) or 0 end
-                    end
-                end
-                table.insert(DetectedPickaxes, pickData)
-            end
-        end
-
-        -- Scan leaderstats for pickaxe data
-        local ls = LocalPlayer:FindFirstChild("leaderstats")
-        if ls then
-            for _, stat in ipairs(ls:GetChildren()) do
-                local n = stat.Name:lower()
-                if n:find("pick") or n:find("axe") or n:find("tool") or n:find("tier") then
-                    -- This might be the current pickaxe level
-                    table.insert(DetectedPickaxes, {
-                        name = stat.Name .. " (Current: " .. tostring(stat.Value) .. ")",
-                        object = stat,
-                        price = 0,
-                        tier = type(stat.Value) == "number" and stat.Value or 1,
-                        location = "Leaderstats",
-                        fullName = stat:GetFullName(),
-                    })
-                end
-            end
-        end
-
-        -- If we still have no pickaxes, generate a default list based on game knowledge
-        if #DetectedPickaxes == 0 then
-            local defaultPickaxes = {
-                {name = "Starter Pickaxe", price = 0, tier = 1},
-                {name = "Iron Pickaxe", price = 100, tier = 2},
-                {name = "Gold Pickaxe", price = 500, tier = 3},
-                {name = "Diamond Pickaxe", price = 2000, tier = 4},
-                {name = "Amethyst Pickaxe", price = 8000, tier = 5},
-                {name = "Legendary Pickaxe", price = 25000, tier = 6},
-                {name = "Mythical Pickaxe", price = 100000, tier = 7},
-                {name = "Star Pickaxe", price = 500000, tier = 8},
-            }
-            for _, dp in ipairs(defaultPickaxes) do
-                table.insert(DetectedPickaxes, {
-                    name = dp.name,
-                    object = nil,
-                    price = dp.price,
-                    tier = dp.tier,
-                    location = "Default List",
-                    fullName = "N/A",
-                })
-            end
-        end
-
-        -- Sort by tier
-        table.sort(DetectedPickaxes, function(a, b) return a.tier < b.tier end)
-    end)
-
-    -- Auto-send pickaxe scan to Discord if webhook enabled
-    pcall(function()
-    if WebhookEnabled and DiscordWebhookURL ~= "" and #DetectedPickaxes > 0 then
-        SendPickaxeScanToDiscord()
-    end
-    end)  -- end pcall
-
-    return DetectedPickaxes
-end
-
-local function BuyPickaxe(pickData)
-    if not pickData then return false end
-    pcall(function()
-        RefreshCharacter()
-
-        -- Method 1: Find and fire upgrade remote
-        local upgradeRemote = GetRemote("Upgrades")
-        if upgradeRemote then
-            FireRemote(upgradeRemote, "Pickaxe")
-            FireRemote(upgradeRemote, pickData.name)
-            FireRemote(upgradeRemote, "Pickaxe", pickData.tier)
-            FireRemote(upgradeRemote, pickData.name, pickData.price)
-        end
-
-        -- Method 2: Teleport to pickaxe in workspace and interact
-        if pickData.position then
-            TeleportTo(pickData.position)
-            _w(0.3)
-            -- Click/interact with the item
-            VirtualUser:CaptureController()
-            VirtualUser:ClickButton2(Vector2.new())
-            -- Fire ProximityPrompt if present
-            if pickData.object then
-                for _, prompt in ipairs(pickData.object:GetDescendants()) do
-                    if prompt:IsA("ProximityPrompt") then
-                        fireproximityprompt(prompt)
-                    end
-                end
-            end
-        end
-
-        -- Method 3: Buy remote
-        local buyRemote = GetRemote("Upgrades") -- Often the same remote
-        if buyRemote then
-            FireRemote(buyRemote, "Buy", pickData.name)
-            FireRemote(buyRemote, "BuyPickaxe", pickData.name)
-            FireRemote(buyRemote, "Purchase", pickData.name, pickData.price)
-        end
-
-        Notify("Pickaxe Shop", "Attempting to buy: " .. pickData.name, 2, "info")
-    end)
-    return true
-end
-
-local AutoBuyBestPickaxe = false
-
-local function StartAutoBuyPickaxe()
-    AutoBuyBestPickaxe = true
-    if Connections.AutoBuyPick then Connections.AutoBuyPick:Disconnect() end
-    Connections.AutoBuyPick = RunService.Heartbeat:Connect(function()
-        if not AutoBuyBestPickaxe then return end
-        pcall(function()
-            -- Get current coins
-            local coins = 0
-            local ls = LocalPlayer:FindFirstChild("leaderstats")
-            if ls then
-                local c = ls:FindFirstChild("Coins") or ls:FindFirstChild("Cash") or ls:FindFirstChild("Money")
-                if c then coins = c.Value end
-            end
-
-            -- Find the best pickaxe we can afford
-            local bestAffordable = nil
-            for i = #DetectedPickaxes, 1, -1 do
-                local p = DetectedPickaxes[i]
-                if p.price <= coins then
-                    bestAffordable = p
-                    break
-                end
-            end
-
-            if bestAffordable then
-                BuyPickaxe(bestAffordable)
-            end
-        end)
-    end)
-    Notify("Auto Buy Pickaxe", "Automatically buying best affordable pickaxe", 2, "success")
-end
-
-local function StopAutoBuyPickaxe()
-    AutoBuyBestPickaxe = false
-    if Connections.AutoBuyPick then Connections.AutoBuyPick:Disconnect() Connections.AutoBuyPick = nil end
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- 11. MOUNTAIN RESET HANDLER
--- ══════════════════════════════════════════════════════════════════════════════
--- Mountain resets every hour — we need to:
---   1. Detect when reset is approaching (timer)
---   2. Pre-reset: sell all items, TP to safe spot
---   3. Post-reset: TP back and resume farming
-
-local MountainResetInterval = 3600  -- 1 hour in seconds
-local MountainResetWarningTime = 60  -- Warn 60 seconds before
-local MountainResetSafePos = nil
-local LastResetTimestamp = tick()
-local MountainResetActive = true
-local PreResetSold = false
-
-local function FindMountainTimer()
-    -- Try to find the actual timer in the game
-    local timerValue = nil
-    pcall(function()
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            local n = obj.Name:lower()
-            if (n:find("timer") or n:find("countdown") or n:find("reset") or n:find("refresh")) and
-               (obj:IsA("IntValue") or obj:IsA("NumberValue")) then
-                timerValue = obj
-                break
-            end
-        end
-        -- Check player GUI for timer text
-        local pg = LocalPlayer:FindFirstChild("PlayerGui")
-        if pg then
-            for _, gui in ipairs(pg:GetDescendants()) do
-                if gui:IsA("TextLabel") then
-                    local txt = gui.Text:lower()
-                    if txt:find("reset") or txt:find("refresh") or txt:match("%d+:%d+") then
-                        -- Found a timer label — try to parse it
-                        local mins, secs = txt:match("(%d+):(%d+)")
-                        if mins and secs then
-                            timerValue = tonumber(mins) * 60 + tonumber(secs)
-                        end
-                    end
-                end
-            end
-        end
-    end)
-    return timerValue
-end
-
-local function GetMountainResetTime()
-    -- First try to find the game's actual timer
-    local timer = FindMountainTimer()
-    if type(timer) == "number" then
-        return timer
-    end
-    -- Fallback: calculate based on session time
-    local elapsed = tick() - LastResetTimestamp
-    local remaining = MountainResetInterval - (elapsed % MountainResetInterval)
-    return remaining
-end
-
-local function StartMountainResetHandler()
-    if not MountainResetActive then return end
-    if Connections.MountainReset then Connections.MountainReset:Disconnect() end
-
-    Connections.MountainReset = RunService.Heartbeat:Connect(function()
-        if not MountainResetActive then return end
-        pcall(function()
-            local remaining = GetMountainResetTime()
-
-            -- Warning notification at 60 seconds
-            if remaining <= MountainResetWarningTime and remaining > MountainResetWarningTime - 3 and not PreResetSold then
-                Notify("⛰ Mountain Reset", string.format("Mountain resets in %d seconds! Selling items...", remaining), 5, "warning")
-
-                -- Pre-reset: sell everything and save position
-                PreResetSold = true
-                MountainResetSafePos = RootPart.CFrame
-
-                -- Sell all items
-                local sellRemote = GetRemote("Selling")
-                if sellRemote then
-                    for i = 1, 10 do
-                        FireRemote(sellRemote, "All")
-                        FireRemote(sellRemote)
-                        if Config.ValueManip then
-                            FireRemote(sellRemote, "All", Config.SellValueOverride)
-                        end
-                    end
-                    Stats.CrystalsSold = Stats.CrystalsSold + 10
-                    Stats.TotalSells = Stats.TotalSells + 10
-                end
-
-                -- Teleport to spawn/safe area
-                local homePos = GetHomePosition()
-                if homePos then
-                    TeleportTo(homePos)
-                end
-
-                Notify("Mountain Reset", "Sold all items, moved to safe position", 3, "success")
-                -- Send pre-reset webhook notification
-                    pcall(function()
-                    if WebhookEnabled and DiscordWebhookURL ~= "" then
-                    SendWebhook("⛰ Mountain Reset Incoming", "Mountain is about to reset! Items sold, moved to safe position. Will return after regeneration.", 15158332, {{name = "Action", value = "Pre-reset sell + safe TP", inline = true}})
-                end
-                    end)  -- end pcall
-            end
-
-            -- Detect post-reset (remaining went from low back to high)
-            if remaining > MountainResetInterval * 0.9 and PreResetSold then
-                PreResetSold = false
-                LastResetTimestamp = tick()
-
-                -- Teleport back to where we were
-                if MountainResetSafePos then
-                    _w(3)  -- Wait for mountain to fully regenerate
-                    RootPart.CFrame = MountainResetSafePos
-                    Notify("Mountain Reset", "Mountain regenerated! Teleported back, resuming farm", 3, "success")
-                end
-                -- Send post-reset webhook notification
-                    pcall(function()
-                    if WebhookEnabled and DiscordWebhookURL ~= "" then
-                    SendWebhook("⛰ Mountain Reset Complete", "Mountain has regenerated! Teleported back and resuming farm.", 5763719, {{name = "Action", value = "Post-reset return + farm resume", inline = true}})
-                end
-                    end)  -- end pcall
-
-                -- Resume farming if it was active
-                if Config.AutoFarm and not Connections.Farm then
-                    StartAutoFarm()
-                end
-            end
-        end)
-    end)
-
-    Notify("Mountain Reset", string.format("Monitoring hourly reset (warns at %ds)", MountainResetWarningTime), 3, "info")
-end
-
-local function StopMountainResetHandler()
-    MountainResetActive = false
-    if Connections.MountainReset then Connections.MountainReset:Disconnect() Connections.MountainReset = nil end
-end
-
--- ══════════════════════════════════════════════════════════════════════════════
--- INITIALIZE NEW SYSTEMS
--- ══════════════════════════════════════════════════════════════════════════════
-
--- Scan pickaxes on load
 -- PROFESSIONAL GLASSMORPHISM GUI — v3
 -- ══════════════════════════════════════════════════════════════════════════════
 
@@ -2955,9 +1914,7 @@ end
 -- ══════════════════════════════════════════════════════════════════════════════
 -- UTILITY: Section divider
 -- ══════════════════════════════════════════════════════════════════════════════
--- ===========================================================================
--- UTILITY: Text Input (TextBox)
--- ===========================================================================
+
 local function MakeTextBox(parent, props)
     local name = props.Name or "TextBox"
     local label = props.Label or name
@@ -2971,7 +1928,6 @@ local function MakeTextBox(parent, props)
     row.BackgroundTransparency = 1
     row.Parent = parent
 
-    -- Label on left
     local lbl = MakeLabel(row, {
         Name = name .. "Label",
         Size = UDim2.new(0.35, 0, 1, 0),
@@ -2981,7 +1937,6 @@ local function MakeTextBox(parent, props)
         Color = C.Text,
     })
 
-    -- TextBox on right
     local tbox = Instance.new("TextBox")
     tbox.Name = name
     tbox.Size = UDim2.new(0.65, 0, 1, 0)
@@ -3014,7 +1969,6 @@ local function MakeTextBox(parent, props)
     tboxPad.PaddingRight = UDim.new(0, 8)
     tboxPad.Parent = tbox
 
-    -- Focus/Unfocus animations
     tbox.Focused:Connect(function()
         TweenService:Create(tboxStroke, TweenInfo.new(0.2), {
             Color = C.Accent,
@@ -3032,7 +1986,6 @@ local function MakeTextBox(parent, props)
 
     return row
 end
-
 
 local function MakeSection(parent, title)
     local div = Instance.new("Frame")
@@ -3188,7 +2141,7 @@ end
 
 -- ScreenGui
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "MtHub3"
+ScreenGui.Name = "MtHub4"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
@@ -3214,8 +2167,8 @@ NotificationContainer.Parent = ScreenGui
 -- ══════════════════════════════════════════════════════════════════════════════
 local MainFrame = MakeGlass(ScreenGui, {
     Name = "MainFrame",
-    Size = UDim2.new(0, 520, 0, 420),
-    Position = UDim2.new(0.5, -260, 0.5, -210),
+    Size = UDim2.new(0.88, 0, 0, 420),
+    Position = UDim2.new(0.06, 0, 0.5, -210),
     Color = Color3.fromRGB(15, 23, 42),
     Transparency = 0.18,
     CornerRadius = 16,
@@ -3285,7 +2238,7 @@ local titleText = MakeLabel(TitleBar, {
 
 -- Version badge
 local versionBadge = Instance.new("Frame")
-versionBadge.Size = UDim2.new(0, 38, 0, 18)
+versionBadge.Size = UDim2.new(0, 32, 0, 18)
 versionBadge.Position = UDim2.new(0, 200, 0.5, -9)
 versionBadge.BackgroundColor3 = C.AccentDark
 versionBadge.BackgroundTransparency = 0.2
@@ -3295,7 +2248,7 @@ Instance.new("UICorner", versionBadge).CornerRadius = UDim.new(0, 6)
 
 MakeLabel(versionBadge, {
     Size = UDim2.new(1, 0, 1, 0),
-    Text = "v3.2",
+    Text = "v3",
     Font = FontBold,
     TextSize = 10,
     Color = C.AccentLight,
@@ -3356,7 +2309,7 @@ minBtn.MouseButton1Click:Connect(function()
     else
         ContentFrame.Visible = true
         TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint), {
-            Size = UDim2.new(0, 520, 0, 420)
+            Size = UDim2.new(0.88, 0, 0, 420)
         }):Play()
     end
 end)
@@ -3725,192 +2678,6 @@ MakeSlider(TabPages.Exploit, {
 }).Parent = TabPages.Exploit
 TabPages.Exploit.OverrideValueRow.LayoutOrder = 9
 
--- v3.1 EXPLOIT TAB ADDITIONS
-
-AddToPage("Exploit", MakeSection("Exploit", "Remote Spy"), 10)
-
-MakeToggle(TabPages.Exploit, {
-    Name = "RemoteSpy",
-    Label = "Remote Spy Logger",
-    Default = false,
-    Callback = function(val)
-        if val then StartRemoteSpy() else StopRemoteSpy() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.RemoteSpyRow.LayoutOrder = 11
-
-MakeButton(TabPages.Exploit, {
-    Name = "DumpRemoteLog",
-    Label = "📋 Dump Remote Log to Console",
-    Color = C.Accent,
-    Callback = function()
-        local lines = GetRemoteLogFormatted()
-        for _, line in ipairs(lines) do
-            print("[RemoteSpy] " .. line)
-        end
-        Notify("Remote Spy", #lines .. " entries printed to console (F9)", 2, "info")
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.DumpRemoteLog.LayoutOrder = 12
-
-AddToPage("Exploit", MakeSection("Exploit", "Rapid Fire / Instant Mine"), 13)
-
-MakeToggle(TabPages.Exploit, {
-    Name = "InstantMine",
-    Label = "Instant Mine (Rapid Fire 25x/frame)",
-    Default = false,
-    Callback = function(val)
-        Config.InstantMine = val
-        if val then StartRapidFire() else StopRapidFire() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.InstantMineRow.LayoutOrder = 14
-
-MakeSlider(TabPages.Exploit, {
-    Name = "RapidFireCount",
-    Label = "Rapid Fire Rate",
-    Min = 5,
-    Max = 50,
-    Default = 25,
-    Suffix = "x",
-    Callback = function(val) RapidFireCount = val end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.RapidFireCountRow.LayoutOrder = 15
-
-AddToPage("Exploit", MakeSection("Exploit", "Sell Bypass / Warp Sell"), 16)
-
-MakeToggle(TabPages.Exploit, {
-    Name = "SellBypass",
-    Label = "Sell Bypass (no cooldown, every frame)",
-    Default = false,
-    Callback = function(val)
-        if val then StartSellBypass() else StopSellBypass() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.SellBypassRow.LayoutOrder = 17
-
-MakeToggle(TabPages.Exploit, {
-    Name = "WarpSell",
-    Label = "Warp Sell (TP shop, sell, TP back)",
-    Default = false,
-    Callback = function(val)
-        if val then StartWarpSell() else StopWarpSell() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.WarpSellRow.LayoutOrder = 18
-
-AddToPage("Exploit", MakeSection("Exploit", "Capacity / Range Bypass"), 19)
-
-MakeToggle(TabPages.Exploit, {
-    Name = "CapacityBypass",
-    Label = "Infinite Backpack Capacity (999999)",
-    Default = false,
-    Callback = function(val)
-        if val then StartCapacityBypass() else StopCapacityBypass() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.CapacityBypassRow.LayoutOrder = 20
-
-MakeToggle(TabPages.Exploit, {
-    Name = "ExtendedRange",
-    Label = "Extended Mine Range (fake distance)",
-    Default = false,
-    Callback = function(val)
-        if val then StartExtendedRange() else StopExtendedRange() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.ExtendedRangeRow.LayoutOrder = 21
-
-MakeSlider(TabPages.Exploit, {
-    Name = "FakeRangeSlider",
-    Label = "Fake Range Distance",
-    Min = 1,
-    Max = 50,
-    Default = 10,
-    Suffix = "st",
-    Callback = function(val) FakeRange = val end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.FakeRangeSliderRow.LayoutOrder = 22
-
-AddToPage("Exploit", MakeSection("Exploit", "Speed Spoof"), 23)
-
-MakeToggle(TabPages.Exploit, {
-    Name = "SpeedSpoof",
-    Label = "Speed Spoof (server reads 16, you move fast)",
-    Default = false,
-    Callback = function(val)
-        if val then StartSpeedSpoof() else StopSpeedSpoof() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.SpeedSpoofRow.LayoutOrder = 24
-
-MakeSlider(TabPages.Exploit, {
-    Name = "RealSpeedSlider",
-    Label = "Real Speed",
-    Min = 20,
-    Max = 200,
-    Default = 80,
-    Suffix = "",
-    Callback = function(val) RealSpeed = val end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.RealSpeedSliderRow.LayoutOrder = 25
-
-MakeSlider(TabPages.Exploit, {
-    Name = "RealJumpSlider",
-    Label = "Real Jump Power",
-    Min = 50,
-    Max = 300,
-    Default = 100,
-    Suffix = "",
-    Callback = function(val) RealJump = val end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.RealJumpSliderRow.LayoutOrder = 26
-
-AddToPage("Exploit", MakeSection("Exploit", "Config Manipulation"), 27)
-
-MakeToggle(TabPages.Exploit, {
-    Name = "ConfigManip",
-    Label = "RS Config Manip (values + health + luck)",
-    Default = false,
-    Callback = function(val)
-        if val then StartConfigManip() else StopConfigManip() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.ConfigManipRow.LayoutOrder = 28
-
-MakeButton(TabPages.Exploit, {
-    Name = "Discoverconfigs",
-    Label = "🔍 Discover Game Configs",
-    Color = C.Warning,
-    Callback = function()
-        local configs = DiscoverGameConfigs()
-        for _, cfg in ipairs(configs) do
-            print("[ConfigManip] " .. cfg.name .. " [" .. cfg.type .. "] @ " .. cfg.path)
-        end
-        Notify("Config Manip", #configs .. " config objects found (see F9 console)", 3, "info")
-        -- Auto-send to Discord if webhook enabled
-        pcall(function()
-        if WebhookEnabled and DiscordWebhookURL ~= "" and #configs > 0 then
-            SendConfigDiscoveryToDiscord()
-        end
-        end)  -- end pcall
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.Discoverconfigs.LayoutOrder = 29
-
-AddToPage("Exploit", MakeSection("Exploit", "Anti-Cheat Full Bypass"), 30)
-
-MakeToggle(TabPages.Exploit, {
-    Name = "AntiCheatFull",
-    Label = "Anti-Cheat Full Bypass (Kick + Detection)",
-    Default = false,
-    Callback = function(val)
-        if val then StartAntiCheatFull() else StopAntiCheatFull() end
-    end,
-}).Parent = TabPages.Exploit
-TabPages.Exploit.AntiCheatFullRow.LayoutOrder = 31
-
-
 -- ─── AUTO TAB ──────────────────────────────────────────────────────────────
 AddToPage("Auto", MakeSection("Auto", "Auto Upgrades"), 1)
 
@@ -3950,71 +2717,6 @@ MakeToggle(TabPages.Auto, {
     end,
 }).Parent = TabPages.Auto
 TabPages.Auto.AutoWarmthRow.LayoutOrder = 6
-
--- v3.1 AUTO TAB ADDITIONS - Pickaxe Shop
-
-AddToPage("Auto", MakeSection("Auto", "Pickaxe Shop"), 7)
-
-MakeButton(TabPages.Auto, {
-    Name = "ScanPickaxes",
-    Label = "🔍 Scan for Pickaxes",
-    Color = C.Accent,
-    Callback = function()
-        ScanPickaxes()
-        Notify("Pickaxe Shop", #DetectedPickaxes .. " pickaxes found!", 3, "success")
-    end,
-}).Parent = TabPages.Auto
-TabPages.Auto.ScanPickaxes.LayoutOrder = 8
-
-MakeDropdown(TabPages.Auto, {
-    Name = "PickaxeSelect",
-    Label = "Pickaxes",
-    Options = (function()
-        ScanPickaxes()
-        local opts = {}
-        for _, p in ipairs(DetectedPickaxes) do
-            table.insert(opts, p.name .. " - $" .. tostring(p.price))
-        end
-        if #opts == 0 then opts = {"No pickaxes found"} end
-        return opts
-    end)(),
-    Default = "Select a pickaxe",
-    Callback = function(opt)
-        for _, p in ipairs(DetectedPickaxes) do
-            if opt:find(p.name) then
-                SelectedPickaxe = p
-                Notify("Pickaxe", "Selected: " .. p.name .. " ($" .. tostring(p.price) .. ")", 2, "info")
-                break
-            end
-        end
-    end,
-}).Parent = TabPages.Auto
-TabPages.Auto.PickaxeSelectRow.LayoutOrder = 9
-
-MakeButton(TabPages.Auto, {
-    Name = "BuySelectedPickaxe",
-    Label = "🛒 Buy Selected Pickaxe",
-    Color = C.Success,
-    Callback = function()
-        if SelectedPickaxe then
-            BuyPickaxe(SelectedPickaxe)
-        else
-            Notify("Pickaxe", "No pickaxe selected! Use dropdown first", 2, "warning")
-        end
-    end,
-}).Parent = TabPages.Auto
-TabPages.Auto.BuySelectedPickaxe.LayoutOrder = 10
-
-MakeToggle(TabPages.Auto, {
-    Name = "AutoBuyPickaxe",
-    Label = "Auto Buy Best Affordable Pickaxe",
-    Default = false,
-    Callback = function(val)
-        if val then StartAutoBuyPickaxe() else StopAutoBuyPickaxe() end
-    end,
-}).Parent = TabPages.Auto
-TabPages.Auto.AutoBuyPickaxeRow.LayoutOrder = 11
-
 
 -- ─── TP TAB ────────────────────────────────────────────────────────────────
 AddToPage("TP", MakeSection("TP", "Teleportation"), 1)
@@ -4364,72 +3066,6 @@ MakeToggle(TabPages.Extra, {
 }).Parent = TabPages.Extra
 TabPages.Extra.InfiniteJumpRow.LayoutOrder = 7
 
--- v3.1 EXTRA TAB ADDITIONS - Mountain Reset
-
-AddToPage("Extra", MakeSection("Extra", "Mountain Reset"), 8)
-
-MakeToggle(TabPages.Extra, {
-    Name = "MountainReset",
-    Label = "Mountain Reset Handler (auto sell + safe TP)",
-    Default = true,
-    Callback = function(val)
-        MountainResetActive = val
-        if val then StartMountainResetHandler() else StopMountainResetHandler() end
-        Notify("Mountain Reset", val and "Handler active - will sell before reset" or "Disabled", 2, val and "success" or "warning")
-    end,
-}).Parent = TabPages.Extra
-TabPages.Extra.MountainResetRow.LayoutOrder = 9
-
-MakeSlider(TabPages.Extra, {
-    Name = "ResetWarningTime",
-    Label = "Reset Warning Time",
-    Min = 10,
-    Max = 120,
-    Default = 60,
-    Suffix = "s",
-    Callback = function(val) MountainResetWarningTime = val end,
-}).Parent = TabPages.Extra
-TabPages.Extra.ResetWarningTimeRow.LayoutOrder = 10
-
--- Mountain Reset Timer Display
-local resetTimerFrame = Instance.new("Frame")
-resetTimerFrame.Name = "ResetTimerDisplay"
-resetTimerFrame.Size = UDim2.new(1, 0, 0, 28)
-resetTimerFrame.BackgroundTransparency = 0.7
-resetTimerFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 45)
-resetTimerFrame.LayoutOrder = 11
-resetTimerFrame.Parent = TabPages.Extra
-Instance.new("UICorner", resetTimerFrame).CornerRadius = UDim.new(0, 6)
-
-local resetTimerLabel = MakeLabel(resetTimerFrame, {
-    Name = "TimerText",
-    Size = UDim2.new(1, -12, 1, 0),
-    Position = UDim2.new(0, 6, 0, 0),
-    Text = "⛰ Mountain Reset: Calculating...",
-    Font = FontSem,
-    TextSize = 12,
-    Color = C.Warning,
-    Align = Enum.TextXAlignment.Center,
-})
-
--- Update mountain reset timer
-spawn(function()
-    while _w(1) do
-        pcall(function()
-            local remaining = GetMountainResetTime()
-            local mins = _m.floor(remaining / 60)
-            local secs = _m.floor(remaining % 60)
-            resetTimerLabel.Text = _s.format("⛰ Mountain Reset: %d:%02d", mins, secs)
-            if remaining <= MountainResetWarningTime then
-                resetTimerLabel.TextColor3 = C.Danger
-            else
-                resetTimerLabel.TextColor3 = C.Warning
-            end
-        end)
-    end
-end)
-
-
 -- ─── CTRL TAB ──────────────────────────────────────────────────────────────
 AddToPage("Ctrl", MakeSection("Ctrl", "Controls"), 1)
 
@@ -4510,12 +3146,13 @@ MakeButton(TabPages.Ctrl, {
 }).Parent = TabPages.Ctrl
 TabPages.Ctrl.ResetConfig.LayoutOrder = 6
 
+
 -- Discord Webhook Section
 AddToPage("Ctrl", MakeSection("Ctrl", "Discord Webhook"), 7)
 
 MakeTextBox(TabPages.Ctrl, {
     Name = "WebhookURL",
-    Label = "🛒 Webhook URL",
+    Label = "Webhook URL",
     Placeholder = "https://discord.com/api/webhooks/...",
     Callback = function(text)
         DiscordWebhookURL = text
@@ -4528,13 +3165,13 @@ TabPages.Ctrl.WebhookURLRow.LayoutOrder = 8
 
 MakeToggle(TabPages.Ctrl, {
     Name = "WebhookEnabled",
-    Label = "🔔 Enable Discord Webhook",
+    Label = "Enable Webhook",
     Default = false,
     Callback = function(val)
         WebhookEnabled = val
         if val then
             StartWebhookProcessor()
-            Notify("Webhook", "Discord webhook enabled - data will be sent!", 2, "success")
+            Notify("Webhook", "Discord webhook enabled!", 2, "success")
         else
             Notify("Webhook", "Discord webhook disabled", 2, "warning")
         end
@@ -4544,7 +3181,7 @@ TabPages.Ctrl.WebhookEnabledRow.LayoutOrder = 9
 
 MakeButton(TabPages.Ctrl, {
     Name = "SendRemoteLog",
-    Label = "📡 Send Remote Log to Discord",
+    Label = "Send Remote Log",
     Color = C.Accent,
     Callback = function()
         SendRemoteLogToDiscord()
@@ -4554,7 +3191,7 @@ TabPages.Ctrl.SendRemoteLog.LayoutOrder = 10
 
 MakeButton(TabPages.Ctrl, {
     Name = "SendPickaxeScan",
-    Label = "⛏ Send Pickaxe Scan to Discord",
+    Label = "Send Pickaxe Scan",
     Color = C.Success,
     Callback = function()
         SendPickaxeScanToDiscord()
@@ -4564,23 +3201,13 @@ TabPages.Ctrl.SendPickaxeScan.LayoutOrder = 11
 
 MakeButton(TabPages.Ctrl, {
     Name = "SendConfigDiscovery",
-    Label = "🔍 Send Config Discovery to Discord",
+    Label = "Send Config Discovery",
     Color = C.Warning,
     Callback = function()
         SendConfigDiscoveryToDiscord()
     end,
 }).Parent = TabPages.Ctrl
 TabPages.Ctrl.SendConfigDiscovery.LayoutOrder = 12
-
-MakeButton(TabPages.Ctrl, {
-    Name = "SendRemoteDiscovery",
-    Label = "🌐 Send Remote Discovery to Discord",
-    Color = C.Danger,
-    Callback = function()
-        SendRemoteDiscoveryToDiscord()
-    end,
-}).Parent = TabPages.Ctrl
-TabPages.Ctrl.SendRemoteDiscovery.LayoutOrder = 13
 
 
 
@@ -4589,8 +3216,8 @@ TabPages.Ctrl.SendRemoteDiscovery.LayoutOrder = 13
 -- ══════════════════════════════════════════════════════════════════════════════
 local StatsOverlay = MakeGlass(ScreenGui, {
     Name = "StatsOverlay",
-    Size = UDim2.new(0, 320, 0, 32),
-    Position = UDim2.new(0.5, -160, 1, -40),
+    Size = UDim2.new(0.8, 0, 0, 32),
+    Position = UDim2.new(0.1, 0, 1, -40),
     Color = Color3.fromRGB(10, 15, 30),
     Transparency = 0.3,
     CornerRadius = 10,
@@ -4644,9 +3271,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
             MainFrame.Visible = true
             StatsOverlay.Visible = true
             -- Re-animate in
-            MainFrame.Size = UDim2.new(0, 520, 0, 0)
+            MainFrame.Size = UDim2.new(0.88, 0, 0, 0)
             TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-                Size = UDim2.new(0, 520, 0, 420)
+                Size = UDim2.new(0.88, 0, 0, 420)
             }):Play()
         end
     end
@@ -4670,8 +3297,8 @@ end)
 if UserInputService.TouchEnabled then
     local joystick = MakeGlass(ScreenGui, {
         Name = "MobileJoystick",
-        Size = UDim2.new(0, 120, 0, 120),
-        Position = UDim2.new(0, 20, 1, -140),
+        Size = UDim2.new(0, 100, 0, 100),
+        Position = UDim2.new(0, 15, 1, -120),
         Color = Color3.fromRGB(10, 15, 30),
         Transparency = 0.4,
         CornerRadius = 60,
@@ -4766,9 +3393,10 @@ end)
 -- ══════════════════════════════════════════════════════════════════════════════
 -- INITIALIZATION
 -- ══════════════════════════════════════════════════════════════════════════════
-LoadConfig()
-StartAntiAFK()
-StartAutoRejoin()
+pcall(LoadConfig)
+pcall(StartAntiAFK)
+pcall(StartAutoRejoin)
+pcall(StartWebhookProcessor)
 
 -- Anti-cheat bypass hooks
 if Config.AntiCheat then
@@ -4791,35 +3419,27 @@ if Config.AntiCheat then
     end)
 end
 
--- v3.2 Webhook processor start
-pcall(StartWebhookProcessor)  -- Safe: wrapped in pcall
-
-
--- v3.2 System initialization
-pcall(ScanPickaxes)  -- Safe: wrapped in pcall
-pcall(StartMountainResetHandler)  -- Safe: wrapped in pcall
-
 -- Welcome notification
-Notify("Mountain Exploit Hub v3.2", "Loaded with 9 new exploits + Pickaxe Shop + Mountain Reset! Press RightCtrl to toggle", 5, "success")
+Notify("Mountain Exploit Hub v4", "Loaded successfully! Press RightCtrl to toggle GUI", 4, "success")
 
 -- Entrance animation
-MainFrame.Size = UDim2.new(0, 520, 0, 0)
+MainFrame.Size = UDim2.new(0.88, 0, 0, 0)
 MainFrame.BackgroundTransparency = 1
 TweenService:Create(MainFrame, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-    Size = UDim2.new(0, 520, 0, 420),
+    Size = UDim2.new(0.88, 0, 0, 420),
     BackgroundTransparency = 0.18,
 }):Play()
 
 -- Stats overlay entrance
-StatsOverlay.Position = UDim2.new(0.5, -160, 1, 40)
+StatsOverlay.Position = UDim2.new(0.1, 0, 1, 40)
 TweenService:Create(StatsOverlay, TweenInfo.new(0.5, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), {
-    Position = UDim2.new(0.5, -160, 1, -40),
+    Position = UDim2.new(0.1, 0, 1, -40),
 }):Play()
 
-print("[MtHub v3.2] ✅ All exploits + Pickaxe Shop + Mountain Reset loaded — RightCtrl to toggle")
+print("[MtHub v4] ✅ Loaded — RightCtrl to toggle GUI")
 
 end)
 if not success then
-    warn("[MtHub v3.2] FATAL ERROR: " .. tostring(err))
-    print("[MtHub v3.2] FATAL ERROR: " .. tostring(err))
+    warn("[MtHub v4] ERROR: " .. tostring(err))
+    print("[MtHub v4] ERROR: " .. tostring(err))
 end
