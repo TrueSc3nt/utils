@@ -1,0 +1,2 @@
+# Keep readable source local only — public repo uses minea_clean_test_obf.lua
+minea_clean_test.lua

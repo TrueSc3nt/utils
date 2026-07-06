@@ -10,8 +10,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/TrueSc3nt/utils/main/
 ```
 Or execute `minea_loader.lua`.
 
-### For development (readable source — keep private)
-- Edit `minea_clean_test.lua` locally
+### For development (readable source — local only, not on GitHub)
+- Edit `minea_clean_test.lua` on your PC (see `.gitignore`)
 - Rebuild obfuscated build:
   ```bash
   python tools/obfuscate_lua.py minea_clean_test.lua minea_clean_test_obf.lua
