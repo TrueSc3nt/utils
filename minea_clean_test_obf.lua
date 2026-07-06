@@ -1,27 +1,36 @@
 --[[ Minea v7 protected | TrueSc3nt ]]
-local _S=function(s)local o=tonumber(s:match("^(%d+)%|"))local r=""for c in s:gmatch("(%d+)")do local n=tonumber(c)-o;if n>0 then r=r..string.char(n)end end;return r end
-if false then local _jdun6ctjx=0 end
-local _vhttz78qdg8 = game:GetService(_S("107|187|215|204|228|208|221|222"))
-local _v02othobmq8 = game:GetService(_S("107|189|208|219|215|212|206|204|223|208|207|190|223|218|221|204|210|208"))
-local _v92gucjek3x = game:GetService(_S("121|208|232|235|228|236|233|218|220|222"))
-local _v9vp3q2syfb = game:GetService(_S("127|209|244|237|210|228|241|245|232|226|228"))
-local _vjsydjh79x2 = game:GetService(_S("109|193|228|210|210|219|192|210|223|227|214|208|210"))
-local _vnqiki4fvlv = game:GetService(_S("114|199|229|215|228|187|224|226|231|230|197|215|228|232|219|213|215"))
-local HttpService = game:GetService(_S("66|138|182|182|178|149|167|180|184|171|165|167"))
-local _vua7rkk1iu0 = game:GetService(_S("68|151|184|165|182|184|169|182|139|185|173"))
-local _v5l01vpqxkc = game:GetService(_S("84|160|189|187|188|200|189|194|187"))
-local _v1vpimabutu = game:GetService(_S("84|168|185|192|185|196|195|198|200|167|185|198|202|189|183|185"))
-local _vp9nq3ucmqn = game:GetService(_S("87|154|198|195|195|188|186|203|192|198|197|170|188|201|205|192|186|188"))
+local _S=function(s)local o=tonumber(s:match("^(%d+)%|"))local t={}for c in s:gmatch("(%d+)")do local n=tonumber(c)-o;if n>0 then t[#t+1]=n end endif utf8 and utf8.char then local ok,res=pcall(utf8.char,table.unpack(t))if ok then return res end endlocal r=""for i=1,#t do if t[i]<=255 then r=r..string.char(t[i])end end;return r end
+if false then local _jl4r21pkt=0 end
+local _ver979nfack = game:GetService(_S("127|207|235|224|248|228|241|242"))
+local _vr82lbb6oq2 = game:GetService(_S("66|148|167|178|174|171|165|163|182|167|166|149|182|177|180|163|169|167"))
+local _v4au113ebz2 = game:GetService(_S("111|198|222|225|218|226|223|208|210|212"))
+local _vyq77pn2i13 = game:GetService(_S("122|204|239|232|205|223|236|240|227|221|223"))
+local _vqf0qk0zahi = game:GetService(_S("80|164|199|181|181|190|163|181|194|198|185|179|181"))
+local _vlokuaz0syl = game:GetService(_S("114|199|229|215|228|187|224|226|231|230|197|215|228|232|219|213|215"))
+local HttpService = game:GetService(_S("96|168|212|212|208|179|197|210|214|201|195|197"))
+local _v5pkwv48d2z = game:GetService(_S("85|168|201|182|199|201|186|199|156|202|190"))
+local _v4eu5y7x4em = game:GetService(_S("115|191|220|218|219|231|220|225|218"))
+local _vx7a4i41ibp = game:GetService(_S("113|197|214|221|214|225|224|227|229|196|214|227|231|218|212|214"))
+local _vm6dzsso528 = game:GetService(_S("94|161|205|202|202|195|193|210|199|205|204|177|195|208|212|199|193|195"))
 
-local _v9qqaid831c = _vhttz78qdg8.LocalPlayer
-if not _v9qqaid831c then
-    _v9qqaid831c = _vhttz78qdg8.PlayerAdded:Wait()
+local _v9q42f8ekfn = _ver979nfack.LocalPlayer
+if not _v9q42f8ekfn then
+    _v9q42f8ekfn = _ver979nfack.PlayerAdded:Wait()
 end
-local Character = _v9qqaid831c.Character or _v9qqaid831c.CharacterAdded:Wait()
-local _vqxyh6gcfta = Character:WaitForChild(_S("123|195|240|232|220|233|234|228|223|205|234|234|239|203|220|237|239"))
-local _vkhkeyt0oao = Character:WaitForChild(_S("92|164|209|201|189|202|203|197|192"))
 
-local _v7waz68vjhn = {
+local Character = _v9q42f8ekfn.Character
+local _vs1tasghk8v = Character and Character:FindFirstChild(_S("80|152|197|189|177|190|191|185|180|162|191|191|196|160|177|194|196"))
+local _vxx3bniaakb = Character and Character:FindFirstChild(_S("118|190|235|227|215|228|229|223|218"))
+if not Character then
+    task.spawn(function()
+        local char = _v9q42f8ekfn.CharacterAdded:Wait()
+        Character = char
+        _vs1tasghk8v = char:WaitForChild(_S("96|168|213|205|193|206|207|201|196|178|207|207|212|176|193|210|212"))
+        _vxx3bniaakb = char:WaitForChild(_S("85|157|202|194|182|195|196|190|185"))
+    end)
+end
+
+local _v6sw8escnb8 = {
     AutoFarm = false,
     AutoSell = false,
     AutoUpgrade = false,
@@ -44,7 +53,7 @@ local _v7waz68vjhn = {
     PriorityClosest = true,
     PriorityHighestValue = false,
     DupeAmount = 1,
-    WebhookURL = _S("115|"),
+    WebhookURL = _S("74|"),
     WebhookEnabled = false,
     WebhookFarm = true,
     WebhookSell = true,
@@ -52,8 +61,8 @@ local _v7waz68vjhn = {
 
     SmartLoop = false,
     OreFilterEnabled = false,
-    OreFilter = _S("109|209|214|206|218|220|219|209|153|223|226|207|230|153|212|220|217|209|153|210|218|210|223|206|217|209|153|224|206|221|221|213|214|223|210|153|224|225|206|223|224|206|221|221|213|214|223|210|153|221|217|206|225|214|219|226|218"),
-    OreBlacklist = _S("111|210|222|208|219|155|226|227|222|221|212|155|225|222|210|218"),
+    OreFilter = _S("93|193|198|190|202|204|203|193|137|207|210|191|214|137|196|204|201|193|137|194|202|194|207|190|201|193|137|208|190|205|205|197|198|207|194|137|208|209|190|207|208|190|205|205|197|198|207|194|137|205|201|190|209|198|203|210|202"),
+    OreBlacklist = _S("104|203|215|201|212|148|219|220|215|214|205|148|218|215|203|211"),
     RapidMine = false,
     RapidMineCount = 3,
     AutoEquipPickaxe = false,
@@ -71,7 +80,7 @@ local _v7waz68vjhn = {
     AutoRebirth = false,
     RebirthCashThreshold = 50000,
     AutoClaimDaily = false,
-    PromoCode = _S("106|"),
+    PromoCode = _S("92|"),
 
     InfiniteJump = false,
     ClickTeleport = false,
@@ -88,14 +97,14 @@ local _v7waz68vjhn = {
     FPSBooster = false,
 
     RemoteSpy = false,
-    CustomRemoteName = _S("85|"),
-    CustomRemoteArgs = _S("68|"),
+    CustomRemoteName = _S("112|"),
+    CustomRemoteArgs = _S("108|"),
 
     ServerHopInterval = 0,
     PanicEnabled = true,
 }
 
-local LogList, ShopList, RockList, RemoteSpyList, CashLabel, _vnsr1o0tdho
+local LogList, ShopList, RockList, RemoteSpyList, CashLabel, _vipiftt7ogd
 
 local State = {
     FarmConnection = nil,
@@ -106,7 +115,7 @@ local State = {
     FlyConn = nil,
     UpgradeConn = nil,
     IsMinimized = false,
-    CurrentTarget = _S("62|140|173|172|163"),
+    CurrentTarget = _S("76|154|187|186|177"),
     FarmCount = 0,
     SellCount = 0,
     DupeCount = 0,
@@ -115,7 +124,7 @@ local State = {
     Logs = {},
     ESPHighlights = {},
     RemoteCache = {},
-    TabOpen = _S("94|164|191|208|203"),
+    TabOpen = _S("85|155|182|199|194"),
     SmartLoopConn = nil,
     InfiniteJumpConn = nil,
     ClickTPConn = nil,
@@ -139,32 +148,32 @@ local Exec = {}
 do
     local genv = getgenv and getgenv() or _G
     local function first(...)
-        for i = 1, select(_S("81|116"), ...) do
+        for i = 1, select(_S("80|115"), ...) do
             local v = select(i, ...)
             if v ~= nil then return v end
         end
     end
 
     Exec.Unpack = table.unpack or unpack
-    Exec.Name = _S("101|186|211|208|211|212|220|211")
+    Exec.Name = _S("103|188|213|210|213|214|222|213")
     pcall(function()
         if identifyexecutor then
             Exec.Name = identifyexecutor()
         elseif EXECUTOR_NAME then
             Exec.Name = EXECUTOR_NAME
         elseif syn then
-            Exec.Name = _S("94|177|215|204|191|206|209|195")
+            Exec.Name = _S("80|163|201|190|177|192|195|181")
         elseif KRNL_LOADED then
-            Exec.Name = _S("76|151|158|154|152")
+            Exec.Name = _S("94|169|176|172|170")
         elseif Fluxus then
-            Exec.Name = _S("123|193|231|240|243|240|238")
+            Exec.Name = _S("114|184|222|231|234|231|229")
         elseif delta then
-            Exec.Name = _S("78|146|179|186|194|175")
+            Exec.Name = _S("101|169|202|209|217|198")
         end
     end)
 
     Exec.SafeCClosure = newcclosure or newlclosure or function(f) return f end
-    Exec.GetNamecallMethod = getnamecallmethod or getcallmethod or function() return _S("124|") end
+    Exec.GetNamecallMethod = getnamecallmethod or getcallmethod or function() return _S("92|") end
     Exec.HasHookMeta = hookmetamethod ~= nil
     Exec.HasNewCClosure = newcclosure ~= nil
     Exec.HasFireClick = fireclickdetector ~= nil
@@ -206,20 +215,20 @@ do
         end)
         if parent then return parent end
         pcall(function()
-            local cg = game:GetService(_S("82|149|193|196|183|153|199|187"))
+            local cg = game:GetService(_S("89|156|200|203|190|160|206|194"))
             if cloneref then cg = cloneref(cg) end
             parent = cg
         end)
         if parent then return parent end
-        return _v9qqaid831c:WaitForChild(_S("89|169|197|186|210|190|203|160|206|194"))
+        return _v9q42f8ekfn:WaitForChild(_S("121|201|229|218|242|222|235|192|238|226"))
     end
 
     Exec.HttpGet = function(url)
         local ok, result = pcall(function() return game:HttpGet(url) end)
         if ok and result then return result end
         if Exec.Request then
-            local res = Exec.Request({Url = url, Method = _S("102|173|171|186")})
-            if type(res) == _S("65|181|162|163|173|166") then
+            local res = Exec.Request({Url = url, Method = _S("93|164|162|177")})
+            if type(res) == _S("79|195|176|177|187|180") then
                 return res.Body or res.body or res.BodyText
             end
         end
@@ -227,12 +236,12 @@ do
     end
 
     Exec.Post = function(url, body, contentType)
-        contentType = contentType or _S("96|193|208|208|204|201|195|193|212|201|207|206|143|202|211|207|206")
+        contentType = contentType or _S("92|189|204|204|200|197|191|189|208|197|203|202|139|198|207|203|202")
         if Exec.Request then
             return Exec.Request({
                 Url = url,
-                Method = _S("95|175|174|178|179"),
-                Headers = {[_S("71|138|182|181|187|172|181|187|116|155|192|183|172")] = contentType},
+                Method = _S("108|188|187|191|192"),
+                Headers = {[_S("60|127|171|170|176|161|170|176|105|144|181|172|161")] = contentType},
                 Body = body,
             })
         end
@@ -289,7 +298,7 @@ do
     Exec.LoadCharacter = function()
         pcall(function()
             if loadcharacter then loadcharacter()
-            elseif _v9qqaid831c.LoadCharacter then _v9qqaid831c:LoadCharacter() end
+            elseif _v9q42f8ekfn.LoadCharacter then _v9q42f8ekfn:LoadCharacter() end
         end)
     end
 
@@ -299,35 +308,35 @@ do
         end)
         pcall(function()
             if sethiddenproperty then
-                sethiddenproperty(_v9qqaid831c, _S("109|192|214|218|226|217|206|225|214|220|219|191|206|209|214|226|224"), 1e9)
-                sethiddenproperty(_v9qqaid831c, _S("94|171|191|214|177|199|203|211|202|191|210|199|205|204|176|191|194|199|211|209"), 1e9)
+                sethiddenproperty(_v9q42f8ekfn, _S("84|167|189|193|201|192|181|200|189|195|194|166|181|184|189|201|199"), 1e9)
+                sethiddenproperty(_v9q42f8ekfn, _S("117|194|214|237|200|222|226|234|225|214|233|222|228|227|199|214|217|222|234|232"), 1e9)
             end
         end)
     end
 
-    local _vqdmwp33ud3 = {}
-    local _vkodccn4177 = nil
-    local _veb6llnbyfg = false
+    local _vhg497m4b64 = {}
+    local _vupsdo70fkf = nil
+    local _vfp5qulr6c1 = false
 
     function Exec.OnNamecall(fn)
-        table.insert(_vqdmwp33ud3, fn)
-        if not _veb6llnbyfg and Exec.HasHookMeta then
-            _veb6llnbyfg = true
+        table.insert(_vhg497m4b64, fn)
+        if not _vfp5qulr6c1 and Exec.HasHookMeta then
+            _vfp5qulr6c1 = true
             pcall(function()
-                _vkodccn4177 = hookmetamethod(game, _S("84|179|179|194|181|193|185|183|181|192|192"), Exec.SafeCClosure(function(self, ...)
+                _vupsdo70fkf = hookmetamethod(game, _S("105|200|200|215|202|214|206|204|202|213|213"), Exec.SafeCClosure(function(self, ...)
                     local method = Exec.GetNamecallMethod()
                     local args = {...}
-                    for _, hook in ipairs(_vqdmwp33ud3) do
+                    for _, hook in ipairs(_vhg497m4b64) do
                         local block, ret = hook(self, method, args)
                         if block then return ret end
                     end
-                    return _vkodccn4177(self, ...)
+                    return _vupsdo70fkf(self, ...)
                 end))
             end)
         end
     end
 
-    Exec.NamecallHooks = _vqdmwp33ud3
+    Exec.NamecallHooks = _vhg497m4b64
 
     HasHookMeta = Exec.HasHookMeta
     HasNewCClosure = Exec.HasNewCClosure
@@ -341,25 +350,25 @@ do
     GetGEnv = genv
 end
 
-local _vh72znc6c4p = false
+local _vinwaiwzonf = false
 
 pcall(function()
     if Exec.HasHookMeta and Exec.GetNamecallMethod then
         Exec.OnNamecall(function(self, method, args)
 
-            if _vh72znc6c4p and (method == _S("101|171|206|215|202|184|202|215|219|202|215") or method == _S("64|137|174|182|175|171|165|147|165|178|182|165|178")) then
-                if self:IsA(_S("94|176|195|203|205|210|195|163|212|195|204|210")) or self:IsA(_S("63|145|164|172|174|179|164|133|180|173|162|179|168|174|173")) then
-                    pcall(function() _vjx4rzwyfi1(self.Name, method, args) end)
+            if _vinwaiwzonf and (method == _S("71|141|176|185|172|154|172|185|189|172|185") or method == _S("65|138|175|183|176|172|166|148|166|179|183|166|179")) then
+                if self:IsA(_S("125|207|226|234|236|241|226|194|243|226|235|241")) or self:IsA(_S("63|145|164|172|174|179|164|133|180|173|162|179|168|174|173")) then
+                    pcall(function() _vxtvfay6gw3(self.Name, method, args) end)
                 end
             end
 
-            if method == _S("109|184|214|208|216") and self == _v9qqaid831c then
+            if method == _S("114|189|219|213|221") and self == _v9q42f8ekfn then
                 return true, nil
             end
 
-            if method == _S("103|173|208|213|203|186|204|217|221|208|202|204") then
+            if method == _S("130|200|235|240|230|213|231|244|248|235|229|231") then
                 local svc = args[1]
-                if svc == _S("107|176|227|219|215|218|212|223|190|208|221|225|212|206|208") or svc == _S("88|155|192|189|185|204|171|189|202|206|193|187|189") then
+                if svc == _S("99|168|219|211|207|210|204|215|182|200|213|217|204|198|200") or svc == _S("85|152|189|186|182|201|168|186|199|203|190|184|186") then
                     return true, nil
                 end
             end
@@ -371,85 +380,85 @@ end)
 do
     if Exec.HasHookMeta and Exec.HasNewCClosure then
         pcall(function()
-            local _vq1bfutrp6j = hookmetamethod(game, _S("124|219|219|229|234|224|225|244"), Exec.SafeCClosure(function(self, key)
-                if _vkhkeyt0oao and self == _vkhkeyt0oao then
-                    if key == _S("75|162|172|183|182|158|187|176|176|175") and _v7waz68vjhn.SpeedBoost then return 16 end
-                    if key == _S("94|168|211|203|206|174|205|213|195|208") and _v7waz68vjhn.JumpPower > 50 then return 50 end
+            local _vvaufdwed48 = hookmetamethod(game, _S("123|218|218|228|233|223|224|243"), Exec.SafeCClosure(function(self, key)
+                if _vxx3bniaakb and self == _vxx3bniaakb then
+                    if key == _S("84|171|181|192|191|167|196|185|185|184") and _v6sw8escnb8.SpeedBoost then return 16 end
+                    if key == _S("108|182|225|217|220|188|219|227|209|222") and _v6sw8escnb8.JumpPower > 50 then return 50 end
                 end
-                return _vq1bfutrp6j(self, key)
+                return _vvaufdwed48(self, key)
             end))
         end)
         pcall(function()
-            local _vkwh39wfrmh = hookmetamethod(game, _S("64|159|159|174|165|183|169|174|164|165|184"), Exec.SafeCClosure(function(self, key, value)
-                if _vkhkeyt0oao and self == _vkhkeyt0oao then
-                    if key == _S("101|188|198|209|208|184|213|202|202|201") and _v7waz68vjhn.SpeedBoost then
-                        return _vkwh39wfrmh(self, key, _v7waz68vjhn.WalkSpeed)
+            local _v6coj1dsqwk = hookmetamethod(game, _S("96|191|191|206|197|215|201|206|196|197|216"), Exec.SafeCClosure(function(self, key, value)
+                if _vxx3bniaakb and self == _vxx3bniaakb then
+                    if key == _S("72|159|169|180|179|155|184|173|173|172") and _v6sw8escnb8.SpeedBoost then
+                        return _v6coj1dsqwk(self, key, _v6sw8escnb8.WalkSpeed)
                     end
                 end
-                return _vkwh39wfrmh(self, key, value)
+                return _v6coj1dsqwk(self, key, value)
             end))
         end)
     end
 end
 
-local function _vjwpa6b4z60()
-    Character = _v9qqaid831c.Character
+local function _vv3bejf2upo()
+    Character = _v9q42f8ekfn.Character
     if Character then
-        _vqxyh6gcfta = Character:FindFirstChild(_S("122|194|239|231|219|232|233|227|222|204|233|233|238|202|219|236|238"))
-        _vkhkeyt0oao = Character:FindFirstChild(_S("117|189|234|226|214|227|228|222|217"))
+        _vs1tasghk8v = Character:FindFirstChild(_S("112|184|229|221|209|222|223|217|212|194|223|223|228|192|209|226|228"))
+        _vxx3bniaakb = Character:FindFirstChild(_S("61|133|178|170|158|171|172|166|161"))
     end
-    return Character and _vqxyh6gcfta and _vkhkeyt0oao
+    return Character and _vs1tasghk8v and _vxx3bniaakb
 end
 
-local function _vbymtkx7r65(part)
-    if not _vjwpa6b4z60() then return math.huge end
-    return (_vqxyh6gcfta.Position - part.Position).Magnitude
+local function _vurfwcailwp(part)
+    if not _vv3bejf2upo() then return math.huge end
+    return (_vs1tasghk8v.Position - part.Position).Magnitude
 end
 
-local function _vmax6nag1aa(position)
-    if not _vjwpa6b4z60() then return false end
-    local _vcglntyzqn8 = CFrame.new(position + Vector3.new(0, 3, 0))
-    if _v7waz68vjhn.TweenTeleport then
-        local dist = (_vqxyh6gcfta.Position - position).Magnitude
-        local dur = math.clamp(dist / _v7waz68vjhn.TweenTeleportSpeed, 0.08, 2.5)
-        _vjsydjh79x2:Create(_vqxyh6gcfta, TweenInfo.new(dur, Enum.EasingStyle.Linear), {CFrame = _vcglntyzqn8}):Play()
+local function _v8dr8vc6i13(position)
+    if not _vv3bejf2upo() then return false end
+    local _v7ipk1xfxi4 = CFrame.new(position + Vector3.new(0, 3, 0))
+    if _v6sw8escnb8.TweenTeleport then
+        local dist = (_vs1tasghk8v.Position - position).Magnitude
+        local dur = math.clamp(dist / _v6sw8escnb8.TweenTeleportSpeed, 0.08, 2.5)
+        _vqf0qk0zahi:Create(_vs1tasghk8v, TweenInfo.new(dur, Enum.EasingStyle.Linear), {CFrame = _v7ipk1xfxi4}):Play()
         task.wait(dur)
     else
-        _vqxyh6gcfta.CFrame = _vcglntyzqn8
-        task.wait(_v7waz68vjhn.TeleportDelay)
+        _vs1tasghk8v.CFrame = _v7ipk1xfxi4
+        task.wait(_v6sw8escnb8.TeleportDelay)
     end
     return true
 end
 
-local function _vo9oggedhoo(str)
+local function _v15rmhs830i(str)
     local list = {}
-    for part in string.gmatch(string.lower(str or _S("81|")), _S("69|160|163|113|106|184|162|112")) do
+    for part in string.gmatch(string.lower(str or _S("83|")), _S("126|217|220|170|163|241|219|169")) do
         table.insert(list, part)
     end
     return list
 end
 
-local function _v93vjgcq0ie(_v55wabs4dz5)
-    if not _v7waz68vjhn.OreFilterEnabled then return true end
-    local _vl1lmpkibhy = _vo9oggedhoo(_v7waz68vjhn.OreBlacklist)
-    for _, word in ipairs(_vl1lmpkibhy) do
-        if string.find(_v55wabs4dz5, word, 1, true) then return false end
+local function _vwn5kt7xmn9(_vs6hkbeo0n2)
+    if not _v6sw8escnb8.OreFilterEnabled then return true end
+    local _vx08ixfz5pd = _v15rmhs830i(_v6sw8escnb8.OreBlacklist)
+    for _, word in ipairs(_vx08ixfz5pd) do
+        if string.find(_vs6hkbeo0n2, word, 1, true) then return false end
     end
-    local _v21tumxakw8 = _vo9oggedhoo(_v7waz68vjhn.OreFilter)
-    if #_v21tumxakw8 == 0 then return true end
-    for _, word in ipairs(_v21tumxakw8) do
-        if string.find(_v55wabs4dz5, word, 1, true) then return true end
+    local _vn95sr0a7o3 = _v15rmhs830i(_v6sw8escnb8.OreFilter)
+    if #_vn95sr0a7o3 == 0 then return true end
+    for _, word in ipairs(_vn95sr0a7o3) do
+        if string.find(_vs6hkbeo0n2, word, 1, true) then return true end
     end
     return false
 end
 
-local function _vyltw0hfh8c(_ves4lobcryw)
-    local _v75o3cg5yaq = _v9qqaid831c:FindFirstChild(_S("60|168|161|157|160|161|174|175|176|157|176|175"))
-    if not _v75o3cg5yaq then return 0 end
-    for _, stat in ipairs(_v75o3cg5yaq:GetChildren()) do
+local function _vpiu97b51nq(_v8f79y92mmj)
+    local _vx01v3xl57x = _v9q42f8ekfn:FindFirstChild(_S("65|173|166|162|165|166|179|180|181|162|181|180"))
+    if not _vx01v3xl57x then return 0 end
+    for _, stat in ipairs(_vx01v3xl57x:GetChildren()) do
         local n = string.lower(stat.Name)
-        for _, p in ipairs(_ves4lobcryw) do
-            if string.find(n, p) and stat:IsA(_S("97|183|194|205|214|198|163|194|212|198")) then
+        for _, p in ipairs(_v8f79y92mmj) do
+            if string.find(n, p) and stat:IsA(_S("74|160|171|182|191|175|140|171|189|175")) then
                 return stat.Value
             end
         end
@@ -457,35 +466,35 @@ local function _vyltw0hfh8c(_ves4lobcryw)
     return 0
 end
 
-local function _vkd8xnh0cyx()
-    return _vyltw0hfh8c({_S("124|223|221|239|228"), _S("68|177|179|178|169|189"), _S("106|205|217|211|216"), _S("111|214|222|219|211"), _S("118|216|215|226|215|228|217|219"), _S("67|165|184|166|174|182")})
+local function _vmay3n2rhhp()
+    return _vpiu97b51nq({_S("85|184|182|200|189"), _S("128|237|239|238|229|249"), _S("124|223|235|229|234"), _S("125|228|236|233|225"), _S("92|190|189|200|189|202|191|193"), _S("73|171|190|172|180|188")})
 end
 
-local function _v03c4c37rjx()
-    return _vyltw0hfh8c({_S("122|241|223|227|225|226|238"), _S("80|179|177|194|194|201"), _S("84|191|187"), _S("102|210|213|199|202"), _S("88|186|185|187|195|200|185|187|195")})
+local function _v8gl3yj8joa()
+    return _vpiu97b51nq({_S("74|193|175|179|177|178|190"), _S("86|185|183|200|200|207"), _S("121|228|224"), _S("106|214|217|203|206"), _S("124|222|221|223|231|236|221|223|231")})
 end
 
-local function _vrbly5rkwrv()
-    local cap = _vyltw0hfh8c({_S("83|182|180|195|180|182|188|199|204"), _S("123|232|220|243|222|220|237|237|244"), _S("99|208|196|219"), _S("113|221|218|222|218|229"), _S("116|214|213|215|223|228|213|215|223")})
+local function _v14jr4ebc0z()
+    local cap = _vpiu97b51nq({_S("64|163|161|176|161|163|169|180|185"), _S("99|208|196|219|198|196|213|213|220"), _S("102|211|199|222"), _S("74|182|179|183|179|190"), _S("61|159|158|160|168|173|158|160|168")})
     if cap > 0 then return cap end
-    local obj = _v9qqaid831c:FindFirstChild(_S("82|148|179|181|189|194|179|181|189|149|179|194|179|181|187|198|203")) or _v9qqaid831c:FindFirstChild(_S("82|159|179|202|149|179|196|196|203"))
-    if obj and obj:IsA(_S("99|185|196|207|216|200|165|196|214|200")) then return obj.Value end
+    local obj = _v9q42f8ekfn:FindFirstChild(_S("117|183|214|216|224|229|214|216|224|184|214|229|214|216|222|233|238")) or _v9q42f8ekfn:FindFirstChild(_S("125|202|222|245|192|222|239|239|246"))
+    if obj and obj:IsA(_S("123|209|220|231|240|224|189|220|238|224")) then return obj.Value end
     return 100
 end
 
-local function _va4u7o7xobt()
-    if _v7waz68vjhn.UnlimitedBackpack then return false end
-    local _vawz9g9w6qk = _v03c4c37rjx()
-    local cap = _vrbly5rkwrv()
-    if cap > 0 and _vawz9g9w6qk > 0 then return _vawz9g9w6qk >= cap * 0.92 end
+local function _vw57os9bi4h()
+    if _v6sw8escnb8.UnlimitedBackpack then return false end
+    local _vmrtuln5egk = _v8gl3yj8joa()
+    local cap = _v14jr4ebc0z()
+    if cap > 0 and _vmrtuln5egk > 0 then return _vmrtuln5egk >= cap * 0.92 end
     return false
 end
 
-local function _v19dcvsp9hu(root)
-    if not _v7waz68vjhn.BypassPromptHold or not root then return end
+local function _vdr4qws4uos(root)
+    if not _v6sw8escnb8.BypassPromptHold or not root then return end
     pcall(function()
         for _, d in ipairs(root:GetDescendants()) do
-            if d:IsA(_S("64|144|178|175|184|169|173|169|180|185|144|178|175|173|176|180")) then
+            if d:IsA(_S("95|175|209|206|215|200|204|200|211|216|175|209|206|204|207|211")) then
                 d.HoldDuration = 0
                 d.MaxActivationDistance = math.max(d.MaxActivationDistance, 20)
             end
@@ -493,23 +502,23 @@ local function _v19dcvsp9hu(root)
     end)
 end
 
-local function _v4l7y64k05o()
-    if not _v7waz68vjhn.AutoEquipPickaxe then return end
+local function _vw9kfb4vwri()
+    if not _v6sw8escnb8.AutoEquipPickaxe then return end
     pcall(function()
         local bestTool, bestScore = nil, -1
-        local function _vqu4gvgxalz(tool)
-            if not tool:IsA(_S("87|171|198|198|195")) then return -1 end
+        local function _v7yzca7qa4s(tool)
+            if not tool:IsA(_S("77|161|188|188|185")) then return -1 end
             local n = string.lower(tool.Name)
-            if not (string.find(n, _S("60|172|165|159|167")) or string.find(n, _S("96|193|216|197")) or string.find(n, _S("67|167|181|172|175|175")) or string.find(n, _S("127|243|238|238|235")) or string.find(n, _S("122|226|219|231|231|223|236"))) then
+            if not (string.find(n, _S("81|193|186|180|188")) or string.find(n, _S("76|173|196|177")) or string.find(n, _S("88|188|202|193|196|196")) or string.find(n, _S("120|236|231|231|228")) or string.find(n, _S("127|231|224|236|236|228|241"))) then
                 return 0
             end
             local s = 0
-            if string.find(n, _S("122|222|227|219|231|233|232|222")) then s = s + 100
-            elseif string.find(n, _S("108|211|219|216|208")) then s = s + 80
-            elseif string.find(n, _S("75|180|189|186|185")) then s = s + 50
-            elseif string.find(n, _S("102|217|218|213|212|203")) then s = s + 20 end
+            if string.find(n, _S("98|198|203|195|207|209|208|198")) then s = s + 100
+            elseif string.find(n, _S("85|188|196|193|185")) then s = s + 80
+            elseif string.find(n, _S("84|189|198|195|194")) then s = s + 50
+            elseif string.find(n, _S("109|224|225|220|219|210")) then s = s + 20 end
             for _, d in ipairs(tool:GetDescendants()) do
-                if d:IsA(_S("84|170|181|192|201|185|150|181|199|185")) and (string.find(string.lower(d.Name), _S("127|235|228|245|228|235")) or string.find(string.lower(d.Name), _S("84|200|189|185|198"))) then
+                if d:IsA(_S("70|156|167|178|187|171|136|167|185|171")) and (string.find(string.lower(d.Name), _S("114|222|215|232|215|222")) or string.find(string.lower(d.Name), _S("113|229|218|214|227"))) then
                     s = s + d.Value * 10
                 end
             end
@@ -518,31 +527,31 @@ local function _v4l7y64k05o()
         local function scan(container)
             if not container then return end
             for _, t in ipairs(container:GetChildren()) do
-                local sc = _vqu4gvgxalz(t)
+                local sc = _v7yzca7qa4s(t)
                 if sc > bestScore then bestScore, bestTool = sc, t end
             end
         end
-        scan(_v9qqaid831c.Backpack)
+        scan(_v9q42f8ekfn.Backpack)
         scan(Character)
         if bestTool and Character and not Character:FindFirstChild(bestTool.Name) then
-            _vkhkeyt0oao:EquipTool(bestTool)
+            _vxx3bniaakb:EquipTool(bestTool)
         end
     end)
 end
 
-local function _vfjjw0v3xxq()
+local function _vk0pgowvvgt()
     local drops = {}
-    local _ves4lobcryw = {_S("106|206|220|217|218"), _S("116|224|227|227|232"), _S("65|170|181|166|174"), _S("69|181|174|168|176|186|181"), _S("91|190|202|199|199|192|190|207"), _S("102|213|216|203"), _S("82|185|183|191"), _S("87|186|201|208|202|203|184|195")}
+    local _v8f79y92mmj = {_S("129|229|243|240|241"), _S("114|222|225|225|230"), _S("92|197|208|193|201"), _S("128|240|233|227|235|245|240"), _S("71|170|182|179|179|172|170|187"), _S("69|180|183|170"), _S("96|199|197|205"), _S("93|192|207|214|208|209|190|201")}
     local function scan(parent)
         for _, child in ipairs(parent:GetChildren()) do
             local nl = string.lower(child.Name)
-            if child:IsA(_S("78|144|175|193|179|158|175|192|194")) or child:IsA(_S("108|185|219|208|209|216")) then
-                for _, p in ipairs(_ves4lobcryw) do
+            if child:IsA(_S("125|191|222|240|226|205|222|239|241")) or child:IsA(_S("87|164|198|187|188|195")) then
+                for _, p in ipairs(_v8f79y92mmj) do
                     if string.find(nl, p) then
-                        local part = child:IsA(_S("66|132|163|181|167|146|163|180|182")) and child or child:FindFirstChildWhichIsA(_S("118|184|215|233|219|198|215|232|234"))
+                        local part = child:IsA(_S("111|177|208|226|212|191|208|225|227")) and child or child:FindFirstChildWhichIsA(_S("79|145|176|194|180|159|176|193|195"))
                         if part then
-                            local dist = _vbymtkx7r65(part)
-                            if dist <= _v7waz68vjhn.FarmRadius then
+                            local dist = _vurfwcailwp(part)
+                            if dist <= _v6sw8escnb8.FarmRadius then
                                 table.insert(drops, {Instance = child, Part = part, Distance = dist, Name = child.Name})
                             end
                         end
@@ -553,113 +562,113 @@ local function _vfjjw0v3xxq()
             if #child:GetChildren() > 0 then scan(child) end
         end
     end
-    scan(_v92gucjek3x)
+    scan(_v4au113ebz2)
     table.sort(drops, function(a, b) return a.Distance < b.Distance end)
     return drops
 end
 
-local function _vpphc2k00e4()
-    if not _v7waz68vjhn.AutoCollectDrops then return end
-    local drops = _vfjjw0v3xxq()
+local function _vu0se5lz0nb()
+    if not _v6sw8escnb8.AutoCollectDrops then return end
+    local drops = _vk0pgowvvgt()
     for i = 1, math.min(3, #drops) do
         local drop = drops[i]
-        _vmax6nag1aa(drop.Part.Position)
+        _v8dr8vc6i13(drop.Part.Position)
         if HasFireTouch then
-            Exec.FireTouch(_vqxyh6gcfta, drop.Part, 0)
+            Exec.FireTouch(_vs1tasghk8v, drop.Part, 0)
             task.wait(0.01)
-            Exec.FireTouch(_vqxyh6gcfta, drop.Part, 1)
+            Exec.FireTouch(_vs1tasghk8v, drop.Part, 1)
         end
-        _vme4qihhqx7(_S("89|201|194|188|196|206|201"))
-        _vme4qihhqx7(_S("69|168|180|177|177|170|168|185"))
-        _vme4qihhqx7(_S("68|176|179|179|184"))
+        _vv8iciwgl48(_S("110|222|215|209|217|227|222"))
+        _vv8iciwgl48(_S("89|188|200|197|197|190|188|205"))
+        _vv8iciwgl48(_S("122|230|233|233|238"))
     end
 end
 
-local function _vw5uvufjbnw()
-    if _v7waz68vjhn.AutoBuyPickaxe then
-        _vme4qihhqx7(_S("60|172|165|159|167|157|180|161")); _vme4qihhqx7(_S("84|182|201|205|179|196|189|183|191|181|204|185")); _vme4qihhqx7(_S("106|223|218|209|220|203|206|207|201|218|211|205|213|203|226|207"))
+local function _vazsqq0p00b()
+    if _v6sw8escnb8.AutoBuyPickaxe then
+        _vv8iciwgl48(_S("73|185|178|172|180|170|193|174")); _vv8iciwgl48(_S("128|226|245|249|223|240|233|227|235|225|248|229")); _vv8iciwgl48(_S("92|209|204|195|206|189|192|193|187|204|197|191|199|189|212|193"))
     end
-    if _v7waz68vjhn.AutoBuyBackpack then
-        _vme4qihhqx7(_S("130|228|227|229|237|242|227|229|237")); _vme4qihhqx7(_S("70|169|167|182|167|169|175|186|191")); _vme4qihhqx7(_S("85|202|197|188|199|182|185|186|180|183|182|184|192|197|182|184|192"))
+    if _v6sw8escnb8.AutoBuyBackpack then
+        _vv8iciwgl48(_S("61|159|158|160|168|173|158|160|168")); _vv8iciwgl48(_S("105|204|202|217|202|204|210|221|226")); _vv8iciwgl48(_S("127|244|239|230|241|224|227|228|222|225|224|226|234|239|224|226|234"))
     end
-    if _v7waz68vjhn.AutoBuyLuck then
-        _vme4qihhqx7(_S("122|230|239|221|229")); _vme4qihhqx7(_S("100|200|205|203|195|208|217|199|207")); _vme4qihhqx7(_S("83|191|200|182|190|204"))
+    if _v6sw8escnb8.AutoBuyLuck then
+        _vv8iciwgl48(_S("123|231|240|222|230")); _vv8iciwgl48(_S("82|182|187|185|177|190|199|181|189")); _vv8iciwgl48(_S("85|193|202|184|192|206"))
     end
-    if _v7waz68vjhn.AutoBuyWarmth then
-        _vme4qihhqx7(_S("115|234|212|229|224|231|219")); _vme4qihhqx7(_S("110|214|211|207|226")); _vme4qihhqx7(_S("115|214|212|224|227|217|220|229|216"))
+    if _v6sw8escnb8.AutoBuyWarmth then
+        _vv8iciwgl48(_S("114|233|211|228|223|230|218")); _vv8iciwgl48(_S("124|228|225|221|240")); _vv8iciwgl48(_S("111|210|208|220|223|213|216|225|212"))
     end
-    if _v7waz68vjhn.AutoUpgrade then
-        _vme4qihhqx7(_S("107|224|219|210|221|204|207|208")); _vme4qihhqx7(_S("118|216|235|239")); _vme4qihhqx7(_S("73|185|190|187|172|177|170|188|174"))
-    end
-end
-
-local function _vdsr858u45u()
-    if not _v7waz68vjhn.AutoRebirth then return end
-    if _vkd8xnh0cyx() >= _v7waz68vjhn.RebirthCashThreshold then
-        _vme4qihhqx7(_S("64|178|165|162|169|178|180|168")); _vme4qihhqx7(_S("113|225|227|214|228|229|218|216|214")); _vme4qihhqx7(_S("114|228|215|229|215|230")); _vme4qihhqx7(_S("94|191|209|193|195|204|194"))
-        _vv6vvad4d9h(_S("74|139|191|190|185|106|188|175|172|179|188|190|178|106|171|190|190|175|183|186|190|175|174|106|171|190|106") .. _vkd8xnh0cyx() .. _S("88|120|187|185|203|192"))
+    if _v6sw8escnb8.AutoUpgrade then
+        _vv8iciwgl48(_S("61|178|173|164|175|158|161|162")); _vv8iciwgl48(_S("60|158|177|181")); _vv8iciwgl48(_S("86|198|203|200|185|190|183|201|187"))
     end
 end
 
-local function _vsz5u8329xb()
-    if not _v7waz68vjhn.AutoClaimDaily then return end
-    _vme4qihhqx7(_S("77|177|174|182|185|198")); _vme4qihhqx7(_S("80|194|181|199|177|194|180")); _vme4qihhqx7(_S("114|213|222|211|219|223")); _vme4qihhqx7(_S("62|170|173|165|167|172"))
-    _vme4qihhqx7(_S("82|181|193|182|183")); _vme4qihhqx7(_S("63|177|164|163|164|164|172"))
-    if _v7waz68vjhn.PromoCode ~= _S("110|") then
-        _vme4qihhqx7(_S("101|200|212|201|202"), _v7waz68vjhn.PromoCode)
-        _vme4qihhqx7(_S("69|183|170|169|170|170|178"), _v7waz68vjhn.PromoCode)
+local function _vlt70fb0sca()
+    if not _v6sw8escnb8.AutoRebirth then return end
+    if _vmay3n2rhhp() >= _v6sw8escnb8.RebirthCashThreshold then
+        _vv8iciwgl48(_S("112|226|213|210|217|226|228|216")); _vv8iciwgl48(_S("83|195|197|184|198|199|188|186|184")); _vv8iciwgl48(_S("122|236|223|237|223|238")); _vv8iciwgl48(_S("97|194|212|196|198|207|197"))
+        _vke6snlfgah(_S("106|171|223|222|217|138|220|207|204|211|220|222|210|138|203|222|222|207|215|218|222|207|206|138|203|222|138") .. _vmay3n2rhhp() .. _S("109|141|208|206|224|213"))
     end
 end
 
-local function _vg5aeo4t6xb()
-    if _va4u7o7xobt() and _v7waz68vjhn.SellWhenFull then return true end
-    if _v7waz68vjhn.SellMinCash > 0 and _vkd8xnh0cyx() >= _v7waz68vjhn.SellMinCash then return true end
+local function _v3lmil1tf08()
+    if not _v6sw8escnb8.AutoClaimDaily then return end
+    _vv8iciwgl48(_S("66|166|163|171|174|187")); _vv8iciwgl48(_S("111|225|212|230|208|225|211")); _vv8iciwgl48(_S("100|199|208|197|205|209")); _vv8iciwgl48(_S("76|184|187|179|181|186"))
+    _vv8iciwgl48(_S("79|178|190|179|180")); _vv8iciwgl48(_S("104|218|205|204|205|205|213"))
+    if _v6sw8escnb8.PromoCode ~= _S("116|") then
+        _vv8iciwgl48(_S("103|202|214|203|204"), _v6sw8escnb8.PromoCode)
+        _vv8iciwgl48(_S("120|234|221|220|221|221|229"), _v6sw8escnb8.PromoCode)
+    end
+end
+
+local function _vnz1zdojgtk()
+    if _vw57os9bi4h() and _v6sw8escnb8.SellWhenFull then return true end
+    if _v6sw8escnb8.SellMinCash > 0 and _vmay3n2rhhp() >= _v6sw8escnb8.SellMinCash then return true end
     return false
 end
 
-local function _vz1pixo5q1v()
-    _vv6vvad4d9h(_S("125|193|239|236|237|157|225|242|237|226|183|157|237|230|224|232|242|237|157|240|237|222|234|171|171|171"))
+local function _vldiorhze7r()
+    _vke6snlfgah(_S("80|148|194|191|192|112|180|197|192|181|138|112|192|185|179|187|197|192|112|195|192|177|189|126|126|126"))
     pcall(function()
-        local tool = Character and Character:FindFirstChildOfClass(_S("60|144|171|171|168"))
+        local tool = Character and Character:FindFirstChildOfClass(_S("93|177|204|204|201"))
         if tool then
-            tool.Parent = _v9qqaid831c.Backpack
+            tool.Parent = _v9q42f8ekfn.Backpack
             task.wait(0.1)
-            _vkhkeyt0oao:EquipTool(tool)
+            _vxx3bniaakb:EquipTool(tool)
         end
-        for i = 1, _v7waz68vjhn.DupeAmount do
-            _vme4qihhqx7(_S("105|205|219|216|217")); _vme4qihhqx7(_S("90|202|195|189|197|207|202")); _vme4qihhqx7(_S("82|181|193|190|190|183|181|198"))
+        for i = 1, _v6sw8escnb8.DupeAmount do
+            _vv8iciwgl48(_S("98|198|212|209|210")); _vv8iciwgl48(_S("127|239|232|226|234|244|239")); _vv8iciwgl48(_S("74|173|185|182|182|175|173|190"))
             task.wait(0.05)
         end
     end)
 end
 
-local function _vx96k21ecg0(cframe)
-    if not _vjwpa6b4z60() then return false end
-    _vqxyh6gcfta.CFrame = cframe + Vector3.new(0, 3, 0)
-    task.wait(_v7waz68vjhn.TeleportDelay)
+local function _vunz8xr80ai(cframe)
+    if not _vv3bejf2upo() then return false end
+    _vs1tasghk8v.CFrame = cframe + Vector3.new(0, 3, 0)
+    task.wait(_v6sw8escnb8.TeleportDelay)
     return true
 end
 
-local function _vdmb3sdada7(scrollingFrame)
+local function _vli1jii61e7(scrollingFrame)
     for _, child in ipairs(scrollingFrame:GetChildren()) do
-        if not child:IsA(_S("121|206|194|197|226|236|237|197|218|242|232|238|237")) and not child:IsA(_S("75|160|148|155|172|175|175|180|185|178")) then
+        if not child:IsA(_S("72|157|145|148|177|187|188|148|169|193|183|189|188")) and not child:IsA(_S("105|190|178|185|202|205|205|210|215|208")) then
             child:Destroy()
         end
     end
 end
 
-local function _vv6vvad4d9h(message)
-    local _vf0gjb0rnau = os.date(_S("128|165|200|186|165|205|186|165|211"))
-    table.insert(State.Logs, 1, _S("63|154") .. _vf0gjb0rnau .. _S("99|192|131") .. message)
+local function _vke6snlfgah(message)
+    local _v08a1du26fs = os.date(_S("114|151|186|172|151|191|172|151|197"))
+    table.insert(State.Logs, 1, _S("127|218") .. _v08a1du26fs .. _S("119|212|151") .. message)
     if #State.Logs > 50 then
         table.remove(State.Logs)
     end
     if LogList then
         pcall(function()
-            _vdmb3sdada7(LogList)
+            _vli1jii61e7(LogList)
             for i, log in ipairs(State.Logs) do
                 if i > 15 then break end
-                local label = Instance.new(_S("127|211|228|247|243|203|224|225|228|235"))
+                local label = Instance.new(_S("61|145|162|181|177|137|158|159|162|169"))
                 label.Size = UDim2.new(1, 0, 0, 18)
                 label.BackgroundTransparency = 1
                 label.Text = log
@@ -674,11 +683,11 @@ local function _vv6vvad4d9h(message)
     end
 end
 
-local function _v9ohaz27yl5()
+local function _v7j1h15u98j()
     State.RemoteCache = {}
     pcall(function()
-        for _, remote in ipairs(_v02othobmq8:GetDescendants()) do
-            if remote:IsA(_S("73|155|174|182|184|189|174|142|191|174|183|189")) or remote:IsA(_S("85|167|186|194|196|201|186|155|202|195|184|201|190|196|195")) then
+        for _, remote in ipairs(_vr82lbb6oq2:GetDescendants()) do
+            if remote:IsA(_S("70|152|171|179|181|186|171|139|188|171|180|186")) or remote:IsA(_S("106|188|207|215|217|222|207|176|223|216|205|222|211|217|216")) then
                 table.insert(State.RemoteCache, {
                     Instance = remote,
                     Name = remote.Name,
@@ -687,19 +696,19 @@ local function _v9ohaz27yl5()
             end
         end
     end)
-    _vv6vvad4d9h(_S("76|143|173|175|180|177|176|108") .. #State.RemoteCache .. _S("95|127|209|196|204|206|211|196|210"))
+    _vke6snlfgah(_S("130|197|227|229|234|231|230|162") .. #State.RemoteCache .. _S("88|120|202|189|197|199|204|189|203"))
 end
 
-local function _vme4qihhqx7(namePattern, ...)
+local function _vv8iciwgl48(namePattern, ...)
     local args = {...}
     for _, remote in ipairs(State.RemoteCache) do
         local rName = string.lower(remote.Name)
-        local _v3a4tabkuce = string.lower(namePattern)
-        if string.find(rName, _v3a4tabkuce) then
+        local _v57hzl491gc = string.lower(namePattern)
+        if string.find(rName, _v57hzl491gc) then
             pcall(function()
-                if remote.Type == _S("113|195|214|222|224|229|214|182|231|214|223|229") then
+                if remote.Type == _S("126|208|227|235|237|242|227|195|244|227|236|242") then
                     remote.Instance:FireServer(Exec.Unpack(args))
-                elseif remote.Type == _S("97|179|198|206|208|213|198|167|214|207|196|213|202|208|207") then
+                elseif remote.Type == _S("86|168|187|195|197|202|187|156|203|196|185|202|191|197|196") then
                     remote.Instance:InvokeServer(Exec.Unpack(args))
                 end
             end)
@@ -707,14 +716,14 @@ local function _vme4qihhqx7(namePattern, ...)
     end
 end
 
-local function _vxjcv8bvu2o(name, ...)
+local function _vzebbox61ma(name, ...)
     local args = {...}
     for _, remote in ipairs(State.RemoteCache) do
         if remote.Name == name then
             pcall(function()
-                if remote.Type == _S("110|192|211|219|221|226|211|179|228|211|220|226") then
+                if remote.Type == _S("120|202|221|229|231|236|221|189|238|221|230|236") then
                     remote.Instance:FireServer(Exec.Unpack(args))
-                elseif remote.Type == _S("101|183|202|210|212|217|202|171|218|211|200|217|206|212|211") then
+                elseif remote.Type == _S("119|201|220|228|230|235|220|189|236|229|218|235|224|230|229") then
                     remote.Instance:InvokeServer(Exec.Unpack(args))
                 end
             end)
@@ -724,40 +733,40 @@ local function _vxjcv8bvu2o(name, ...)
     return false
 end
 
-local _v1rz5rex4bw = {
-    _S("67|181|178|166|174"), _S("89|200|203|190"), _S("116|231|232|227|226|217"), _S("112|221|217|222|213|226|209|220"), _S("122|221|236|243|237|238|219|230"), _S("70|173|171|179"), _S("112|211|223|209|220"), _S("76|181|190|187|186"),
-    _S("96|199|207|204|196"), _S("105|205|210|202|214|216|215|205"), _S("76|175|187|188|188|177|190"), _S("110|225|215|218|228|211|224"), _S("70|184|187|168|191"), _S("95|196|204|196|209|192|203|195"), _S("61|176|158|173|173|165|166|175|162"),
-    _S("62|159|171|163|178|166|183|177|178"), _S("62|172|173|162|163"), _S("124|242|225|229|234"), _S("89|189|190|201|200|204|194|205"), _S("107|205|218|224|215|207|208|221"), _S("69|184|185|166|183|184|166|181|181|173|174|183|170"),
-    _S("73|189|184|185|170|195"), _S("71|182|183|168|179"), _S("97|209|198|194|211|205"), _S("121|227|218|221|222"), _S("70|183|187|167|184|186|192"), _S("82|193|180|197|187|182|187|179|192"), _S("122|230|219|234|227|237"),
-    _S("122|231|227|238|226|236|227|230"), _S("127|243|232|243|224|237|232|244|236"), _S("86|198|194|183|202|191|196|203|195"), _S("129|241|230|243|234|229|240|245"), _S("114|236|219|228|213|225|224"), _S("127|230|224|241|237|228|243"),
-    _S("111|208|224|228|208|220|208|225|216|221|212"), _S("60|159|165|176|174|165|170|161"), _S("63|179|160|173|185|160|173|168|179|164"), _S("97|206|208|208|207|212|213|208|207|198"), _S("95|210|212|205|210|211|206|205|196"),
-    _S("95|193|203|206|206|195|210|211|206|205|196"), _S("119|230|229|240|239"), _S("69|185|180|186|183|178|166|177|174|179|170"), _S("93|208|205|198|203|194|201"), _S("107|205|208|221|228|215"), _S("119|218|223|216|227|218|220|219|230|229|240"),
+local _vnvw1sq18j6 = {
+    _S("126|240|237|225|233"), _S("98|209|212|199"), _S("84|199|200|195|194|185"), _S("127|236|232|237|228|241|224|235"), _S("110|209|224|231|225|226|207|218"), _S("111|214|212|220"), _S("74|173|185|171|182"), _S("93|198|207|204|203"),
+    _S("103|206|214|211|203"), _S("86|186|191|183|195|197|196|186"), _S("64|163|175|176|176|165|178"), _S("123|238|228|231|241|224|237"), _S("80|194|197|178|201"), _S("117|218|226|218|231|214|225|217"), _S("74|189|171|186|186|178|179|188|175"),
+    _S("69|166|178|170|185|173|190|184|185"), _S("105|215|216|205|206"), _S("60|178|161|165|170"), _S("126|226|227|238|237|241|231|242"), _S("108|206|219|225|216|208|209|222"), _S("66|181|182|163|180|181|163|178|178|170|171|180|167"),
+    _S("109|225|220|221|206|231"), _S("84|195|196|181|192"), _S("68|180|169|165|182|176"), _S("102|208|199|202|203"), _S("77|190|194|174|191|193|199"), _S("92|203|190|207|197|192|197|189|202"), _S("108|216|205|220|213|223"),
+    _S("71|180|176|187|175|185|176|179"), _S("129|245|234|245|226|239|234|246|238"), _S("63|175|171|160|179|168|173|180|172"), _S("82|194|183|196|187|182|193|198"), _S("102|224|207|216|201|213|212"), _S("97|200|194|211|207|198|213"),
+    _S("97|194|210|214|194|206|194|211|202|207|198"), _S("126|225|231|242|240|231|236|227"), _S("67|183|164|177|189|164|177|172|183|168"), _S("100|209|211|211|210|215|216|211|210|201"), _S("114|229|231|224|229|230|225|224|215"),
+    _S("68|166|176|179|179|168|183|184|179|178|169"), _S("64|175|174|185|184"), _S("75|191|186|192|189|184|172|183|180|185|176"), _S("69|184|181|174|179|170|177"), _S("85|183|186|199|206|193"), _S("103|202|207|200|211|202|204|203|214|213|224"),
 }
 
-local function _v1y2wurcl0l()
+local function _vvkj7mz5kfi()
     local rocks = {}
-    local function _v8oyas05wlq(parent)
+    local function _v583ulqzxgz(parent)
         if not parent then return end
         for _, child in ipairs(parent:GetChildren()) do
-            local _v55wabs4dz5 = string.lower(child.Name)
-            if child:IsA(_S("127|193|224|242|228|207|224|241|243")) or child:IsA(_S("116|193|227|216|217|224")) then
-                local _v893hmsa2la = false
-                for _, _v3a4tabkuce in ipairs(_v1rz5rex4bw) do
-                    if string.find(_v55wabs4dz5, _v3a4tabkuce) then
-                        _v893hmsa2la = true
+            local _vs6hkbeo0n2 = string.lower(child.Name)
+            if child:IsA(_S("126|192|223|241|227|206|223|240|242")) or child:IsA(_S("127|204|238|227|228|235")) then
+                local _vop5uonq3au = false
+                for _, _v57hzl491gc in ipairs(_vnvw1sq18j6) do
+                    if string.find(_vs6hkbeo0n2, _v57hzl491gc) then
+                        _vop5uonq3au = true
                         break
                     end
                 end
-                if _v893hmsa2la and _v93vjgcq0ie(_v55wabs4dz5) then
-                    local part = child:IsA(_S("100|166|197|215|201|180|197|214|216")) and child or child:FindFirstChildWhichIsA(_S("84|150|181|199|185|164|181|198|200"))
+                if _vop5uonq3au and _vwn5kt7xmn9(_vs6hkbeo0n2) then
+                    local part = child:IsA(_S("77|143|174|192|178|157|174|191|193")) and child or child:FindFirstChildWhichIsA(_S("74|140|171|189|175|154|171|188|190"))
                     if part then
-                        local dist = _vbymtkx7r65(part)
-                        if dist <= _v7waz68vjhn.FarmRadius then
+                        local dist = _vurfwcailwp(part)
+                        if dist <= _v6sw8escnb8.FarmRadius then
 
                             local value = 0
                             pcall(function()
-                                local val = child:FindFirstChild(_S("65|151|162|173|182|166")) or child:FindFirstChild(_S("120|200|234|225|219|221")) or child:FindFirstChild(_S("99|186|210|213|215|203")) or child:FindFirstChild(_S("88|174|185|196|205|189|167|206|189|202|202|193|188|189"))
-                                if val and val:IsA(_S("121|207|218|229|238|222|187|218|236|222")) then
+                                local val = child:FindFirstChild(_S("85|171|182|193|202|186")) or child:FindFirstChild(_S("75|155|189|180|174|176")) or child:FindFirstChild(_S("110|197|221|224|226|214")) or child:FindFirstChild(_S("109|195|206|217|226|210|188|227|210|223|223|214|209|210"))
+                                if val and val:IsA(_S("128|214|225|236|245|229|194|225|243|229")) then
                                     value = val.Value
                                 end
                             end)
@@ -772,58 +781,58 @@ local function _v1y2wurcl0l()
                     end
                 end
                 if #child:GetChildren() > 0 then
-                    _v8oyas05wlq(child)
+                    _v583ulqzxgz(child)
                 end
             end
         end
     end
 
-    local _vaijhvg0wuh = {
-        _v92gucjek3x:FindFirstChild(_S("91|173|202|190|198|206")),
-        _v92gucjek3x:FindFirstChild(_S("97|176|211|198|212")),
-        _v92gucjek3x:FindFirstChild(_S("66|143|171|176|167|180|163|174|181")),
-        _v92gucjek3x:FindFirstChild(_S("124|201|229|234|225|239")),
-        _v92gucjek3x:FindFirstChild(_S("91|173|192|206|202|208|205|190|192|206")),
-        _v92gucjek3x:FindFirstChild(_S("89|166|186|201")),
-        _v92gucjek3x:FindFirstChild(_S("119|203|220|233|233|216|224|229")),
-        _v92gucjek3x:FindFirstChild(_S("92|159|206|213|207|208|189|200|207")),
-        _v92gucjek3x:FindFirstChild(_S("109|186|220|226|219|225|206|214|219")),
-        _v92gucjek3x,
+    local _vi0e81973lq = {
+        _v4au113ebz2:FindFirstChild(_S("69|151|180|168|176|184")),
+        _v4au113ebz2:FindFirstChild(_S("73|152|187|174|188")),
+        _v4au113ebz2:FindFirstChild(_S("69|146|174|179|170|183|166|177|184")),
+        _v4au113ebz2:FindFirstChild(_S("68|145|173|178|169|183")),
+        _v4au113ebz2:FindFirstChild(_S("113|195|214|228|224|230|227|212|214|228")),
+        _v4au113ebz2:FindFirstChild(_S("109|186|206|221")),
+        _v4au113ebz2:FindFirstChild(_S("60|144|161|174|174|157|165|170")),
+        _v4au113ebz2:FindFirstChild(_S("113|180|227|234|228|229|210|221|228")),
+        _v4au113ebz2:FindFirstChild(_S("75|152|186|192|185|191|172|180|185")),
+        _v4au113ebz2,
     }
 
-    for _, area in ipairs(_vaijhvg0wuh) do
+    for _, area in ipairs(_vi0e81973lq) do
         if area then
-            _v8oyas05wlq(area)
+            _v583ulqzxgz(area)
         end
     end
 
-    if _v7waz68vjhn.PriorityHighestValue then
+    if _v6sw8escnb8.PriorityHighestValue then
         table.sort(rocks, function(a, b) return a.Value > b.Value end)
-    elseif _v7waz68vjhn.PriorityClosest then
+    elseif _v6sw8escnb8.PriorityClosest then
         table.sort(rocks, function(a, b) return a.Distance < b.Distance end)
     end
 
     return rocks
 end
 
-local function _vwi0vrnlz4s()
+local function _vkgv156tecx()
     local shops = {}
-    local function _vqua9hnz1zl(parent)
+    local function _vv4a681dnp7(parent)
         if not parent then return end
         for _, child in ipairs(parent:GetChildren()) do
-            local _v55wabs4dz5 = string.lower(child.Name)
-            if child:IsA(_S("104|181|215|204|205|212")) or child:IsA(_S("68|134|165|183|169|148|165|182|184")) then
-                if string.find(_v55wabs4dz5, _S("98|213|202|209|210")) or string.find(_v55wabs4dz5, _S("122|237|223|230|230")) or
-                   string.find(_v55wabs4dz5, _S("82|197|198|193|196|183")) or string.find(_v55wabs4dz5, _S("89|198|190|203|188|193|186|199|205")) or
-                   string.find(_v55wabs4dz5, _S("121|237|235|218|221|222|235")) or string.find(_v55wabs4dz5, _S("78|178|179|175|186|179|192")) or
-                   string.find(_v55wabs4dz5, _S("64|173|161|178|171|165|180")) or string.find(_v55wabs4dz5, _S("102|220|203|212|202|213|216")) or
-                   string.find(_v55wabs4dz5, _S("118|217|215|233|222|223|219|232")) or string.find(_v55wabs4dz5, _S("91|189|208|212|192|205")) or
-                   string.find(_v55wabs4dz5, _S("107|217|219|206")) or string.find(_v55wabs4dz5, _S("87|186|184|202|191")) or
-                   string.find(_v55wabs4dz5, _S("83|187|194|192|184")) or string.find(_v55wabs4dz5, _S("108|206|205|223|209")) or
-                   string.find(_v55wabs4dz5, _S("104|203|201|213|216")) then
-                    local part = child:IsA(_S("115|181|212|230|216|195|212|229|231")) and child or child:FindFirstChildWhichIsA(_S("96|162|193|211|197|176|193|210|212")) or child:FindFirstChild(_S("103|175|220|212|200|213|214|208|203|185|214|214|219|183|200|217|219"))
+            local _vs6hkbeo0n2 = string.lower(child.Name)
+            if child:IsA(_S("64|141|175|164|165|172")) or child:IsA(_S("99|165|196|214|200|179|196|213|215")) then
+                if string.find(_vs6hkbeo0n2, _S("86|201|190|197|198")) or string.find(_vs6hkbeo0n2, _S("114|229|215|222|222")) or
+                   string.find(_vs6hkbeo0n2, _S("94|209|210|205|208|195")) or string.find(_vs6hkbeo0n2, _S("116|225|217|230|215|220|213|226|232")) or
+                   string.find(_vs6hkbeo0n2, _S("73|189|187|170|173|174|187")) or string.find(_vs6hkbeo0n2, _S("112|212|213|209|220|213|226")) or
+                   string.find(_vs6hkbeo0n2, _S("90|199|187|204|197|191|206")) or string.find(_vs6hkbeo0n2, _S("130|248|231|240|230|241|244")) or
+                   string.find(_vs6hkbeo0n2, _S("62|161|159|177|166|167|163|176")) or string.find(_vs6hkbeo0n2, _S("68|166|185|189|169|182")) or
+                   string.find(_vs6hkbeo0n2, _S("74|184|186|173")) or string.find(_vs6hkbeo0n2, _S("67|166|164|182|171")) or
+                   string.find(_vs6hkbeo0n2, _S("105|209|216|214|206")) or string.find(_vs6hkbeo0n2, _S("89|187|186|204|190")) or
+                   string.find(_vs6hkbeo0n2, _S("123|222|220|232|235")) then
+                    local part = child:IsA(_S("96|162|193|211|197|176|193|210|212")) and child or child:FindFirstChildWhichIsA(_S("75|141|172|190|176|155|172|189|191")) or child:FindFirstChild(_S("109|181|226|218|206|219|220|214|209|191|220|220|225|189|206|223|225"))
                     if part then
-                        local dist = _vbymtkx7r65(part)
+                        local dist = _vurfwcailwp(part)
                         table.insert(shops, {
                             Instance = child,
                             Part = part,
@@ -833,64 +842,64 @@ local function _vwi0vrnlz4s()
                     end
                 end
                 if #child:GetChildren() > 0 then
-                    _vqua9hnz1zl(child)
+                    _vv4a681dnp7(child)
                 end
             end
         end
     end
 
-    _vqua9hnz1zl(_v92gucjek3x)
+    _vv4a681dnp7(_v4au113ebz2)
     table.sort(shops, function(a, b) return a.Distance < b.Distance end)
     return shops
 end
 
-local function _vf37ku9f4vl(rockData)
+local function _vc594g6v3oz(rockData)
     local rock = rockData.Instance
     local part = rockData.Part
 
     if not rock or not rock.Parent then return false end
 
-    _v4l7y64k05o()
-    _v19dcvsp9hu(rock)
+    _vw9kfb4vwri()
+    _vdr4qws4uos(rock)
 
-    _vv6vvad4d9h(_S("115|192|220|225|220|225|218|173|147") .. rockData.Name)
+    _vke6snlfgah(_S("70|147|175|180|175|180|173|128|102") .. rockData.Name)
 
-    _vmax6nag1aa(part.Position)
+    _v8dr8vc6i13(part.Position)
     task.wait(0.05)
 
-    local function _vf3velzzetg()
+    local function _vss4wxni4mq()
 
         if HasFireClick then
-            local clickDetector = rock:FindFirstChildOfClass(_S("78|145|186|183|177|185|146|179|194|179|177|194|189|192")) or part:FindFirstChildOfClass(_S("83|150|191|188|182|190|151|184|199|184|182|199|194|197"))
+            local clickDetector = rock:FindFirstChildOfClass(_S("114|181|222|219|213|221|182|215|230|215|213|230|225|228")) or part:FindFirstChildOfClass(_S("81|148|189|186|180|188|149|182|197|182|180|197|192|195"))
             if clickDetector then Exec.FireClick(clickDetector) end
         end
         if HasFireProximity then
-            local prompt = rock:FindFirstChildOfClass(_S("67|147|181|178|187|172|176|172|183|188|147|181|178|176|179|183")) or part:FindFirstChildOfClass(_S("129|209|243|240|249|234|238|234|245|250|209|243|240|238|241|245"))
+            local prompt = rock:FindFirstChildOfClass(_S("87|167|201|198|207|192|196|192|203|208|167|201|198|196|199|203")) or part:FindFirstChildOfClass(_S("120|200|234|231|240|225|229|225|236|241|200|234|231|229|232|236"))
             if prompt then
-                if _v7waz68vjhn.BypassPromptHold then prompt.HoldDuration = 0 end
+                if _v6sw8escnb8.BypassPromptHold then prompt.HoldDuration = 0 end
                 Exec.FireProximity(prompt)
             end
         end
         if HasFireTouch then
-            Exec.FireTouch(_vqxyh6gcfta, part, 0)
+            Exec.FireTouch(_vs1tasghk8v, part, 0)
             task.wait(0.01)
-            Exec.FireTouch(_vqxyh6gcfta, part, 1)
+            Exec.FireTouch(_vs1tasghk8v, part, 1)
         end
 
-        local tool = Character and Character:FindFirstChildOfClass(_S("105|189|216|216|213"))
+        local tool = Character and Character:FindFirstChildOfClass(_S("82|166|193|193|190"))
         if tool then tool:Activate() end
 
-        _vme4qihhqx7(_S("83|192|188|193|184")); _vme4qihhqx7(_S("106|210|203|220|224|207|221|222")); _vme4qihhqx7(_S("109|208|220|217|217|210|208|225"))
-        _vme4qihhqx7(_S("112|210|226|213|209|219")); _vme4qihhqx7(_S("95|198|192|211|199|196|209")); _vme4qihhqx7(_S("116|216|221|219"))
-        _vme4qihhqx7(_S("127|239|232|226|234")); _vme4qihhqx7(_S("84|199|203|189|194|187"))
+        _vv8iciwgl48(_S("110|219|215|220|211")); _vv8iciwgl48(_S("66|170|163|180|184|167|181|182")); _vv8iciwgl48(_S("112|211|223|220|220|213|211|228"))
+        _vv8iciwgl48(_S("85|183|199|186|182|192")); _vv8iciwgl48(_S("100|203|197|216|204|201|214")); _vv8iciwgl48(_S("130|230|235|233"))
+        _vv8iciwgl48(_S("71|183|176|170|178")); _vv8iciwgl48(_S("96|211|215|201|206|199"))
 
         for _, remote in ipairs(State.RemoteCache) do
             local rName = string.lower(remote.Name)
-            if string.find(rName, _S("119|228|224|229|220")) or string.find(rName, _S("128|228|233|231")) or string.find(rName, _S("86|190|183|200|204|187|201|202")) then
+            if string.find(rName, _S("86|195|191|196|187")) or string.find(rName, _S("96|196|201|199")) or string.find(rName, _S("118|222|215|232|236|219|233|234")) then
                 pcall(function()
-                    if remote.Type == _S("114|196|215|223|225|230|215|183|232|215|224|230") then
+                    if remote.Type == _S("102|184|203|211|213|218|203|171|220|203|212|218") then
                         remote.Instance:FireServer(rock, part)
-                    elseif remote.Type == _S("129|211|230|238|240|245|230|199|246|239|228|245|234|240|239") then
+                    elseif remote.Type == _S("91|173|192|200|202|207|192|161|208|201|190|207|196|202|201") then
                         remote.Instance:InvokeServer(rock, part)
                     end
                 end)
@@ -898,132 +907,132 @@ local function _vf37ku9f4vl(rockData)
         end
     end
 
-    local hits = _v7waz68vjhn.RapidMine and _v7waz68vjhn.RapidMineCount or 1
+    local hits = _v6sw8escnb8.RapidMine and _v6sw8escnb8.RapidMineCount or 1
     for _ = 1, hits do
-        _vf3velzzetg()
+        _vss4wxni4mq()
         if hits > 1 then task.wait(0.03) end
     end
 
-    _vpphc2k00e4()
+    _vu0se5lz0nb()
     State.FarmCount = State.FarmCount + 1
-    pcall(function() _vvcghtq480v(rockData.Name) end)
+    pcall(function() _vxjs8905n38(rockData.Name) end)
 
     return true
 end
 
-local function _vfklcf8eoiw(shopData)
+local function _vyoan4flcrh(shopData)
     if not shopData then return false end
 
     local shop = shopData.Instance
     local part = shopData.Part
 
-    _vv6vvad4d9h(_S("123|206|224|231|231|228|233|226|155|220|239|181|155") .. shopData.Name)
+    _vke6snlfgah(_S("65|148|166|173|173|170|175|168|97|162|181|123|97") .. shopData.Name)
 
-    _vmax6nag1aa(part.Position)
+    _v8dr8vc6i13(part.Position)
     task.wait(0.1)
 
     if HasFireClick then
-        local clickDetector = shop:FindFirstChildOfClass(_S("62|129|170|167|161|169|130|163|178|163|161|178|173|176")) or part:FindFirstChildOfClass(_S("83|150|191|188|182|190|151|184|199|184|182|199|194|197"))
+        local clickDetector = shop:FindFirstChildOfClass(_S("116|183|224|221|215|223|184|217|232|217|215|232|227|230")) or part:FindFirstChildOfClass(_S("124|191|232|229|223|231|192|225|240|225|223|240|235|238"))
         if clickDetector then Exec.FireClick(clickDetector) end
     end
 
     if HasFireProximity then
-        local prompt = shop:FindFirstChildOfClass(_S("125|205|239|236|245|230|234|230|241|246|205|239|236|234|237|241")) or part:FindFirstChildOfClass(_S("111|191|225|222|231|216|220|216|227|232|191|225|222|220|223|227"))
+        local prompt = shop:FindFirstChildOfClass(_S("130|210|244|241|250|235|239|235|246|251|210|244|241|239|242|246")) or part:FindFirstChildOfClass(_S("70|150|184|181|190|175|179|175|186|191|150|184|181|179|182|186"))
         if prompt then Exec.FireProximity(prompt) end
     end
 
     if HasFireTouch then
-        Exec.FireTouch(_vqxyh6gcfta, part, 0)
+        Exec.FireTouch(_vs1tasghk8v, part, 0)
         task.wait(0.01)
-        Exec.FireTouch(_vqxyh6gcfta, part, 1)
+        Exec.FireTouch(_vs1tasghk8v, part, 1)
     end
 
-    _vme4qihhqx7(_S("88|203|189|196|196"))
-    _vme4qihhqx7(_S("74|189|178|185|186"))
-    _vme4qihhqx7(_S("97|206|194|211|204|198|213"))
-    _vme4qihhqx7(_S("107|223|221|204|207|208"))
-    _vme4qihhqx7(_S("78|177|175|193|182"))
-    _vme4qihhqx7(_S("127|236|238|237|228|248"))
-    _vme4qihhqx7(_S("101|216|202|209|209|198|209|209"))
-    _vme4qihhqx7(_S("105|220|206|213|213|200|202|213|213"))
+    _vv8iciwgl48(_S("67|182|168|175|175"))
+    _vv8iciwgl48(_S("114|229|218|225|226"))
+    _vv8iciwgl48(_S("121|230|218|235|228|222|237"))
+    _vv8iciwgl48(_S("112|228|226|209|212|213"))
+    _vv8iciwgl48(_S("124|223|221|239|228"))
+    _vv8iciwgl48(_S("84|193|195|194|185|205"))
+    _vv8iciwgl48(_S("94|209|195|202|202|191|202|202"))
+    _vv8iciwgl48(_S("85|200|186|193|193|180|182|193|193"))
 
     State.SellCount = State.SellCount + 1
 
     return true
 end
 
-local function _vmxf3w0runt()
+local function _vuzi1rglazv()
     if State.FarmConnection then return end
-    _vv6vvad4d9h(_S("81|146|198|197|192|113|151|178|195|190|113|164|165|146|163|165|150|149"))
+    _vke6snlfgah(_S("124|189|241|240|235|156|194|221|238|233|156|207|208|189|206|208|193|192"))
 
     State.FarmConnection = true
     task.spawn(function()
-        while _v7waz68vjhn.AutoFarm and State.FarmConnection do
-            if _vjwpa6b4z60() then
-                local rocks = _v1y2wurcl0l()
+        while _v6sw8escnb8.AutoFarm and State.FarmConnection do
+            if _vv3bejf2upo() then
+                local rocks = _vvkj7mz5kfi()
                 if #rocks > 0 then
-                    local _vcr62f7vct7 = rocks[1]
-                    State.CurrentTarget = _vcr62f7vct7.Name
-                    _vf37ku9f4vl(_vcr62f7vct7)
+                    local _vgz3vpl9vnp = rocks[1]
+                    State.CurrentTarget = _vgz3vpl9vnp.Name
+                    _vc594g6v3oz(_vgz3vpl9vnp)
                 else
-                    State.CurrentTarget = _S("69|152|170|166|183|168|173|174|179|172|115|115|115")
+                    State.CurrentTarget = _S("106|189|207|203|220|205|210|211|216|209|152|152|152")
                 end
             end
-            task.wait(_v7waz68vjhn.FarmDelay)
+            task.wait(_v6sw8escnb8.FarmDelay)
         end
     end)
 end
 
-local function _vg3ft1nprj0()
+local function _vfd9vsjy6dq()
     State.FarmConnection = nil
-    State.CurrentTarget = _S("78|156|189|188|179")
-    _vv6vvad4d9h(_S("86|151|203|202|197|118|156|183|200|195|118|169|170|165|166|166|155|154"))
+    State.CurrentTarget = _S("65|143|176|175|166")
+    _vke6snlfgah(_S("90|155|207|206|201|122|160|187|204|199|122|173|174|169|170|170|159|158"))
 end
 
-local function _vfe6auuyq2a()
+local function _vbgmozo1ahz()
     if State.SellConnection then return end
-    _vv6vvad4d9h(_S("62|127|179|178|173|94|145|163|170|170|94|145|146|127|144|146|131|130"))
+    _vke6snlfgah(_S("112|177|229|228|223|144|195|213|220|220|144|195|196|177|194|196|181|180"))
 
     State.SellConnection = true
     task.spawn(function()
-        while _v7waz68vjhn.AutoSell and State.SellConnection do
-            if _vjwpa6b4z60() then
-                local _vgpg9gakq1x = true
-                if _v7waz68vjhn.SellWhenFull and not _va4u7o7xobt() then _vgpg9gakq1x = false end
-                if _v7waz68vjhn.SellMinCash > 0 and _vkd8xnh0cyx() < _v7waz68vjhn.SellMinCash then _vgpg9gakq1x = false end
-                if _vgpg9gakq1x then
-                    local shops = _vwi0vrnlz4s()
+        while _v6sw8escnb8.AutoSell and State.SellConnection do
+            if _vv3bejf2upo() then
+                local _vbt8w617878 = true
+                if _v6sw8escnb8.SellWhenFull and not _vw57os9bi4h() then _vbt8w617878 = false end
+                if _v6sw8escnb8.SellMinCash > 0 and _vmay3n2rhhp() < _v6sw8escnb8.SellMinCash then _vbt8w617878 = false end
+                if _vbt8w617878 then
+                    local shops = _vkgv156tecx()
                     if #shops > 0 then
-                        _vfklcf8eoiw(shops[1])
-                        pcall(_vj7ry4jdtkk)
+                        _vyoan4flcrh(shops[1])
+                        pcall(_vjri73hvhgu)
                     end
                 end
             end
-            task.wait(_v7waz68vjhn.SellDelay)
+            task.wait(_v6sw8escnb8.SellDelay)
         end
     end)
 end
 
-local function _v6ljjlim2a7()
+local function _vuq97ifew3y()
     State.SellConnection = nil
-    _vv6vvad4d9h(_S("73|138|190|189|184|105|156|174|181|181|105|156|157|152|153|153|142|141"))
+    _vke6snlfgah(_S("68|133|185|184|179|100|151|169|176|176|100|151|152|147|148|148|137|136"))
 end
 
-local function _v976re6fk96()
+local function _vlan4nqf1gk()
     if State.UpgradeConn then return end
-    _vv6vvad4d9h(_S("118|183|235|234|229|150|203|230|221|232|215|218|219|150|201|202|183|200|202|187|186"))
+    _vke6snlfgah(_S("92|157|209|208|203|124|177|204|195|206|189|192|193|124|175|176|157|174|176|161|160"))
 
     State.UpgradeConn = true
     task.spawn(function()
-        while _v7waz68vjhn.AutoUpgrade and State.UpgradeConn do
-            _vme4qihhqx7(_S("118|235|230|221|232|215|218|219"))
-            _vme4qihhqx7(_S("117|215|234|238"))
-            _vme4qihhqx7(_S("124|236|241|238|223|228|221|239|225"))
-            _vme4qihhqx7(_S("108|227|205|222|217|224|212"))
-            _vme4qihhqx7(_S("122|234|227|221|229|219|242|223"))
-            _vme4qihhqx7(_S("95|193|192|194|202|207|192|194|202"))
-            _vme4qihhqx7(_S("67|182|179|168|168|167"))
-            _vme4qihhqx7(_S("99|199|204|202"))
+        while _v6sw8escnb8.AutoUpgrade and State.UpgradeConn do
+            _vv8iciwgl48(_S("113|230|225|216|227|210|213|214"))
+            _vv8iciwgl48(_S("73|171|190|194"))
+            _vv8iciwgl48(_S("95|207|212|209|194|199|192|210|196"))
+            _vv8iciwgl48(_S("79|198|176|193|188|195|183"))
+            _vv8iciwgl48(_S("106|218|211|205|213|203|226|207"))
+            _vv8iciwgl48(_S("119|217|216|218|226|231|216|218|226"))
+            _vv8iciwgl48(_S("63|178|175|164|164|163"))
+            _vv8iciwgl48(_S("66|166|171|169"))
 
             State.UpgradeCount = State.UpgradeCount + 1
             task.wait(1)
@@ -1031,195 +1040,195 @@ local function _v976re6fk96()
     end)
 end
 
-local function _va469as3ox3()
+local function _vffsy0igmzp()
     State.UpgradeConn = nil
-    _vv6vvad4d9h(_S("105|170|222|221|216|137|190|217|208|219|202|205|206|137|188|189|184|185|185|174|173"))
+    _vke6snlfgah(_S("96|161|213|212|207|128|181|208|199|210|193|196|197|128|179|180|175|176|176|165|164"))
 end
 
-local function _vpkh13lg7pm()
-    for _, _vdppl3gxrr7 in ipairs(State.ESPHighlights) do
-        pcall(function() _vdppl3gxrr7:Destroy() end)
+local function _vg9tithre7l()
+    for _, _v3n6uxy5v1w in ipairs(State.ESPHighlights) do
+        pcall(function() _v3n6uxy5v1w:Destroy() end)
     end
     State.ESPHighlights = {}
 end
 
-local function _v8vr1101p6x()
-    _vpkh13lg7pm()
+local function _v6wzkp945uc()
+    _vg9tithre7l()
 
-    local rocks = _v1y2wurcl0l()
+    local rocks = _vvkj7mz5kfi()
     for _, rock in ipairs(rocks) do
         if rock.Instance and rock.Instance.Parent then
 
-            local _vdppl3gxrr7 = Instance.new(_S("94|166|199|197|198|202|199|197|198|210"))
-            _vdppl3gxrr7.Name = _S("81|150|164|161|176") .. rock.Name
-            _vdppl3gxrr7.FillTransparency = 0.6
-            _vdppl3gxrr7.OutlineTransparency = 0
-            _vdppl3gxrr7.OutlineColor = rock.Value > 0 and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(100, 200, 255)
-            _vdppl3gxrr7.FillColor = rock.Value > 0 and Color3.fromRGB(255, 200, 50) or Color3.fromRGB(80, 150, 255)
-            _vdppl3gxrr7.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            _vdppl3gxrr7.Parent = rock.Instance
+            local _v3n6uxy5v1w = Instance.new(_S("127|199|232|230|231|235|232|230|231|243"))
+            _v3n6uxy5v1w.Name = _S("101|170|184|181|196") .. rock.Name
+            _v3n6uxy5v1w.FillTransparency = 0.6
+            _v3n6uxy5v1w.OutlineTransparency = 0
+            _v3n6uxy5v1w.OutlineColor = rock.Value > 0 and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(100, 200, 255)
+            _v3n6uxy5v1w.FillColor = rock.Value > 0 and Color3.fromRGB(255, 200, 50) or Color3.fromRGB(80, 150, 255)
+            _v3n6uxy5v1w.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            _v3n6uxy5v1w.Parent = rock.Instance
 
-            local _vc3vykb332t = Instance.new(_S("114|180|219|222|222|212|225|211|228|214|185|231|219"))
-            _vc3vykb332t.Name = _S("67|136|150|147|143|164|165|168|175")
-            _vc3vykb332t.Size = UDim2.new(0, 120, 0, 30)
-            _vc3vykb332t.StudsOffset = Vector3.new(0, 3, 0)
-            _vc3vykb332t.AlwaysOnTop = true
-            _vc3vykb332t.Parent = rock.Part
+            local _vihnx4nvn6t = Instance.new(_S("93|159|198|201|201|191|204|190|207|193|164|210|198"))
+            _vihnx4nvn6t.Name = _S("125|194|208|205|201|222|223|226|233")
+            _vihnx4nvn6t.Size = UDim2.new(0, 120, 0, 30)
+            _vihnx4nvn6t.StudsOffset = Vector3.new(0, 3, 0)
+            _vihnx4nvn6t.AlwaysOnTop = true
+            _vihnx4nvn6t.Parent = rock.Part
 
-            local label = Instance.new(_S("93|177|194|213|209|169|190|191|194|201"))
+            local label = Instance.new(_S("85|169|186|205|201|161|182|183|186|193"))
             label.Size = UDim2.new(1, 0, 1, 0)
             label.BackgroundTransparency = 0.4
             label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            label.Text = rock.Name .. _S("64|96|155") .. math.floor(rock.Distance) .. _S("94|203|187") .. (rock.Value > 0 and (_S("120|152|244|152|156") .. tostring(rock.Value)) or _S("112|"))
+            label.Text = rock.Name .. _S("112|144|203") .. math.floor(rock.Distance) .. _S("124|233|217") .. (rock.Value > 0 and (_S("119|151|243|151|155") .. tostring(rock.Value)) or _S("114|"))
             label.TextColor3 = rock.Value > 0 and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(100, 200, 255)
             label.Font = Enum.Font.GothamBold
             label.TextSize = 11
-            label.Parent = _vc3vykb332t
+            label.Parent = _vihnx4nvn6t
 
-            local _vsr6fg33r69 = Instance.new(_S("81|166|154|148|192|195|191|182|195"))
-            _vsr6fg33r69.CornerRadius = UDim.new(0, 4)
-            _vsr6fg33r69.Parent = label
+            local _vq3458w1ts3 = Instance.new(_S("111|196|184|178|222|225|221|212|225"))
+            _vq3458w1ts3.CornerRadius = UDim.new(0, 4)
+            _vq3458w1ts3.Parent = label
 
-            table.insert(State.ESPHighlights, _vdppl3gxrr7)
-            table.insert(State.ESPHighlights, _vc3vykb332t)
+            table.insert(State.ESPHighlights, _v3n6uxy5v1w)
+            table.insert(State.ESPHighlights, _vihnx4nvn6t)
         end
     end
 
-    local shops = _vwi0vrnlz4s()
+    local shops = _vkgv156tecx()
     for _, shop in ipairs(shops) do
         if shop.Instance and shop.Instance.Parent then
-            local _vdppl3gxrr7 = Instance.new(_S("108|180|213|211|212|216|213|211|212|224"))
-            _vdppl3gxrr7.Name = _S("89|158|172|169|184|172|193|200|201|184") .. shop.Name
-            _vdppl3gxrr7.FillTransparency = 0.5
-            _vdppl3gxrr7.OutlineTransparency = 0
-            _vdppl3gxrr7.OutlineColor = Color3.fromRGB(0, 255, 100)
-            _vdppl3gxrr7.FillColor = Color3.fromRGB(50, 255, 100)
-            _vdppl3gxrr7.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-            _vdppl3gxrr7.Parent = shop.Instance
+            local _v3n6uxy5v1w = Instance.new(_S("78|150|183|181|182|186|183|181|182|194"))
+            _v3n6uxy5v1w.Name = _S("85|154|168|165|180|168|189|196|197|180") .. shop.Name
+            _v3n6uxy5v1w.FillTransparency = 0.5
+            _v3n6uxy5v1w.OutlineTransparency = 0
+            _v3n6uxy5v1w.OutlineColor = Color3.fromRGB(0, 255, 100)
+            _v3n6uxy5v1w.FillColor = Color3.fromRGB(50, 255, 100)
+            _v3n6uxy5v1w.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+            _v3n6uxy5v1w.Parent = shop.Instance
 
-            local _vc3vykb332t = Instance.new(_S("92|158|197|200|200|190|203|189|206|192|163|209|197"))
-            _vc3vykb332t.Name = _S("81|150|164|161|164|185|192|193|157|178|179|182|189")
-            _vc3vykb332t.Size = UDim2.new(0, 100, 0, 25)
-            _vc3vykb332t.StudsOffset = Vector3.new(0, 3, 0)
-            _vc3vykb332t.AlwaysOnTop = true
-            _vc3vykb332t.Parent = shop.Part
+            local _vihnx4nvn6t = Instance.new(_S("104|170|209|212|212|202|215|201|218|204|175|221|209"))
+            _vihnx4nvn6t.Name = _S("126|195|209|206|209|230|237|238|202|223|224|227|234")
+            _vihnx4nvn6t.Size = UDim2.new(0, 100, 0, 25)
+            _vihnx4nvn6t.StudsOffset = Vector3.new(0, 3, 0)
+            _vihnx4nvn6t.AlwaysOnTop = true
+            _vihnx4nvn6t.Parent = shop.Part
 
-            local label = Instance.new(_S("104|188|205|224|220|180|201|202|205|212"))
+            local label = Instance.new(_S("72|156|173|192|188|148|169|170|173|180"))
             label.Size = UDim2.new(1, 0, 1, 0)
             label.BackgroundTransparency = 0.4
             label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            label.Text = _S("129|212|201|208|209|187|161") .. shop.Name
+            label.Text = _S("80|163|152|159|160|138|112") .. shop.Name
             label.TextColor3 = Color3.fromRGB(0, 255, 100)
             label.Font = Enum.Font.GothamBold
             label.TextSize = 10
-            label.Parent = _vc3vykb332t
+            label.Parent = _vihnx4nvn6t
 
-            table.insert(State.ESPHighlights, _vdppl3gxrr7)
-            table.insert(State.ESPHighlights, _vc3vykb332t)
+            table.insert(State.ESPHighlights, _v3n6uxy5v1w)
+            table.insert(State.ESPHighlights, _vihnx4nvn6t)
         end
     end
 
-    _vv6vvad4d9h(_S("72|141|155|152|130|104") .. #rocks .. _S("130|162|244|241|229|237|245|174|162") .. #shops .. _S("73|105|188|177|184|185|188"))
+    _vke6snlfgah(_S("76|145|159|156|134|108") .. #rocks .. _S("94|126|208|205|193|201|209|138|126") .. #shops .. _S("106|138|221|210|217|218|221"))
 end
 
-local function _viqkdi2an3c()
-    if _v7waz68vjhn.ESPEnabled then
-        _v8vr1101p6x()
+local function _vgj21848tpp()
+    if _v6sw8escnb8.ESPEnabled then
+        _v6wzkp945uc()
 
         task.spawn(function()
-            while _v7waz68vjhn.ESPEnabled do
+            while _v6sw8escnb8.ESPEnabled do
                 task.wait(5)
-                if _v7waz68vjhn.ESPEnabled then
-                    _v8vr1101p6x()
+                if _v6sw8escnb8.ESPEnabled then
+                    _v6wzkp945uc()
                 end
             end
         end)
     end
 end
 
-local function _vcjbsky4wca()
-    _vpkh13lg7pm()
+local function _v38ajuvobj2()
+    _vg9tithre7l()
 end
 
-local function _vbw4lcu8jky()
+local function _vxztgumrssa()
     if State.AntiDamageConn then return end
-    _vv6vvad4d9h(_S("73|138|183|189|178|105|141|170|182|170|176|174|105|142|151|138|139|149|142|141"))
+    _vke6snlfgah(_S("80|145|190|196|185|112|148|177|189|177|183|181|112|149|158|145|146|156|149|148"))
 
-    State.AntiDamageConn = _v9vp3q2syfb.Heartbeat:Connect(function()
-        if not _vjwpa6b4z60() then return end
+    State.AntiDamageConn = _vyq77pn2i13.Heartbeat:Connect(function()
+        if not _vv3bejf2upo() then return end
 
-        if _vkhkeyt0oao and _vkhkeyt0oao.Health < _vkhkeyt0oao.MaxHealth then
-            _vkhkeyt0oao.Health = _vkhkeyt0oao.MaxHealth
+        if _vxx3bniaakb and _vxx3bniaakb.Health < _vxx3bniaakb.MaxHealth then
+            _vxx3bniaakb.Health = _vxx3bniaakb.MaxHealth
         end
 
-        if _v7waz68vjhn.AntiFreeze then
+        if _v6sw8escnb8.AntiFreeze then
             pcall(function()
 
-                local _vwxk2kkc0o8 = Character:FindFirstChild(_S("86|173|183|200|195|202|190")) or Character:FindFirstChild(_S("76|160|177|185|188|177|190|173|192|193|190|177")) or Character:FindFirstChild(_S("94|161|205|202|194"))
-                if _vwxk2kkc0o8 and _vwxk2kkc0o8:IsA(_S("127|213|224|235|244|228|193|224|242|228")) then
-                    _vwxk2kkc0o8.Value = 100
+                local _vpn17b8zq38 = Character:FindFirstChild(_S("62|149|159|176|171|178|166")) or Character:FindFirstChild(_S("90|174|191|199|202|191|204|187|206|207|204|191")) or Character:FindFirstChild(_S("70|137|181|178|170"))
+                if _vpn17b8zq38 and _vpn17b8zq38:IsA(_S("115|201|212|223|232|216|181|212|230|216")) then
+                    _vpn17b8zq38.Value = 100
                 end
 
-                local _v5yv76p0q7c = Character:FindFirstChild(_S("102|172|216|213|224|203|212")) or Character:FindFirstChild(_S("119|192|234|189|233|230|241|220|229")) or Character:FindFirstChild(_S("106|176|220|207|207|228|211|216|209"))
-                if _v5yv76p0q7c and _v5yv76p0q7c:IsA(_S("129|195|240|240|237|215|226|237|246|230")) then
-                    _v5yv76p0q7c.Value = false
+                local _v80mshce7re = Character:FindFirstChild(_S("66|136|180|177|188|167|176")) or Character:FindFirstChild(_S("85|158|200|155|199|196|207|186|195")) or Character:FindFirstChild(_S("78|148|192|179|179|200|183|188|181"))
+                if _v80mshce7re and _v80mshce7re:IsA(_S("116|182|227|227|224|202|213|224|233|217")) then
+                    _v80mshce7re.Value = false
                 end
 
-                _vme4qihhqx7(_S("68|187|165|182|177|184|172"))
-                _vme4qihhqx7(_S("79|196|189|181|193|180|180|201|180"))
-                _vme4qihhqx7(_S("123|227|224|220|239"))
+                _vv8iciwgl48(_S("68|187|165|182|177|184|172"))
+                _vv8iciwgl48(_S("75|192|185|177|189|176|176|197|176"))
+                _vv8iciwgl48(_S("112|216|213|209|228"))
             end)
         end
     end)
 end
 
-local function _v38vluifqi9()
+local function _v88qf4v4bra()
     if State.AntiDamageConn then
         State.AntiDamageConn:Disconnect()
         State.AntiDamageConn = nil
     end
-    _vv6vvad4d9h(_S("68|133|178|184|173|100|136|165|177|165|171|169|100|136|141|151|133|134|144|137|136"))
+    _vke6snlfgah(_S("85|150|195|201|190|117|153|182|194|182|188|186|117|153|158|168|150|151|161|154|153"))
 end
 
-local function _v2w74nz9wje()
-    if not _v7waz68vjhn.UnlimitedBackpack then return end
-    _vv6vvad4d9h(_S("88|153|200|200|196|209|193|198|191|120|173|198|196|193|197|193|204|189|188|120|154|185|187|195|200|185|187|195|134|134|134"))
+local function _vf5maiinbu8()
+    if not _v6sw8escnb8.UnlimitedBackpack then return end
+    _vke6snlfgah(_S("69|134|181|181|177|190|174|179|172|101|154|179|177|174|178|174|185|170|169|101|135|166|168|176|181|166|168|176|115|115|115"))
 
     pcall(function()
 
-        local _v3yty6a2syl = _v9qqaid831c:FindFirstChild(_S("66|132|163|165|173|178|163|165|173|133|163|178|163|165|171|182|187")) or _v9qqaid831c:FindFirstChild(_S("61|138|158|181|128|158|175|175|182")) or _v9qqaid831c:FindFirstChild(_S("107|174|204|221|221|228|182|178"))
-        if _v3yty6a2syl and _v3yty6a2syl:IsA(_S("79|165|176|187|196|180|145|176|194|180")) then
-            _v3yty6a2syl.Value = 999999
+        local _vtr3ao558en = _v9q42f8ekfn:FindFirstChild(_S("120|186|217|219|227|232|217|219|227|187|217|232|217|219|225|236|241")) or _v9q42f8ekfn:FindFirstChild(_S("114|191|211|234|181|211|228|228|235")) or _v9q42f8ekfn:FindFirstChild(_S("130|197|227|244|244|251|205|201"))
+        if _vtr3ao558en and _vtr3ao558en:IsA(_S("105|191|202|213|222|206|171|202|220|206")) then
+            _vtr3ao558en.Value = 999999
         end
 
-        local _v75o3cg5yaq = _v9qqaid831c:FindFirstChild(_S("104|212|205|201|204|205|218|219|220|201|220|219"))
-        if _v75o3cg5yaq then
-            for _, stat in ipairs(_v75o3cg5yaq:GetChildren()) do
-                local _v55wabs4dz5 = string.lower(stat.Name)
-                if string.find(_v55wabs4dz5, _S("130|228|227|229|237|242|227|229|237")) or string.find(_v55wabs4dz5, _S("65|164|162|179|179|186")) or string.find(_v55wabs4dz5, _S("90|189|187|202|187|189|195|206|211")) or string.find(_v55wabs4dz5, _S("73|192|174|178|176|177|189")) or string.find(_v55wabs4dz5, _S("112|219|215")) then
-                    if stat:IsA(_S("67|153|164|175|184|168|133|164|182|168")) then
+        local _vx01v3xl57x = _v9q42f8ekfn:FindFirstChild(_S("68|176|169|165|168|169|182|183|184|165|184|183"))
+        if _vx01v3xl57x then
+            for _, stat in ipairs(_vx01v3xl57x:GetChildren()) do
+                local _vs6hkbeo0n2 = string.lower(stat.Name)
+                if string.find(_vs6hkbeo0n2, _S("91|189|188|190|198|203|188|190|198")) or string.find(_vs6hkbeo0n2, _S("104|203|201|218|218|225")) or string.find(_vs6hkbeo0n2, _S("94|193|191|206|191|193|199|210|215")) or string.find(_vs6hkbeo0n2, _S("87|206|188|192|190|191|203")) or string.find(_vs6hkbeo0n2, _S("100|207|203")) then
+                    if stat:IsA(_S("100|186|197|208|217|201|166|197|215|201")) then
                         stat.Value = 999999
                     end
                 end
             end
         end
 
-        _vme4qihhqx7(_S("117|215|214|216|224|229|214|216|224"))
-        _vme4qihhqx7(_S("60|159|157|172|157|159|165|176|181"))
-        _vme4qihhqx7(_S("123|222|220|237|237|244"))
-        _vme4qihhqx7(_S("77|194|189|180|191|174|177|178|172|175|174|176|184|189|174|176|184"))
+        _vv8iciwgl48(_S("111|209|208|210|218|223|208|210|218"))
+        _vv8iciwgl48(_S("87|186|184|199|184|186|192|203|208"))
+        _vv8iciwgl48(_S("130|229|227|244|244|251"))
+        _vv8iciwgl48(_S("111|228|223|214|225|208|211|212|206|209|208|210|218|223|208|210|218"))
     end)
 
     task.spawn(function()
-        while _v7waz68vjhn.UnlimitedBackpack do
+        while _v6sw8escnb8.UnlimitedBackpack do
             task.wait(2)
             pcall(function()
-                local _v75o3cg5yaq = _v9qqaid831c:FindFirstChild(_S("83|191|184|180|183|184|197|198|199|180|199|198"))
-                if _v75o3cg5yaq then
-                    for _, stat in ipairs(_v75o3cg5yaq:GetChildren()) do
-                        local _v55wabs4dz5 = string.lower(stat.Name)
-                        if string.find(_v55wabs4dz5, _S("79|177|176|178|186|191|176|178|186")) or string.find(_v55wabs4dz5, _S("80|179|177|194|194|201")) or string.find(_v55wabs4dz5, _S("112|211|209|224|209|211|217|228|233")) or string.find(_v55wabs4dz5, _S("96|215|197|201|199|200|212")) or string.find(_v55wabs4dz5, _S("70|177|173")) then
-                            if stat:IsA(_S("86|172|183|194|203|187|152|183|201|187")) then
+                local _vx01v3xl57x = _v9q42f8ekfn:FindFirstChild(_S("75|183|176|172|175|176|189|190|191|172|191|190"))
+                if _vx01v3xl57x then
+                    for _, stat in ipairs(_vx01v3xl57x:GetChildren()) do
+                        local _vs6hkbeo0n2 = string.lower(stat.Name)
+                        if string.find(_vs6hkbeo0n2, _S("112|210|209|211|219|224|209|211|219")) or string.find(_vs6hkbeo0n2, _S("78|177|175|192|192|199")) or string.find(_vs6hkbeo0n2, _S("126|225|223|238|223|225|231|242|247")) or string.find(_vs6hkbeo0n2, _S("91|210|192|196|194|195|207")) or string.find(_vs6hkbeo0n2, _S("88|195|191")) then
+                            if stat:IsA(_S("115|201|212|223|232|216|181|212|230|216")) then
                                 stat.Value = 999999
                             end
                         end
@@ -1230,42 +1239,42 @@ local function _v2w74nz9wje()
     end)
 end
 
-local function _viozocvluoe()
-    if not _v7waz68vjhn.UnlimitedLuck then return end
-    _vv6vvad4d9h(_S("124|189|236|236|232|245|229|234|227|156|209|234|232|229|233|229|240|225|224|156|200|241|223|231|170|170|170"))
+local function _vctsieush67()
+    if not _v6sw8escnb8.UnlimitedLuck then return end
+    _vke6snlfgah(_S("60|125|172|172|168|181|165|170|163|92|145|170|168|165|169|165|176|161|160|92|136|177|159|167|106|106|106"))
 
     pcall(function()
 
-        local _vty8mniecl8 = _v9qqaid831c:FindFirstChild(_S("64|140|181|163|171")) or _v9qqaid831c:FindFirstChild(_S("98|166|203|201|174|215|197|205")) or _v9qqaid831c:FindFirstChild(_S("116|193|221|226|221|226|219|192|233|215|223"))
-        if _vty8mniecl8 and _vty8mniecl8:IsA(_S("112|198|209|220|229|213|178|209|227|213")) then
-            _vty8mniecl8.Value = 999999
+        local _v1rbw7bor9p = _v9q42f8ekfn:FindFirstChild(_S("123|199|240|222|230")) or _v9q42f8ekfn:FindFirstChild(_S("117|185|222|220|193|234|216|224")) or _v9q42f8ekfn:FindFirstChild(_S("87|164|192|197|192|197|190|163|204|186|194"))
+        if _v1rbw7bor9p and _v1rbw7bor9p:IsA(_S("109|195|206|217|226|210|175|206|224|210")) then
+            _v1rbw7bor9p.Value = 999999
         end
 
-        local _v75o3cg5yaq = _v9qqaid831c:FindFirstChild(_S("61|169|162|158|161|162|175|176|177|158|177|176"))
-        if _v75o3cg5yaq then
-            for _, stat in ipairs(_v75o3cg5yaq:GetChildren()) do
-                local _v55wabs4dz5 = string.lower(stat.Name)
-                if string.find(_v55wabs4dz5, _S("110|218|227|209|217")) then
-                    if stat:IsA(_S("127|213|224|235|244|228|193|224|242|228")) then
+        local _vx01v3xl57x = _v9q42f8ekfn:FindFirstChild(_S("120|228|221|217|220|221|234|235|236|217|236|235"))
+        if _vx01v3xl57x then
+            for _, stat in ipairs(_vx01v3xl57x:GetChildren()) do
+                local _vs6hkbeo0n2 = string.lower(stat.Name)
+                if string.find(_vs6hkbeo0n2, _S("68|176|185|167|175")) then
+                    if stat:IsA(_S("60|146|157|168|177|161|126|157|175|161")) then
                         stat.Value = 999999
                     end
                 end
             end
         end
 
-        _vme4qihhqx7(_S("90|198|207|189|197"))
-        _vme4qihhqx7(_S("91|199|208|190|198|212"))
-        _vme4qihhqx7(_S("74|174|179|177|169|182|191|173|181"))
+        _vv8iciwgl48(_S("112|220|229|211|219"))
+        _vv8iciwgl48(_S("74|182|191|173|181|195"))
+        _vv8iciwgl48(_S("60|160|165|163|155|168|177|159|167"))
     end)
 
     task.spawn(function()
-        while _v7waz68vjhn.UnlimitedLuck do
+        while _v6sw8escnb8.UnlimitedLuck do
             task.wait(2)
             pcall(function()
-                local _v75o3cg5yaq = _v9qqaid831c:FindFirstChild(_S("91|199|192|188|191|192|205|206|207|188|207|206"))
-                if _v75o3cg5yaq then
-                    for _, stat in ipairs(_v75o3cg5yaq:GetChildren()) do
-                        if string.find(string.lower(stat.Name), _S("63|171|180|162|170")) and stat:IsA(_S("90|176|187|198|207|191|156|187|205|191")) then
+                local _vx01v3xl57x = _v9q42f8ekfn:FindFirstChild(_S("126|234|227|223|226|227|240|241|242|223|242|241"))
+                if _vx01v3xl57x then
+                    for _, stat in ipairs(_vx01v3xl57x:GetChildren()) do
+                        if string.find(string.lower(stat.Name), _S("114|222|231|213|221")) and stat:IsA(_S("84|170|181|192|201|185|150|181|199|185")) then
                             stat.Value = 999999
                         end
                     end
@@ -1275,30 +1284,30 @@ local function _viozocvluoe()
     end)
 end
 
-local function _vdxokk31e4o(amount)
-    _vv6vvad4d9h(_S("61|126|177|177|162|170|173|177|166|171|164|93|177|172|93|161|178|173|162|93") .. amount .. _S("113|145|218|229|214|222|228|159|159|159"))
+local function _va98mjfm1t4(amount)
+    _vke6snlfgah(_S("112|177|228|228|213|221|224|228|217|222|215|144|228|223|144|212|229|224|213|144") .. amount .. _S("79|111|184|195|180|188|194|125|125|125"))
 
     pcall(function()
 
         for i = 1, amount do
-            _vme4qihhqx7(_S("70|169|181|178|178|171|169|186"))
-            _vme4qihhqx7(_S("96|205|201|206|197"))
-            _vme4qihhqx7(_S("110|214|207|224|228|211|225|226"))
-            _vme4qihhqx7(_S("86|198|191|185|193|203|198"))
-            _vme4qihhqx7(_S("78|181|175|194|182|179|192"))
-            _vme4qihhqx7(_S("108|216|219|219|224"))
-            _vme4qihhqx7(_S("104|215|202|220|201|209|214"))
-            _vme4qihhqx7(_S("67|170|181|164|177|183"))
-            _vme4qihhqx7(_S("104|218|205|223|201|218|204"))
+            _vv8iciwgl48(_S("90|189|201|198|198|191|189|206"))
+            _vv8iciwgl48(_S("86|195|191|196|187"))
+            _vv8iciwgl48(_S("69|173|166|183|187|170|184|185"))
+            _vv8iciwgl48(_S("123|235|228|222|230|240|235"))
+            _vv8iciwgl48(_S("127|230|224|243|231|228|241"))
+            _vv8iciwgl48(_S("102|210|213|213|218"))
+            _vv8iciwgl48(_S("74|185|172|190|171|179|184"))
+            _vv8iciwgl48(_S("108|211|222|205|218|224"))
+            _vv8iciwgl48(_S("107|221|208|226|204|221|207"))
             task.wait(0.05)
         end
 
-        local _v75o3cg5yaq = _v9qqaid831c:FindFirstChild(_S("77|185|178|174|177|178|191|192|193|174|193|192"))
-        if _v75o3cg5yaq then
-            for _, stat in ipairs(_v75o3cg5yaq:GetChildren()) do
-                local _v55wabs4dz5 = string.lower(stat.Name)
-                if string.find(_v55wabs4dz5, _S("101|200|215|222|216|217|198|209")) or string.find(_v55wabs4dz5, _S("119|230|233|220")) or string.find(_v55wabs4dz5, _S("86|189|187|195")) or string.find(_v55wabs4dz5, _S("124|229|240|225|233")) then
-                    if stat:IsA(_S("81|159|198|190|179|182|195|167|178|189|198|182")) or stat:IsA(_S("63|136|173|179|149|160|171|180|164")) then
+        local _vx01v3xl57x = _v9q42f8ekfn:FindFirstChild(_S("118|226|219|215|218|219|232|233|234|215|234|233"))
+        if _vx01v3xl57x then
+            for _, stat in ipairs(_vx01v3xl57x:GetChildren()) do
+                local _vs6hkbeo0n2 = string.lower(stat.Name)
+                if string.find(_vs6hkbeo0n2, _S("129|228|243|250|244|245|226|237")) or string.find(_vs6hkbeo0n2, _S("97|208|211|198")) or string.find(_vs6hkbeo0n2, _S("73|176|174|182")) or string.find(_vs6hkbeo0n2, _S("95|200|211|196|204")) then
+                    if stat:IsA(_S("121|199|238|230|219|222|235|207|218|229|238|222")) or stat:IsA(_S("84|157|194|200|170|181|192|201|185")) then
                         stat.Value = stat.Value * amount
                     end
                 end
@@ -1306,22 +1315,22 @@ local function _vdxokk31e4o(amount)
         end
 
         for i = 1, amount do
-            _vme4qihhqx7(_S("71|186|172|179|179"))
+            _vv8iciwgl48(_S("116|231|217|224|224"))
             task.wait(0.02)
-            _vme4qihhqx7(_S("84|182|201|205"))
+            _vv8iciwgl48(_S("117|215|234|238"))
             task.wait(0.02)
         end
 
-        local rocks = _v1y2wurcl0l()
+        local rocks = _vvkj7mz5kfi()
         if #rocks > 0 then
-            local _vf54ujy5ydw = rocks[1]
+            local _veba8hquni7 = rocks[1]
             for i = 1, amount do
                 for _, remote in ipairs(State.RemoteCache) do
                     local rName = string.lower(remote.Name)
-                    if string.find(rName, _S("125|224|236|233|233|226|224|241")) or string.find(rName, _S("84|196|189|183|191|201|196")) or string.find(rName, _S("94|202|205|205|210")) then
+                    if string.find(rName, _S("130|229|241|238|238|231|229|246")) or string.find(rName, _S("124|236|229|223|231|241|236")) or string.find(rName, _S("94|202|205|205|210")) then
                         pcall(function()
-                            if remote.Type == _S("130|212|231|239|241|246|231|199|248|231|240|246") then
-                                remote.Instance:FireServer(_vf54ujy5ydw.Instance, _vf54ujy5ydw.Part)
+                            if remote.Type == _S("104|186|205|213|215|220|205|173|222|205|214|220") then
+                                remote.Instance:FireServer(_veba8hquni7.Instance, _veba8hquni7.Part)
                             end
                         end)
                     end
@@ -1332,195 +1341,195 @@ local function _vdxokk31e4o(amount)
     end)
 
     State.DupeCount = State.DupeCount + amount
-    _vv6vvad4d9h(_S("86|154|203|198|187|118|183|202|202|187|195|198|202|118|185|197|195|198|194|187|202|187|144|118") .. amount .. _S("121|241"))
+    _vke6snlfgah(_S("94|162|211|206|195|126|191|210|210|195|203|206|210|126|193|205|203|206|202|195|210|195|152|126") .. amount .. _S("126|246"))
 end
 
-local function _vkm9n5mxhp2()
+local function _vh23oykjfce()
     if State.NoclipConn then return end
-    _vv6vvad4d9h(_S("76|154|187|175|184|181|188|108|145|154|141|142|152|145|144"))
+    _vke6snlfgah(_S("70|148|181|169|178|175|182|102|139|148|135|136|146|139|138"))
 
-    State.NoclipConn = _v9vp3q2syfb.Stepped:Connect(function()
-        if not _v7waz68vjhn.Noclip then return end
-        if not _vjwpa6b4z60() then return end
+    State.NoclipConn = _vyq77pn2i13.Stepped:Connect(function()
+        if not _v6sw8escnb8.Noclip then return end
+        if not _vv3bejf2upo() then return end
         for _, part in ipairs(Character:GetDescendants()) do
-            if part:IsA(_S("70|136|167|185|171|150|167|184|186")) then
+            if part:IsA(_S("68|134|165|183|169|148|165|182|184")) then
                 part.CanCollide = false
             end
         end
     end)
 end
 
-local function _vqulkb5gnc2()
+local function _vm7ug8ajp1o()
     if State.NoclipConn then
         State.NoclipConn:Disconnect()
         State.NoclipConn = nil
     end
-    _vv6vvad4d9h(_S("121|199|232|220|229|226|233|153|189|194|204|186|187|197|190|189"))
+    _vke6snlfgah(_S("85|163|196|184|193|190|197|117|153|158|168|150|151|161|154|153"))
 end
 
-local _vkm8z4l1xwo = nil
-local _vyh3myy6je2 = nil
+local _vgab7cophya = nil
+local _vtwzew5o5m3 = nil
 
-local function _v1vyt4wih0r()
+local function _vpwcd8goxkp()
     if State.FlyConn then return end
-    if not _vjwpa6b4z60() then return end
-    _vv6vvad4d9h(_S("112|182|220|233|144|181|190|177|178|188|181|180"))
+    if not _vv3bejf2upo() then return end
+    _vke6snlfgah(_S("93|163|201|214|125|162|171|158|159|169|162|161"))
 
-    _vkm8z4l1xwo = Instance.new(_S("88|154|199|188|209|174|189|196|199|187|193|204|209"))
-    _vkm8z4l1xwo.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-    _vkm8z4l1xwo.Velocity = Vector3.new(0, 0, 0)
-    _vkm8z4l1xwo.Parent = _vqxyh6gcfta
+    _vgab7cophya = Instance.new(_S("126|192|237|226|247|212|227|234|237|225|231|242|247"))
+    _vgab7cophya.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+    _vgab7cophya.Velocity = Vector3.new(0, 0, 0)
+    _vgab7cophya.Parent = _vs1tasghk8v
 
-    _vyh3myy6je2 = Instance.new(_S("82|148|193|182|203|153|203|196|193"))
-    _vyh3myy6je2.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
-    _vyh3myy6je2.P = 9e4
-    _vyh3myy6je2.Parent = _vqxyh6gcfta
+    _vtwzew5o5m3 = Instance.new(_S("81|147|192|181|202|152|202|195|192"))
+    _vtwzew5o5m3.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+    _vtwzew5o5m3.P = 9e4
+    _vtwzew5o5m3.Parent = _vs1tasghk8v
 
-    State.FlyConn = _v9vp3q2syfb.RenderStepped:Connect(function()
-        if not _v7waz68vjhn.FlyEnabled then return end
-        if not _vjwpa6b4z60() then return end
+    State.FlyConn = _vyq77pn2i13.RenderStepped:Connect(function()
+        if not _v6sw8escnb8.FlyEnabled then return end
+        if not _vv3bejf2upo() then return end
 
-        local cam = _v92gucjek3x.CurrentCamera
-        local _v8s0ucu6ccd = Vector3.new(0, 0, 0)
+        local cam = _v4au113ebz2.CurrentCamera
+        local _vmzicsx832b = Vector3.new(0, 0, 0)
 
-        if _vnqiki4fvlv:IsKeyDown(Enum.KeyCode.W) then
-            _v8s0ucu6ccd = _v8s0ucu6ccd + cam.CFrame.LookVector
+        if _vlokuaz0syl:IsKeyDown(Enum.KeyCode.W) then
+            _vmzicsx832b = _vmzicsx832b + cam.CFrame.LookVector
         end
-        if _vnqiki4fvlv:IsKeyDown(Enum.KeyCode.S) then
-            _v8s0ucu6ccd = _v8s0ucu6ccd - cam.CFrame.LookVector
+        if _vlokuaz0syl:IsKeyDown(Enum.KeyCode.S) then
+            _vmzicsx832b = _vmzicsx832b - cam.CFrame.LookVector
         end
-        if _vnqiki4fvlv:IsKeyDown(Enum.KeyCode.A) then
-            _v8s0ucu6ccd = _v8s0ucu6ccd - cam.CFrame.RightVector
+        if _vlokuaz0syl:IsKeyDown(Enum.KeyCode.A) then
+            _vmzicsx832b = _vmzicsx832b - cam.CFrame.RightVector
         end
-        if _vnqiki4fvlv:IsKeyDown(Enum.KeyCode.D) then
-            _v8s0ucu6ccd = _v8s0ucu6ccd + cam.CFrame.RightVector
+        if _vlokuaz0syl:IsKeyDown(Enum.KeyCode.D) then
+            _vmzicsx832b = _vmzicsx832b + cam.CFrame.RightVector
         end
-        if _vnqiki4fvlv:IsKeyDown(Enum.KeyCode.Space) then
-            _v8s0ucu6ccd = _v8s0ucu6ccd + Vector3.new(0, 1, 0)
+        if _vlokuaz0syl:IsKeyDown(Enum.KeyCode.Space) then
+            _vmzicsx832b = _vmzicsx832b + Vector3.new(0, 1, 0)
         end
-        if _vnqiki4fvlv:IsKeyDown(Enum.KeyCode.LeftShift) then
-            _v8s0ucu6ccd = _v8s0ucu6ccd - Vector3.new(0, 1, 0)
-        end
-
-        if _v8s0ucu6ccd.Magnitude > 0 then
-            _v8s0ucu6ccd = _v8s0ucu6ccd.Unit * _v7waz68vjhn.FlySpeed
+        if _vlokuaz0syl:IsKeyDown(Enum.KeyCode.LeftShift) then
+            _vmzicsx832b = _vmzicsx832b - Vector3.new(0, 1, 0)
         end
 
-        _vkm8z4l1xwo.Velocity = _v8s0ucu6ccd
-        _vyh3myy6je2.CFrame = cam.CFrame
+        if _vmzicsx832b.Magnitude > 0 then
+            _vmzicsx832b = _vmzicsx832b.Unit * _v6sw8escnb8.FlySpeed
+        end
+
+        _vgab7cophya.Velocity = _vmzicsx832b
+        _vtwzew5o5m3.CFrame = cam.CFrame
     end)
 end
 
-local function _vjnercdb1pz()
+local function _vtsizpq0fzh()
     if State.FlyConn then
         State.FlyConn:Disconnect()
         State.FlyConn = nil
     end
-    if _vkm8z4l1xwo then _vkm8z4l1xwo:Destroy() _vkm8z4l1xwo = nil end
-    if _vyh3myy6je2 then _vyh3myy6je2:Destroy() _vyh3myy6je2 = nil end
-    _vv6vvad4d9h(_S("79|149|187|200|111|147|152|162|144|145|155|148|147"))
+    if _vgab7cophya then _vgab7cophya:Destroy() _vgab7cophya = nil end
+    if _vtwzew5o5m3 then _vtwzew5o5m3:Destroy() _vtwzew5o5m3 = nil end
+    _vke6snlfgah(_S("123|193|231|244|155|191|196|206|188|189|199|192|191"))
 end
 
-local function _vb0zw0tduye()
-    if not _vjwpa6b4z60() then return end
-    if _v7waz68vjhn.SpeedBoost then
-        _vkhkeyt0oao.WalkSpeed = _v7waz68vjhn.WalkSpeed
+local function _vrfkp7amk9k()
+    if not _vv3bejf2upo() then return end
+    if _v6sw8escnb8.SpeedBoost then
+        _vxx3bniaakb.WalkSpeed = _v6sw8escnb8.WalkSpeed
     else
-        _vkhkeyt0oao.WalkSpeed = 16
+        _vxx3bniaakb.WalkSpeed = 16
     end
 end
 
-local function _vb1z9ofns0r()
-    _v7waz68vjhn.AutoFarm = false
-    _v7waz68vjhn.AutoSell = false
-    _v7waz68vjhn.AutoUpgrade = false
-    _v7waz68vjhn.SmartLoop = false
-    _v7waz68vjhn.ESPEnabled = false
-    _v7waz68vjhn.FlyEnabled = false
-    _v7waz68vjhn.Noclip = false
-    _v7waz68vjhn.RapidMine = false
-    _v7waz68vjhn.RemoteSpy = false
-    _vg3ft1nprj0()
-    _v6ljjlim2a7()
-    _va469as3ox3()
+local function _v1rxecgi1m8()
+    _v6sw8escnb8.AutoFarm = false
+    _v6sw8escnb8.AutoSell = false
+    _v6sw8escnb8.AutoUpgrade = false
+    _v6sw8escnb8.SmartLoop = false
+    _v6sw8escnb8.ESPEnabled = false
+    _v6sw8escnb8.FlyEnabled = false
+    _v6sw8escnb8.Noclip = false
+    _v6sw8escnb8.RapidMine = false
+    _v6sw8escnb8.RemoteSpy = false
+    _vfd9vsjy6dq()
+    _vuq97ifew3y()
+    _vffsy0igmzp()
     State.SmartLoopConn = nil
-    _vjnercdb1pz()
-    _vqulkb5gnc2()
-    _vcjbsky4wca()
-    _vzfgkygt8d4()
-    _vgi705eg68c()
-    _vjpa1gixp55()
+    _vtsizpq0fzh()
+    _vm7ug8ajp1o()
+    _v38ajuvobj2()
+    _vojug3ef0vt()
+    _vitpv1dj25h()
+    _vhrk3y03yqx()
     if State.InfiniteJumpConn then State.InfiniteJumpConn:Disconnect() State.InfiniteJumpConn = nil end
     if State.ClickTPConn then State.ClickTPConn:Disconnect() State.ClickTPConn = nil end
     if State.WarmthKeeperConn then State.WarmthKeeperConn:Disconnect() State.WarmthKeeperConn = nil end
     if State.DropCollectConn then State.DropCollectConn = nil end
-    _vv6vvad4d9h(_S("92|172|157|170|165|159|150|124|157|200|200|124|194|193|189|208|209|206|193|207|124|207|208|203|204|204|193|192"))
+    _vke6snlfgah(_S("83|163|148|161|156|150|141|115|148|191|191|115|185|184|180|199|200|197|184|198|115|198|199|194|195|195|184|183"))
 end
 
-local function _v1yqj5byw0q()
+local function _vfxmh0gf14j()
     if State.SmartLoopConn then return end
-    _vv6vvad4d9h(_S("62|145|171|159|176|178|94|138|173|173|174|94|145|146|127|144|146|131|130|94|102|132|159|176|171|94|8656|94|145|163|170|170|94|8656|94|147|174|165|176|159|162|163|103"))
+    _vke6snlfgah(_S("79|162|188|176|193|195|111|155|190|190|191|111|162|163|144|161|163|148|147|111|119|149|176|193|188|111|8673|111|162|180|187|187|111|8673|111|164|191|182|193|176|179|180|120"))
     State.SmartLoopConn = true
     task.spawn(function()
-        while _v7waz68vjhn.SmartLoop and State.SmartLoopConn do
-            if _vjwpa6b4z60() then
-                _v4l7y64k05o()
-                _v19dcvsp9hu(_v92gucjek3x)
-                if _vg5aeo4t6xb() then
-                    local shops = _vwi0vrnlz4s()
+        while _v6sw8escnb8.SmartLoop and State.SmartLoopConn do
+            if _vv3bejf2upo() then
+                _vw9kfb4vwri()
+                _vdr4qws4uos(_v4au113ebz2)
+                if _vnz1zdojgtk() then
+                    local shops = _vkgv156tecx()
                     if #shops > 0 then
-                        State.CurrentTarget = _S("77|160|178|185|185|182|187|180|123|123|123")
-                        _vfklcf8eoiw(shops[1])
-                        pcall(_vj7ry4jdtkk)
-                        _vw5uvufjbnw()
-                        _vdsr858u45u()
+                        State.CurrentTarget = _S("68|151|169|176|176|173|178|171|114|114|114")
+                        _vyoan4flcrh(shops[1])
+                        pcall(_vjri73hvhgu)
+                        _vazsqq0p00b()
+                        _vlt70fb0sca()
                     end
                 else
-                    local rocks = _v1y2wurcl0l()
+                    local rocks = _vvkj7mz5kfi()
                     if #rocks > 0 then
                         State.CurrentTarget = rocks[1].Name
-                        _vf37ku9f4vl(rocks[1])
+                        _vc594g6v3oz(rocks[1])
                     else
-                        State.CurrentTarget = _S("123|206|224|220|237|222|227|228|233|226|169|169|169")
-                        _vpphc2k00e4()
+                        State.CurrentTarget = _S("71|154|172|168|185|170|175|176|181|174|117|117|117")
+                        _vu0se5lz0nb()
                     end
                 end
-                _vsz5u8329xb()
+                _v3lmil1tf08()
             end
-            task.wait(_v7waz68vjhn.FarmDelay)
+            task.wait(_v6sw8escnb8.FarmDelay)
         end
     end)
 end
 
-local function _vjrd7o2l9jf()
+local function _vz2b4tz2i8v()
     State.SmartLoopConn = nil
-    _vv6vvad4d9h(_S("127|210|236|224|241|243|159|203|238|238|239|159|210|211|206|207|207|196|195"))
+    _vke6snlfgah(_S("126|209|235|223|240|242|158|202|237|237|238|158|209|210|205|206|206|195|194"))
 end
 
-local function _vd33k9iz6j5(arg)
+local function _va74ygp8u7b(arg)
     local t = typeof(arg)
-    if t == _S("72|145|182|187|188|169|182|171|173") then return arg:GetFullName()
-    elseif t == _S("87|173|188|186|203|198|201|138") then return string.format(_S("74|160|175|173|190|185|188|125|114|111|120|123|176|118|111|120|123|176|118|111|120|123|176|115"), arg.X, arg.Y, arg.Z)
-    elseif t == _S("115|182|185|229|212|224|216") then return _S("70|137|140|184|167|179|171")
-    elseif t == _S("82|198|179|180|190|183") then return _S("113|229|210|211|221|214")
+    if t == _S("95|168|205|210|211|192|205|194|196") then return arg:GetFullName()
+    elseif t == _S("130|216|231|229|246|241|244|181") then return string.format(_S("93|179|194|192|209|204|207|144|133|130|139|142|195|137|130|139|142|195|137|130|139|142|195|134"), arg.X, arg.Y, arg.Z)
+    elseif t == _S("101|168|171|215|198|210|202") then return _S("83|150|153|197|180|192|184")
+    elseif t == _S("112|228|209|210|220|213") then return _S("107|223|204|205|215|208")
     else return tostring(arg) end
 end
 
-local function _vjx4rzwyfi1(remoteName, remoteType, args)
-    local _v9uagk4mty3 = _S("117|")
+local function _vxtvfay6gw3(remoteName, remoteType, args)
+    local _vvhbh2un3rt = _S("130|")
     for i, a in ipairs(args) do
-        _v9uagk4mty3 = _v9uagk4mty3 .. (i > 1 and _S("98|142|130") or _S("86|")) .. _vd33k9iz6j5(a)
+        _vvhbh2un3rt = _vvhbh2un3rt .. (i > 1 and _S("102|146|134") or _S("119|")) .. _va74ygp8u7b(a)
     end
-    local entry = os.date(_S("81|118|153|139|118|158|139|118|164")) .. _S("119|151|243|151") .. remoteType .. _S("70|102|194|102") .. remoteName .. _S("123|163") .. _v9uagk4mty3 .. _S("75|116")
+    local entry = os.date(_S("128|165|200|186|165|205|186|165|211")) .. _S("117|149|241|149") .. remoteType .. _S("71|103|195|103") .. remoteName .. _S("108|148") .. _vvhbh2un3rt .. _S("68|109")
     table.insert(State.RemoteSpyLogs, 1, entry)
     if #State.RemoteSpyLogs > 40 then table.remove(State.RemoteSpyLogs) end
     State.LastRemoteFire = entry
     if RemoteSpyList then
         pcall(function()
-            _vdmb3sdada7(RemoteSpyList)
+            _vli1jii61e7(RemoteSpyList)
             for i, log in ipairs(State.RemoteSpyLogs) do
                 if i > 20 then break end
-                local lbl = Instance.new(_S("120|204|221|240|236|196|217|218|221|228"))
+                local lbl = Instance.new(_S("109|193|210|229|225|185|206|207|210|217"))
                 lbl.Size = UDim2.new(1, 0, 0, 32)
                 lbl.BackgroundTransparency = 1
                 lbl.Text = log
@@ -1536,233 +1545,233 @@ local function _vjx4rzwyfi1(remoteName, remoteType, args)
     end
 end
 
-local function _vz6wlv6t48l()
+local function _vo9rkwly7oi()
     if not Exec.HasHookMeta then
-        _vv6vvad4d9h(_S("60|142|161|169|171|176|161|92|143|172|181|92|177|170|157|178|157|165|168|157|158|168|161|92|171|170|92|176|164|165|175|92|161|180|161|159|177|176|171|174"))
+        _vke6snlfgah(_S("117|199|218|226|228|233|218|149|200|229|238|149|234|227|214|235|214|222|225|214|215|225|218|149|228|227|149|233|221|222|232|149|218|237|218|216|234|233|228|231"))
         return
     end
-    _vh72znc6c4p = true
-    _vv6vvad4d9h(_S("99|181|200|208|210|215|200|131|182|211|220|131|168|177|164|165|175|168|167"))
+    _vinwaiwzonf = true
+    _vke6snlfgah(_S("85|167|186|194|196|201|186|117|168|197|206|117|154|163|150|151|161|154|153"))
 end
 
-local function _v4u1wr7tpmt()
-    _vh72znc6c4p = false
-    _v7waz68vjhn.RemoteSpy = false
-    _vv6vvad4d9h(_S("113|195|214|222|224|229|214|145|196|225|234|145|181|186|196|178|179|189|182|181"))
+local function _vx7y8h74a5n()
+    _vinwaiwzonf = false
+    _v6sw8escnb8.RemoteSpy = false
+    _vke6snlfgah(_S("70|152|171|179|181|186|171|102|153|182|191|102|138|143|153|135|136|146|139|138"))
 end
 
-local function _va9h0k3xui8()
-    if _v7waz68vjhn.CustomRemoteName == _S("99|") then
-        _vv6vvad4d9h(_S("110|179|220|226|211|224|142|207|142|224|211|219|221|226|211|142|220|207|219|211|142|212|215|224|225|226"))
+local function _vhes57e8vkt()
+    if _v6sw8escnb8.CustomRemoteName == _S("70|") then
+        _vke6snlfgah(_S("61|130|171|177|162|175|93|158|93|175|162|170|172|177|162|93|171|158|170|162|93|163|166|175|176|177"))
         return
     end
     local args = {}
-    if _v7waz68vjhn.CustomRemoteArgs ~= _S("67|") then
-        for part in string.gmatch(_v7waz68vjhn.CustomRemoteArgs, _S("61|152|155|105|154|104")) do
-            part = string.gsub(part, _S("88|182|125|203|130|128|134|133|129|125|203|130|124"), _S("97|134|146"))
+    if _v6sw8escnb8.CustomRemoteArgs ~= _S("62|") then
+        for part in string.gmatch(_v6sw8escnb8.CustomRemoteArgs, _S("83|174|177|127|176|126")) do
+            part = string.gsub(part, _S("66|160|103|181|108|106|112|111|107|103|181|108|102"), _S("62|99|111"))
             local num = tonumber(part)
             if num then
                 table.insert(args, num)
-            elseif part == _S("124|240|238|241|225") then
+            elseif part == _S("113|229|227|230|214") then
                 table.insert(args, true)
-            elseif part == _S("88|190|185|196|203|189") then
+            elseif part == _S("103|205|200|211|218|204") then
                 table.insert(args, false)
             else
                 table.insert(args, part)
             end
         end
     end
-    if _vxjcv8bvu2o(_v7waz68vjhn.CustomRemoteName, Exec.Unpack(args)) then
-        _vv6vvad4d9h(_S("119|189|224|233|220|219|151|220|239|216|218|235|177|151") .. _v7waz68vjhn.CustomRemoteName)
+    if _vzebbox61ma(_v6sw8escnb8.CustomRemoteName, Exec.Unpack(args)) then
+        _vke6snlfgah(_S("106|176|211|220|207|206|138|207|226|203|205|222|164|138") .. _v6sw8escnb8.CustomRemoteName)
     else
-        _vme4qihhqx7(_v7waz68vjhn.CustomRemoteName, Exec.Unpack(args))
-        _vv6vvad4d9h(_S("78|148|183|192|179|178|110|190|175|194|194|179|192|188|136|110") .. _v7waz68vjhn.CustomRemoteName)
+        _vv8iciwgl48(_v6sw8escnb8.CustomRemoteName, Exec.Unpack(args))
+        _vke6snlfgah(_S("78|148|183|192|179|178|110|190|175|194|194|179|192|188|136|110") .. _v6sw8escnb8.CustomRemoteName)
     end
 end
 
-local function _vkhvmp0vzuf()
+local function _vabborehzic()
     if State.InfiniteJumpConn then return end
-    State.InfiniteJumpConn = _vnqiki4fvlv.JumpRequest:Connect(function()
-        if _v7waz68vjhn.InfiniteJump and _vjwpa6b4z60() and _vkhkeyt0oao then
-            _vkhkeyt0oao:ChangeState(Enum.HumanoidStateType.Jumping)
+    State.InfiniteJumpConn = _vlokuaz0syl.JumpRequest:Connect(function()
+        if _v6sw8escnb8.InfiniteJump and _vv3bejf2upo() and _vxx3bniaakb then
+            _vxx3bniaakb:ChangeState(Enum.HumanoidStateType.Jumping)
         end
     end)
-    _vv6vvad4d9h(_S("67|140|177|169|172|177|172|183|168|99|141|184|176|179|99|136|145|132|133|143|136|135"))
+    _vke6snlfgah(_S("110|183|220|212|215|220|215|226|211|142|184|227|219|222|142|179|188|175|176|186|179|178"))
 end
 
-local function _v9iyu3x3m2k()
+local function _v5h8twcc98l()
     if State.InfiniteJumpConn then
         State.InfiniteJumpConn:Disconnect()
         State.InfiniteJumpConn = nil
     end
 end
 
-local function _voygtbe4zr9()
+local function _vestfrmfpc5()
     if State.ClickTPConn then return end
-    State.ClickTPConn = _vnqiki4fvlv.InputBegan:Connect(function(input, processed)
-        if processed or not _v7waz68vjhn.ClickTeleport then return end
-        if input.UserInputType == Enum.UserInputType.MouseButton1 and _vnqiki4fvlv:IsKeyDown(Enum.KeyCode.LeftControl) then
-            local cam = _v92gucjek3x.CurrentCamera
+    State.ClickTPConn = _vlokuaz0syl.InputBegan:Connect(function(input, processed)
+        if processed or not _v6sw8escnb8.ClickTeleport then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and _vlokuaz0syl:IsKeyDown(Enum.KeyCode.LeftControl) then
+            local cam = _v4au113ebz2.CurrentCamera
             if not cam then return end
             local ray = cam:ScreenPointToRay(input.Position.X, input.Position.Y)
-            local _viy816kasxu = RaycastParams.new()
-            if Character then _viy816kasxu.FilterDescendantsInstances = {Character} end
-            local _vb263bzitde = pcall(function()
-                _viy816kasxu.FilterType = Enum.RaycastFilterType.Exclude
+            local _vhz5lzsufck = RaycastParams.new()
+            if Character then _vhz5lzsufck.FilterDescendantsInstances = {Character} end
+            local _vwpnedpbiv2 = pcall(function()
+                _vhz5lzsufck.FilterType = Enum.RaycastFilterType.Exclude
             end)
-            if not _vb263bzitde then
-                _viy816kasxu.FilterType = Enum.RaycastFilterType.Blacklist
+            if not _vwpnedpbiv2 then
+                _vhz5lzsufck.FilterType = Enum.RaycastFilterType.Blacklist
             end
-            local hit = _v92gucjek3x:Raycast(ray.Origin, ray.Direction * 2000, _viy816kasxu)
+            local hit = _v4au113ebz2:Raycast(ray.Origin, ray.Direction * 2000, _vhz5lzsufck)
             if hit then
-                _vmax6nag1aa(hit.Position)
-                _vv6vvad4d9h(_S("64|131|172|169|163|171|96|148|144|96|8658|96") .. math.floor(hit.Position.X) .. _S("91|135") .. math.floor(hit.Position.Y))
+                _v8dr8vc6i13(hit.Position)
+                _vke6snlfgah(_S("84|151|192|189|183|191|116|168|164|116|8678|116") .. math.floor(hit.Position.X) .. _S("126|170") .. math.floor(hit.Position.Y))
             end
         end
     end)
-    _vv6vvad4d9h(_S("113|180|221|218|212|220|145|197|193|145|182|191|178|179|189|182|181|145|153|180|229|227|221|156|180|221|218|212|220|154"))
+    _vke6snlfgah(_S("102|169|210|207|201|209|134|186|182|134|171|180|167|168|178|171|170|134|142|169|218|216|210|145|169|210|207|201|209|143"))
 end
 
-local function _vyqgv4evc1t()
+local function _vhbcvy8y7hc()
     if State.ClickTPConn then
         State.ClickTPConn:Disconnect()
         State.ClickTPConn = nil
     end
 end
 
-local function _v5edf1wp9gy(name)
-    if not _vjwpa6b4z60() then return end
-    State.Waypoints[name] = _vqxyh6gcfta.Position
-    _vv6vvad4d9h(_S("110|193|207|228|211|210|142|229|207|231|222|221|215|220|226|168|142") .. name)
+local function _vxitmwvevj0(name)
+    if not _vv3bejf2upo() then return end
+    State.Waypoints[name] = _vs1tasghk8v.Position
+    _vke6snlfgah(_S("126|209|223|244|227|226|158|245|223|247|238|237|231|236|242|184|158") .. name)
 end
 
-local function _v3e5sqvvzg4(name)
+local function _vomq738oyz1(name)
     local pos = State.Waypoints[name]
     if pos then
-        _vmax6nag1aa(pos)
-        _vv6vvad4d9h(_S("90|174|170|122|209|187|211|202|201|195|200|206|148|122") .. name)
+        _v8dr8vc6i13(pos)
+        _vke6snlfgah(_S("89|173|169|121|208|186|210|201|200|194|199|205|147|121") .. name)
     else
-        _vv6vvad4d9h(_S("86|173|183|207|198|197|191|196|202|118|196|197|202|118|188|197|203|196|186|144|118") .. name)
+        _vke6snlfgah(_S("94|181|191|215|206|205|199|204|210|126|204|205|210|126|196|205|211|204|194|152|126") .. name)
     end
 end
 
-local function _vzj5rgcjfn3()
+local function _vh5zi6xqdjt()
     if State.AntiAFKConn then return end
-    local vu = game:GetService(_S("61|147|166|175|177|178|158|169|146|176|162|175"))
-    State.AntiAFKConn = _v9qqaid831c.Idled:Connect(function()
-        if _v7waz68vjhn.AntiAFK then
+    local vu = game:GetService(_S("72|158|177|186|188|189|169|180|157|187|173|186"))
+    State.AntiAFKConn = _v9q42f8ekfn.Idled:Connect(function()
+        if _v6sw8escnb8.AntiAFK then
             pcall(function() vu:CaptureController(); vu:ClickButton2(Vector2.new(0, 0)) end)
         end
     end)
-    _vv6vvad4d9h(_S("120|185|230|236|225|165|185|190|195|152|189|198|185|186|196|189|188"))
+    _vke6snlfgah(_S("97|162|207|213|202|142|162|167|172|129|166|175|162|163|173|166|165"))
 end
 
-local function _v8dxpvy8aqj()
+local function _vivikqob5mk()
     if State.AntiAFKConn then
         State.AntiAFKConn:Disconnect()
         State.AntiAFKConn = nil
     end
 end
 
-local function _vyknuy031k5()
+local function _v2bipzjm8pv()
     if State.WarmthKeeperConn then return end
-    State.WarmthKeeperConn = _v9vp3q2syfb.Heartbeat:Connect(function()
-        if not _v7waz68vjhn.WarmthKeeper and not _v7waz68vjhn.StaminaKeeper then return end
-        if not _vjwpa6b4z60() then return end
+    State.WarmthKeeperConn = _vyq77pn2i13.Heartbeat:Connect(function()
+        if not _v6sw8escnb8.WarmthKeeper and not _v6sw8escnb8.StaminaKeeper then return end
+        if not _vv3bejf2upo() then return end
         pcall(function()
-            if _v7waz68vjhn.WarmthKeeper then
-                for _, name in ipairs({_S("130|217|227|244|239|246|234"), _S("72|156|173|181|184|173|186|169|188|189|186|173"), _S("108|175|219|216|208"), _S("111|183|212|208|227"), _S("125|212|222|239|234")}) do
-                    local v = Character:FindFirstChild(name) or _v9qqaid831c:FindFirstChild(name)
-                    if v and v:IsA(_S("74|160|171|182|191|175|140|171|189|175")) then v.Value = 100 end
+            if _v6sw8escnb8.WarmthKeeper then
+                for _, name in ipairs({_S("97|184|194|211|206|213|201"), _S("84|168|185|193|196|185|198|181|200|201|198|185"), _S("122|189|233|230|222"), _S("74|146|175|171|190"), _S("72|159|169|186|181")}) do
+                    local v = Character:FindFirstChild(name) or _v9q42f8ekfn:FindFirstChild(name)
+                    if v and v:IsA(_S("65|151|162|173|182|166|131|162|180|166")) then v.Value = 100 end
                 end
-                _vme4qihhqx7(_S("122|241|219|236|231|238|226")); _vme4qihhqx7(_S("84|188|185|181|200")); _vme4qihhqx7(_S("65|164|162|174|177|167|170|179|166"))
+                _vv8iciwgl48(_S("70|189|167|184|179|186|174")); _vv8iciwgl48(_S("103|207|204|200|219")); _vv8iciwgl48(_S("128|227|225|237|240|230|233|242|229"))
             end
-            if _v7waz68vjhn.StaminaKeeper then
-                for _, name in ipairs({_S("115|198|231|212|224|220|225|212"), _S("92|161|202|193|206|195|213"), _S("68|135|176|173|177|166"), _S("107|186|227|228|210|208|217"), _S("105|171|219|206|202|221|209")}) do
-                    local v = Character:FindFirstChild(name) or _v9qqaid831c:FindFirstChild(name)
-                    if v and v:IsA(_S("121|207|218|229|238|222|187|218|236|222")) then v.Value = 100 end
+            if _v6sw8escnb8.StaminaKeeper then
+                for _, name in ipairs({_S("105|188|221|202|214|210|215|202"), _S("72|141|182|173|186|175|193"), _S("124|191|232|229|233|222"), _S("73|152|193|194|176|174|183"), _S("122|188|236|223|219|238|226")}) do
+                    local v = Character:FindFirstChild(name) or _v9q42f8ekfn:FindFirstChild(name)
+                    if v and v:IsA(_S("126|212|223|234|243|227|192|223|241|227")) then v.Value = 100 end
                 end
             end
         end)
     end)
-    _vv6vvad4d9h(_S("116|203|213|230|225|232|220|163|199|232|213|225|221|226|213|148|191|217|217|228|217|230|148|185|194|181|182|192|185|184"))
+    _vke6snlfgah(_S("70|157|167|184|179|186|174|117|153|186|167|179|175|180|167|102|145|171|171|182|171|184|102|139|148|135|136|146|139|138"))
 end
 
-local function _vio6kma08xn()
+local function _vtx890mj3yn()
     if State.WarmthKeeperConn then
         State.WarmthKeeperConn:Disconnect()
         State.WarmthKeeperConn = nil
     end
 end
 
-local function _vzfgkygt8d4()
+local function _vojug3ef0vt()
     for _, obj in ipairs(State.TracerObjects) do
         pcall(function() obj:Destroy() end)
     end
     State.TracerObjects = {}
 end
 
-local function _vfyh1s9eesc()
-    if not _v7waz68vjhn.Tracers then _vzfgkygt8d4() return end
-    if not _vjwpa6b4z60() then return end
-    _vzfgkygt8d4()
-    local _vnkpsmjgb04 = {}
-    for _, r in ipairs(_v1y2wurcl0l()) do
-        if #_vnkpsmjgb04 >= 8 then break end
-        table.insert(_vnkpsmjgb04, {Part = r.Part, Color = Color3.fromRGB(100, 200, 255)})
+local function _vpoz5mqsik7()
+    if not _v6sw8escnb8.Tracers then _vojug3ef0vt() return end
+    if not _vv3bejf2upo() then return end
+    _vojug3ef0vt()
+    local _vhz19hvr2a1 = {}
+    for _, r in ipairs(_vvkj7mz5kfi()) do
+        if #_vhz19hvr2a1 >= 8 then break end
+        table.insert(_vhz19hvr2a1, {Part = r.Part, Color = Color3.fromRGB(100, 200, 255)})
     end
-    for _, s in ipairs(_vwi0vrnlz4s()) do
-        if #_vnkpsmjgb04 >= 10 then break end
-        table.insert(_vnkpsmjgb04, {Part = s.Part, Color = Color3.fromRGB(0, 255, 100)})
+    for _, s in ipairs(_vkgv156tecx()) do
+        if #_vhz19hvr2a1 >= 10 then break end
+        table.insert(_vhz19hvr2a1, {Part = s.Part, Color = Color3.fromRGB(0, 255, 100)})
     end
-    for _, t in ipairs(_vnkpsmjgb04) do
-        local att0 = Instance.new(_S("106|171|222|222|203|205|210|215|207|216|222"))
-        att0.Parent = _vqxyh6gcfta
-        local att1 = Instance.new(_S("81|146|197|197|178|180|185|190|182|191|197"))
+    for _, t in ipairs(_vhz19hvr2a1) do
+        local att0 = Instance.new(_S("65|130|181|181|162|164|169|174|166|175|181"))
+        att0.Parent = _vs1tasghk8v
+        local att1 = Instance.new(_S("115|180|231|231|212|214|219|224|216|225|231"))
         att1.Parent = t.Part
-        local beam = Instance.new(_S("93|159|194|190|202"))
+        local beam = Instance.new(_S("122|188|223|219|231"))
         beam.Attachment0 = att0
         beam.Attachment1 = att1
         beam.Color = ColorSequence.new(t.Color)
         beam.Width0 = 0.15
         beam.Width1 = 0.15
         beam.FaceCamera = true
-        beam.Parent = _vqxyh6gcfta
+        beam.Parent = _vs1tasghk8v
         table.insert(State.TracerObjects, att0)
         table.insert(State.TracerObjects, att1)
         table.insert(State.TracerObjects, beam)
     end
 end
 
-local function _vgi705eg68c()
+local function _vitpv1dj25h()
     for _, obj in ipairs(State.PlayerESPObjects) do
         pcall(function() obj:Destroy() end)
     end
     State.PlayerESPObjects = {}
 end
 
-local function _vwnlqp7zj6f()
-    if not _v7waz68vjhn.PlayerESP then _vgi705eg68c() return end
-    _vgi705eg68c()
-    for _, plr in ipairs(_vhttz78qdg8:GetPlayers()) do
-        if plr ~= _v9qqaid831c and plr.Character then
-            local hrp = plr.Character:FindFirstChild(_S("129|201|246|238|226|239|240|234|229|211|240|240|245|209|226|243|245"))
+local function _v3gp7hvkeu3()
+    if not _v6sw8escnb8.PlayerESP then _vitpv1dj25h() return end
+    _vitpv1dj25h()
+    for _, plr in ipairs(_ver979nfack:GetPlayers()) do
+        if plr ~= _v9q42f8ekfn and plr.Character then
+            local hrp = plr.Character:FindFirstChild(_S("98|170|215|207|195|208|209|203|198|180|209|209|214|178|195|212|214"))
             if hrp then
-                local hl = Instance.new(_S("102|174|207|205|206|210|207|205|206|218"))
+                local hl = Instance.new(_S("92|164|197|195|196|200|197|195|196|208"))
                 hl.FillTransparency = 0.7
                 hl.OutlineColor = Color3.fromRGB(255, 80, 80)
                 hl.FillColor = Color3.fromRGB(255, 50, 50)
                 hl.Parent = plr.Character
-                local bb = Instance.new(_S("66|132|171|174|174|164|177|163|180|166|137|183|171"))
+                local bb = Instance.new(_S("104|170|209|212|212|202|215|201|218|204|175|221|209"))
                 bb.Size = UDim2.new(0, 100, 0, 24)
                 bb.StudsOffset = Vector3.new(0, 3, 0)
                 bb.AlwaysOnTop = true
                 bb.Parent = hrp
-                local lbl = Instance.new(_S("106|190|207|226|222|182|203|204|207|214"))
+                local lbl = Instance.new(_S("113|197|214|233|229|189|210|211|214|221"))
                 lbl.Size = UDim2.new(1, 0, 1, 0)
                 lbl.BackgroundTransparency = 0.5
                 lbl.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-                lbl.Text = plr.Name .. _S("102|134|193") .. math.floor(_vbymtkx7r65(hrp)) .. _S("113|222|206")
+                lbl.Text = plr.Name .. _S("62|94|153") .. math.floor(_vurfwcailwp(hrp)) .. _S("101|210|194")
                 lbl.TextColor3 = Color3.fromRGB(255, 100, 100)
                 lbl.Font = Enum.Font.GothamBold
                 lbl.TextSize = 10
@@ -1774,25 +1783,25 @@ local function _vwnlqp7zj6f()
     end
 end
 
-local function _vjpa1gixp55()
+local function _vhrk3y03yqx()
     for _, obj in ipairs(State.ChestESPObjects) do
         pcall(function() obj:Destroy() end)
     end
     State.ChestESPObjects = {}
 end
 
-local function _v0cz2jcife5()
-    if not _v7waz68vjhn.ChestESP then _vjpa1gixp55() return end
-    _vjpa1gixp55()
-    local _ves4lobcryw = {_S("115|214|219|216|230|231"), _S("112|211|226|209|228|213"), _S("127|228|245|228|237|243"), _S("64|167|169|166|180"), _S("102|214|216|203|217|203|212|218"), _S("108|224|222|209|205|223|225|222|209"), _S("79|193|180|198|176|193|179")}
-    for _, d in ipairs(_v92gucjek3x:GetDescendants()) do
-        if d:IsA(_S("91|168|202|191|192|199")) or d:IsA(_S("100|166|197|215|201|180|197|214|216")) then
+local function _vt7f1e9gp7q()
+    if not _v6sw8escnb8.ChestESP then _vhrk3y03yqx() return end
+    _vhrk3y03yqx()
+    local _v8f79y92mmj = {_S("91|190|195|192|206|207"), _S("90|189|204|187|206|191"), _S("118|219|236|219|228|234"), _S("92|195|197|194|208"), _S("97|209|211|198|212|198|207|213"), _S("95|211|209|196|192|210|212|209|196"), _S("97|211|198|216|194|211|197")}
+    for _, d in ipairs(_v4au113ebz2:GetDescendants()) do
+        if d:IsA(_S("101|178|212|201|202|209")) or d:IsA(_S("79|145|176|194|180|159|176|193|195")) then
             local nl = string.lower(d.Name)
-            for _, p in ipairs(_ves4lobcryw) do
+            for _, p in ipairs(_v8f79y92mmj) do
                 if string.find(nl, p) then
-                    local part = d:IsA(_S("110|176|207|225|211|190|207|224|226")) and d or d:FindFirstChildWhichIsA(_S("82|148|179|197|183|162|179|196|198"))
+                    local part = d:IsA(_S("74|140|171|189|175|154|171|188|190")) and d or d:FindFirstChildWhichIsA(_S("74|140|171|189|175|154|171|188|190"))
                     if part then
-                        local hl = Instance.new(_S("105|177|210|208|209|213|210|208|209|221"))
+                        local hl = Instance.new(_S("71|143|176|174|175|179|176|174|175|187"))
                         hl.FillColor = Color3.fromRGB(255, 200, 50)
                         hl.OutlineColor = Color3.fromRGB(255, 215, 0)
                         hl.FillTransparency = 0.5
@@ -1806,180 +1815,180 @@ local function _v0cz2jcife5()
     end
 end
 
-local function _vwlliduxaxp()
+local function _vnda051adsq()
     if State.FullbrightApplied then return end
     State.SavedLighting = {
-        Brightness = _v5l01vpqxkc.Brightness,
-        ClockTime = _v5l01vpqxkc.ClockTime,
-        FogEnd = _v5l01vpqxkc.FogEnd,
-        GlobalShadows = _v5l01vpqxkc.GlobalShadows,
-        Ambient = _v5l01vpqxkc.Ambient,
-        OutdoorAmbient = _v5l01vpqxkc.OutdoorAmbient,
+        Brightness = _v4eu5y7x4em.Brightness,
+        ClockTime = _v4eu5y7x4em.ClockTime,
+        FogEnd = _v4eu5y7x4em.FogEnd,
+        GlobalShadows = _v4eu5y7x4em.GlobalShadows,
+        Ambient = _v4eu5y7x4em.Ambient,
+        OutdoorAmbient = _v4eu5y7x4em.OutdoorAmbient,
     }
-    _v5l01vpqxkc.Brightness = 2
-    _v5l01vpqxkc.ClockTime = 14
-    _v5l01vpqxkc.FogEnd = 100000
-    _v5l01vpqxkc.GlobalShadows = false
-    _v5l01vpqxkc.Ambient = Color3.fromRGB(180, 180, 180)
-    _v5l01vpqxkc.OutdoorAmbient = Color3.fromRGB(180, 180, 180)
+    _v4eu5y7x4em.Brightness = 2
+    _v4eu5y7x4em.ClockTime = 14
+    _v4eu5y7x4em.FogEnd = 100000
+    _v4eu5y7x4em.GlobalShadows = false
+    _v4eu5y7x4em.Ambient = Color3.fromRGB(180, 180, 180)
+    _v4eu5y7x4em.OutdoorAmbient = Color3.fromRGB(180, 180, 180)
     State.FullbrightApplied = true
-    _vv6vvad4d9h(_S("70|140|187|178|178|168|184|175|173|174|186|102|149|148"))
+    _vke6snlfgah(_S("123|193|240|231|231|221|237|228|226|227|239|155|202|201"))
 end
 
-local function _vnp38yekj16()
+local function _vm8z8ktb1d8()
     if not State.FullbrightApplied then return end
     for k, v in pairs(State.SavedLighting) do
-        pcall(function() _v5l01vpqxkc[k] = v end)
+        pcall(function() _v4eu5y7x4em[k] = v end)
     end
     State.FullbrightApplied = false
-    _vv6vvad4d9h(_S("63|133|180|171|171|161|177|168|166|167|179|95|142|133|133"))
+    _vke6snlfgah(_S("120|190|237|228|228|218|234|225|223|224|236|152|199|190|190"))
 end
 
-local function _vlijjol47uc()
-    for _, plr in ipairs(_vhttz78qdg8:GetPlayers()) do
-        if plr ~= _v9qqaid831c and plr.Character then
+local function _vlx1pscxgrc()
+    for _, plr in ipairs(_ver979nfack:GetPlayers()) do
+        if plr ~= _v9q42f8ekfn and plr.Character then
             for _, p in ipairs(plr.Character:GetDescendants()) do
-                if p:IsA(_S("71|137|168|186|172|151|168|185|187")) then p.LocalTransparencyModifier = _v7waz68vjhn.HideOtherPlayers and 1 or 0 end
+                if p:IsA(_S("72|138|169|187|173|152|169|186|188")) then p.LocalTransparencyModifier = _v6sw8escnb8.HideOtherPlayers and 1 or 0 end
             end
         end
     end
 end
 
-local function _vuu45qgitw3()
-    if not _v7waz68vjhn.FPSBooster then return end
+local function _vpphhvi3qqb()
+    if not _v6sw8escnb8.FPSBooster then return end
     pcall(function()
         settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
-        for _, d in ipairs(_v92gucjek3x:GetDescendants()) do
-            if d:IsA(_S("79|159|176|193|195|184|178|187|180|148|188|184|195|195|180|193")) or d:IsA(_S("88|172|202|185|193|196")) or d:IsA(_S("81|164|190|192|188|182")) or d:IsA(_S("96|166|201|210|197")) then
+        for _, d in ipairs(_v4au113ebz2:GetDescendants()) do
+            if d:IsA(_S("85|165|182|199|201|190|184|193|186|154|194|190|201|201|186|199")) or d:IsA(_S("70|154|184|167|175|178")) or d:IsA(_S("69|152|178|180|176|170")) or d:IsA(_S("109|179|214|223|210")) then
                 d.Enabled = false
             end
         end
-        _v5l01vpqxkc.GlobalShadows = false
+        _v4eu5y7x4em.GlobalShadows = false
     end)
-    _vv6vvad4d9h(_S("104|174|184|187|136|170|215|215|219|220|205|218|136|201|216|216|212|209|205|204"))
+    _vke6snlfgah(_S("79|149|159|162|111|145|190|190|194|195|180|193|111|176|191|191|187|184|180|179"))
 end
 
-local function _vhe532db45f()
+local function _v9fa1xc9dbw()
     local t = {}
-    for k, v in pairs(_v7waz68vjhn) do t[k] = v end
+    for k, v in pairs(_v6sw8escnb8) do t[k] = v end
     return t
 end
 
-local function _vwyex5ywgqr(t)
-    if type(t) ~= _S("67|183|164|165|175|168") then return false end
+local function _v8ns5padqpt(t)
+    if type(t) ~= _S("64|180|161|162|172|165") then return false end
     for k, v in pairs(t) do
-        if _v7waz68vjhn[k] ~= nil then _v7waz68vjhn[k] = v end
+        if _v6sw8escnb8[k] ~= nil then _v6sw8escnb8[k] = v end
     end
     return true
 end
 
-local function _vf3t8kn2cud()
-    local ok, json = pcall(function() return HttpService:JSONEncode(_vhe532db45f()) end)
-    if not ok then _vv6vvad4d9h(_S("116|183|227|226|218|221|219|148|231|213|234|217|148|218|213|221|224|217|216")) return end
-    if Exec.WriteFile(_S("93|170|198|203|194|190|170|204|210|203|209|190|198|203|188|160|204|203|195|198|196|139|199|208|204|203"), json) then
-        _vv6vvad4d9h(_S("121|188|232|231|223|226|224|153|236|218|239|222|221|153|237|232|153|223|226|229|222"))
+local function _vpamlislzxc()
+    local ok, json = pcall(function() return HttpService:JSONEncode(_v9fa1xc9dbw()) end)
+    if not ok then _vke6snlfgah(_S("103|170|214|213|205|208|206|135|218|200|221|204|135|205|200|208|211|204|203")) return end
+    if Exec.WriteFile(_S("92|169|197|202|193|189|169|203|209|202|208|189|197|202|187|159|203|202|194|197|195|138|198|207|203|202"), json) then
+        _vke6snlfgah(_S("74|141|185|184|176|179|177|106|189|171|192|175|174|106|190|185|106|176|179|182|175"))
     elseif Exec.HasClipboard then
         Exec.SetClipboard(json)
-        _vv6vvad4d9h(_S("115|182|226|225|217|220|218|147|214|226|227|220|216|215|147|231|226|147|214|223|220|227|213|226|212|229|215"))
+        _vke6snlfgah(_S("114|181|225|224|216|219|217|146|213|225|226|219|215|214|146|230|225|146|213|222|219|226|212|225|211|228|214"))
     else
-        _vv6vvad4d9h(_S("104|187|201|222|205|136|221|214|201|222|201|209|212|201|202|212|205|136|144|214|215|136|223|218|209|220|205|206|209|212|205|151|203|212|209|216|202|215|201|218|204|145"))
+        _vke6snlfgah(_S("66|149|163|184|167|98|183|176|163|184|163|171|174|163|164|174|167|98|106|176|177|98|185|180|171|182|167|168|171|174|167|113|165|174|171|178|164|177|163|180|166|107"))
     end
 end
 
-local function _v0lkfk91e2o()
-    local json = Exec.ReadFile(_S("90|167|195|200|191|187|167|201|207|200|206|187|195|200|185|157|201|200|192|195|193|136|196|205|201|200"))
+local function _v4xzwwjxl6g()
+    local json = Exec.ReadFile(_S("109|186|214|219|210|206|186|220|226|219|225|206|214|219|204|176|220|219|211|214|212|155|215|224|220|219"))
     if json then
         local ok, data = pcall(function() return HttpService:JSONDecode(json) end)
-        if ok and _vwyex5ywgqr(data) then
-            _vv6vvad4d9h(_S("71|138|182|181|173|176|174|103|179|182|168|171|172|171|103|173|185|182|180|103|173|176|179|172"))
+        if ok and _v8ns5padqpt(data) then
+            _vke6snlfgah(_S("111|178|222|221|213|216|214|143|219|222|208|211|212|211|143|213|225|222|220|143|213|216|219|212"))
             return true
         end
     end
-    _vv6vvad4d9h(_S("130|208|241|162|245|227|248|231|230|162|229|241|240|232|235|233|162|232|241|247|240|230"))
+    _vke6snlfgah(_S("68|146|179|100|183|165|186|169|168|100|167|179|178|170|173|171|100|170|179|185|178|168"))
     return false
 end
 
-local function _v2m06cb8caz()
-    _vv6vvad4d9h(_S("116|199|217|230|234|217|230|148|220|227|228|228|221|226|219|162|162|162"))
+local function _v6idno3rd7y()
+    _vke6snlfgah(_S("103|186|204|217|221|204|217|135|207|214|215|215|208|213|206|149|149|149"))
     pcall(function()
-        local body = Exec.HttpGet(_S("61|165|177|177|173|176|119|108|108|164|158|170|162|176|107|175|172|159|169|172|181|107|160|172|170|108|179|110|108|164|158|170|162|176|108") .. game.PlaceId .. _S("76|123|191|177|190|194|177|190|191|123|156|193|174|184|181|175|139|191|187|190|192|155|190|176|177|190|137|141|191|175|114|184|181|185|181|192|137|125|124|124"))
-        if not body then error(_S("112|184|228|228|224|183|213|228|144|214|209|217|220|213|212")) end
-        local _v5cnqcmhrjg = HttpService:JSONDecode(body)
-        if _v5cnqcmhrjg and _v5cnqcmhrjg.data then
-            for _, srv in ipairs(_v5cnqcmhrjg.data) do
+        local body = Exec.HttpGet(_S("128|232|244|244|240|243|186|175|175|231|225|237|229|243|174|242|239|226|236|239|248|174|227|239|237|175|246|177|175|231|225|237|229|243|175") .. game.PlaceId .. _S("91|138|206|192|205|209|192|205|206|138|171|208|189|199|196|190|154|206|202|205|207|170|205|191|192|205|152|156|206|190|129|199|196|200|196|207|152|140|139|139"))
+        if not body then error(_S("126|198|242|242|238|197|227|242|158|228|223|231|234|227|226")) end
+        local _v4rmsvgaoeq = HttpService:JSONDecode(body)
+        if _v4rmsvgaoeq and _v4rmsvgaoeq.data then
+            for _, srv in ipairs(_v4rmsvgaoeq.data) do
                 if srv.id ~= game.JobId and srv.playing < srv.maxPlayers then
-                    _v1vpimabutu:TeleportToPlaceInstance(game.PlaceId, srv.id, _v9qqaid831c)
+                    _vx7a4i41ibp:TeleportToPlaceInstance(game.PlaceId, srv.id, _v9q42f8ekfn)
                     return
                 end
             end
         end
-        _v1vpimabutu:Teleport(game.PlaceId, _v9qqaid831c)
+        _vx7a4i41ibp:Teleport(game.PlaceId, _v9q42f8ekfn)
     end)
 end
 
-local function _v8s0ld9io6n()
+local function _vl1hz0cwg9l()
     if State.ServerHopConn then return end
-    if _v7waz68vjhn.ServerHopInterval <= 0 then return end
+    if _v6sw8escnb8.ServerHopInterval <= 0 then return end
     State.ServerHopConn = true
     task.spawn(function()
-        while _v7waz68vjhn.ServerHopInterval > 0 and State.ServerHopConn do
-            task.wait(_v7waz68vjhn.ServerHopInterval * 60)
-            if _v7waz68vjhn.ServerHopInterval > 0 then _v2m06cb8caz() end
+        while _v6sw8escnb8.ServerHopInterval > 0 and State.ServerHopConn do
+            task.wait(_v6sw8escnb8.ServerHopInterval * 60)
+            if _v6sw8escnb8.ServerHopInterval > 0 then _v6idno3rd7y() end
         end
     end)
 end
 
-local function _v1gykbuih0y()
+local function _vi1hq7g0yo5()
     State.ServerHopConn = nil
 end
 
-local function _v0ngom9zhsp()
+local function _vbxesk88vl2()
     if State.DropCollectConn then return end
     State.DropCollectConn = true
     task.spawn(function()
-        while _v7waz68vjhn.AutoCollectDrops and State.DropCollectConn do
-            _vpphc2k00e4()
+        while _v6sw8escnb8.AutoCollectDrops and State.DropCollectConn do
+            _vu0se5lz0nb()
             task.wait(1.5)
         end
     end)
 end
 
-local _verl1cyci2z = {}
-local _vxyn8edivmk = false
+local _vm62rfaum93 = {}
+local _vawleg0o2j7 = false
 
-local function _vwpuc45t3bj(data)
-    if not _v7waz68vjhn.WebhookEnabled or _v7waz68vjhn.WebhookURL == _S("77|") then return end
+local function _vh7yhgsjjgy(data)
+    if not _v6sw8escnb8.WebhookEnabled or _v6sw8escnb8.WebhookURL == _S("128|") then return end
     pcall(function()
         local body = HttpService:JSONEncode(data)
-        Exec.Post(_v7waz68vjhn.WebhookURL, body)
+        Exec.Post(_v6sw8escnb8.WebhookURL, body)
     end)
 end
 
-local function _vvcghtq480v(itemName)
-    if not _v7waz68vjhn.WebhookFarm then return end
-    _vwpuc45t3bj({
-        content = _S("109|151|151|200|186|214|219|210|206|141|186|220|226|219|225|206|214|219|202|151|151|141|186|214|219|210|209|167|141") .. itemName .. _S("116|148|240|148|200|227|232|213|224|174|148") .. State.FarmCount,
+local function _vxjs8905n38(itemName)
+    if not _v6sw8escnb8.WebhookFarm then return end
+    _vh7yhgsjjgy({
+        content = _S("80|122|122|171|157|185|190|181|177|112|157|191|197|190|196|177|185|190|173|122|122|112|157|185|190|181|180|138|112") .. itemName .. _S("74|106|198|106|158|185|190|171|182|132|106") .. State.FarmCount,
     })
 end
 
-local function _vj7ry4jdtkk()
-    if not _v7waz68vjhn.WebhookSell then return end
-    _vwpuc45t3bj({
-        content = _S("92|134|134|183|169|197|202|193|189|124|169|203|209|202|208|189|197|202|185|134|134|124|175|203|200|192|124|197|208|193|201|207|124|216|124|176|203|208|189|200|124|207|193|200|200|207|150|124") .. State.SellCount,
+local function _vjri73hvhgu()
+    if not _v6sw8escnb8.WebhookSell then return end
+    _vh7yhgsjjgy({
+        content = _S("64|106|106|155|141|169|174|165|161|96|141|175|181|174|180|161|169|174|157|106|106|96|147|175|172|164|96|169|180|165|173|179|96|188|96|148|175|180|161|172|96|179|165|172|172|179|122|96") .. State.SellCount,
     })
 end
 
-local function _vzdu6ihz2jk()
-    if not _v7waz68vjhn.WebhookStats then return end
-    _vwpuc45t3bj({
-        content = _S("77|119|119|168|154|182|187|178|174|109|154|188|194|187|193|174|182|187|109|160|193|174|193|192|170|119|119|109|154|182|187|178|177|135|109") .. State.FarmCount .. _S("122|154|246|154|205|223|230|230|237|180|154") .. State.SellCount .. _S("110|142|234|142|178|227|222|211|225|168|142") .. State.DupeCount .. _S("62|94|186|94|146|159|176|165|163|178|120|94") .. State.CurrentTarget,
+local function _vp5zwljziql()
+    if not _v6sw8escnb8.WebhookStats then return end
+    _vh7yhgsjjgy({
+        content = _S("81|123|123|172|158|186|191|182|178|113|158|192|198|191|197|178|186|191|113|164|197|178|197|196|174|123|123|113|158|186|191|182|181|139|113") .. State.FarmCount .. _S("77|109|201|109|160|178|185|185|192|135|109") .. State.SellCount .. _S("67|99|191|99|135|184|179|168|182|125|99") .. State.DupeCount .. _S("118|150|242|150|202|215|232|221|219|234|176|150") .. State.CurrentTarget,
     })
 end
 
 local Theme = {
     Bg = Color3.fromRGB(15, 15, 17),
     Panel = Color3.fromRGB(22, 22, 26),
-    _v5n8u6uij7w = Color3.fromRGB(12, 12, 14),
+    _v0hy6akiewi = Color3.fromRGB(12, 12, 14),
     Input = Color3.fromRGB(30, 30, 34),
     Accent = Color3.fromRGB(0, 235, 120),
     AccentDark = Color3.fromRGB(0, 170, 88),
@@ -1988,231 +1997,231 @@ local Theme = {
     Muted = Color3.fromRGB(75, 75, 82),
 }
 
-local _v63jbp5gyvx = Instance.new(_S("102|185|201|216|203|203|212|173|219|207"))
-_v63jbp5gyvx.Name = _S("93|170|198|203|194|190|170|204|210|203|209|190|198|203|179|148")
-_v63jbp5gyvx.ResetOnSpawn = false
-_v63jbp5gyvx.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-_v63jbp5gyvx.IgnoreGuiInset = true
+local _vz90e7eogvf = Instance.new(_S("72|155|171|186|173|173|182|143|189|177"))
+_vz90e7eogvf.Name = _S("112|189|217|222|213|209|189|223|229|222|228|209|217|222|198|167")
+_vz90e7eogvf.ResetOnSpawn = false
+_vz90e7eogvf.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+_vz90e7eogvf.IgnoreGuiInset = true
 
-Exec.ProtectGui(_v63jbp5gyvx)
-pcall(function() _v63jbp5gyvx.Parent = Exec.GetGuiParent() end)
-if not _v63jbp5gyvx.Parent then
-    pcall(function() _v63jbp5gyvx.Parent = _v9qqaid831c:WaitForChild(_S("119|199|227|216|240|220|233|190|236|224")) end)
+Exec.ProtectGui(_vz90e7eogvf)
+pcall(function() _vz90e7eogvf.Parent = Exec.GetGuiParent() end)
+if not _vz90e7eogvf.Parent then
+    pcall(function() _vz90e7eogvf.Parent = _v9q42f8ekfn:WaitForChild(_S("99|179|207|196|220|200|213|170|216|204")) end)
 end
 
-local _vhr6gh6h8s0 = _v92gucjek3x.CurrentCamera or _v92gucjek3x:WaitForChild(_S("93|160|190|202|194|207|190"), 10)
-local _v45biysu9ko = _vhr6gh6h8s0 and _vhr6gh6h8s0.ViewportSize or Vector2.new(1920, 1080)
-local _vgle8yoef1q = _v45biysu9ko.X < 800
-local _v9edvrg50xl = _vgle8yoef1q and 130 or 175
-local _vwwfao1t8dm = _vgle8yoef1q and UDim2.new(0, 340, 0, 420) or UDim2.new(0, 700, 0, 440)
-local _vee2umr3ro9 = UDim2.new(0, 160, 0, 40)
-local _v9gz4xmf9bh = UDim2.new(0.5, _vgle8yoef1q and -170 or -350, 0.5, _vgle8yoef1q and -210 or -220)
-local _v9a482le31k = _v9gz4xmf9bh
+local _vhd2vjx3udq = _v4au113ebz2.CurrentCamera or _v4au113ebz2:WaitForChild(_S("66|133|163|175|167|180|163"), 10)
+local _vc42364vp7q = _vhd2vjx3udq and _vhd2vjx3udq.ViewportSize or Vector2.new(1920, 1080)
+local _v04hlk5ce7d = _vc42364vp7q.X < 800
+local _vj00ia02wpa = _v04hlk5ce7d and 130 or 175
+local _viq68ytww7c = _v04hlk5ce7d and UDim2.new(0, 340, 0, 420) or UDim2.new(0, 700, 0, 440)
+local _v1wm4rpvb8p = UDim2.new(0, 160, 0, 40)
+local _vhkny4r83fh = UDim2.new(0.5, _v04hlk5ce7d and -170 or -350, 0.5, _v04hlk5ce7d and -210 or -220)
+local _vh1hqzjuk53 = _vhkny4r83fh
 
-local _vw5uhdt5rf2 = Instance.new(_S("111|181|225|208|220|212"))
-_vw5uhdt5rf2.Name = _S("115|192|212|220|225|185|229|212|224|216")
-_vw5uhdt5rf2.Size = _vwwfao1t8dm
-_vw5uhdt5rf2.Position = _v9gz4xmf9bh
-_vw5uhdt5rf2.BackgroundColor3 = Theme.Bg
-_vw5uhdt5rf2.BackgroundTransparency = 0.05
-_vw5uhdt5rf2.BorderSizePixel = 0
-_vw5uhdt5rf2.ClipsDescendants = true
-_vw5uhdt5rf2.Parent = _v63jbp5gyvx
+local _vgyp3jjazs2 = Instance.new(_S("68|138|182|165|177|169"))
+_vgyp3jjazs2.Name = _S("70|147|167|175|180|140|184|167|179|171")
+_vgyp3jjazs2.Size = _viq68ytww7c
+_vgyp3jjazs2.Position = _vhkny4r83fh
+_vgyp3jjazs2.BackgroundColor3 = Theme.Bg
+_vgyp3jjazs2.BackgroundTransparency = 0.05
+_vgyp3jjazs2.BorderSizePixel = 0
+_vgyp3jjazs2.ClipsDescendants = true
+_vgyp3jjazs2.Parent = _vz90e7eogvf
 
-local _v15ulpemfhz = Instance.new(_S("117|202|190|184|228|231|227|218|231"))
-_v15ulpemfhz.CornerRadius = UDim.new(0, 12)
-_v15ulpemfhz.Parent = _vw5uhdt5rf2
+local _v2pmecvna70 = Instance.new(_S("99|184|172|166|210|213|209|200|213"))
+_v2pmecvna70.CornerRadius = UDim.new(0, 12)
+_v2pmecvna70.Parent = _vgyp3jjazs2
 
-local _vd6lgjm09gm = Instance.new(_S("101|186|174|184|217|215|212|208|202"))
-_vd6lgjm09gm.Color = Theme.Accent
-_vd6lgjm09gm.Thickness = 1
-_vd6lgjm09gm.Transparency = 0.65
-_vd6lgjm09gm.Parent = _vw5uhdt5rf2
+local _v80omp96eqe = Instance.new(_S("88|173|161|171|204|202|199|195|189"))
+_v80omp96eqe.Color = Theme.Accent
+_v80omp96eqe.Thickness = 1
+_v80omp96eqe.Transparency = 0.65
+_v80omp96eqe.Parent = _vgyp3jjazs2
 
-local _v37qpihrw43 = Instance.new(_S("101|171|215|198|210|202"))
-_v37qpihrw43.Name = _S("108|180|209|205|208|209|222")
-_v37qpihrw43.Size = UDim2.new(1, 0, 0, 54)
-_v37qpihrw43.BackgroundColor3 = Theme.Sidebar
-_v37qpihrw43.BorderSizePixel = 0
-_v37qpihrw43.ZIndex = 5
-_v37qpihrw43.Parent = _vw5uhdt5rf2
+local _vn4141jg4ip = Instance.new(_S("128|198|242|225|237|229"))
+_vn4141jg4ip.Name = _S("87|159|188|184|187|188|201")
+_vn4141jg4ip.Size = UDim2.new(1, 0, 0, 54)
+_vn4141jg4ip.BackgroundColor3 = Theme.Sidebar
+_vn4141jg4ip.BorderSizePixel = 0
+_vn4141jg4ip.ZIndex = 5
+_vn4141jg4ip.Parent = _vgyp3jjazs2
 
-local _v7mxbpu5dzp = Instance.new(_S("69|139|183|166|178|170"))
-_v7mxbpu5dzp.Size = UDim2.new(1, 0, 0, 1)
-_v7mxbpu5dzp.Position = UDim2.new(0, 0, 1, -1)
-_v7mxbpu5dzp.BackgroundColor3 = Theme.Accent
-_v7mxbpu5dzp.BackgroundTransparency = 0.5
-_v7mxbpu5dzp.BorderSizePixel = 0
-_v7mxbpu5dzp.ZIndex = 6
-_v7mxbpu5dzp.Parent = _v37qpihrw43
+local _vbrmw5bvip3 = Instance.new(_S("99|169|213|196|208|200"))
+_vbrmw5bvip3.Size = UDim2.new(1, 0, 0, 1)
+_vbrmw5bvip3.Position = UDim2.new(0, 0, 1, -1)
+_vbrmw5bvip3.BackgroundColor3 = Theme.Accent
+_vbrmw5bvip3.BackgroundTransparency = 0.5
+_vbrmw5bvip3.BorderSizePixel = 0
+_vbrmw5bvip3.ZIndex = 6
+_vbrmw5bvip3.Parent = _vn4141jg4ip
 
-local _vwr5gc4zz8d = Instance.new(_S("63|147|164|183|179|139|160|161|164|171"))
-_vwr5gc4zz8d.Size = UDim2.new(0, 36, 0, 36)
-_vwr5gc4zz8d.Position = UDim2.new(0, 14, 0.5, -18)
-_vwr5gc4zz8d.BackgroundColor3 = Theme.Accent
-_vwr5gc4zz8d.Text = _S("111|188")
-_vwr5gc4zz8d.TextColor3 = Color3.fromRGB(10, 10, 12)
-_vwr5gc4zz8d.Font = Enum.Font.GothamBlack
-_vwr5gc4zz8d.TextSize = 22
-_vwr5gc4zz8d.ZIndex = 6
-_vwr5gc4zz8d.Parent = _v37qpihrw43
-local logoC = Instance.new(_S("125|210|198|192|236|239|235|226|239"))
+local _v156zvxhhib = Instance.new(_S("90|174|191|210|206|166|187|188|191|198"))
+_v156zvxhhib.Size = UDim2.new(0, 36, 0, 36)
+_v156zvxhhib.Position = UDim2.new(0, 14, 0.5, -18)
+_v156zvxhhib.BackgroundColor3 = Theme.Accent
+_v156zvxhhib.Text = _S("124|201")
+_v156zvxhhib.TextColor3 = Color3.fromRGB(10, 10, 12)
+_v156zvxhhib.Font = Enum.Font.GothamBlack
+_v156zvxhhib.TextSize = 22
+_v156zvxhhib.ZIndex = 6
+_v156zvxhhib.Parent = _vn4141jg4ip
+local logoC = Instance.new(_S("108|193|181|175|219|222|218|209|222"))
 logoC.CornerRadius = UDim.new(0, 8)
-logoC.Parent = _vwr5gc4zz8d
+logoC.Parent = _v156zvxhhib
 
-local _vq6z7irognd = Instance.new(_S("115|199|216|235|231|191|212|213|216|223"))
-_vq6z7irognd.Size = UDim2.new(0, 100, 0, 14)
-_vq6z7irognd.Position = UDim2.new(0, 56, 0, 12)
-_vq6z7irognd.BackgroundTransparency = 1
-_vq6z7irognd.Text = _S("129|206|202|207|230|226|161|198|197|202|213|202|208|207")
-_vq6z7irognd.TextColor3 = Theme.Accent
-_vq6z7irognd.Font = Enum.Font.GothamBold
-_vq6z7irognd.TextSize = 10
-_vq6z7irognd.TextXAlignment = Enum.TextXAlignment.Left
-_vq6z7irognd.ZIndex = 6
-_vq6z7irognd.Parent = _v37qpihrw43
+local _v6sw7rrvwjo = Instance.new(_S("76|160|177|196|192|152|173|174|177|184"))
+_v6sw7rrvwjo.Size = UDim2.new(0, 100, 0, 14)
+_v6sw7rrvwjo.Position = UDim2.new(0, 56, 0, 12)
+_v6sw7rrvwjo.BackgroundTransparency = 1
+_v6sw7rrvwjo.Text = _S("75|152|148|153|176|172|107|144|143|148|159|148|154|153")
+_v6sw7rrvwjo.TextColor3 = Theme.Accent
+_v6sw7rrvwjo.Font = Enum.Font.GothamBold
+_v6sw7rrvwjo.TextSize = 10
+_v6sw7rrvwjo.TextXAlignment = Enum.TextXAlignment.Left
+_v6sw7rrvwjo.ZIndex = 6
+_v6sw7rrvwjo.Parent = _vn4141jg4ip
 
-local _vc29xemk97d = Instance.new(_S("105|189|206|225|221|181|202|203|206|213"))
-_vc29xemk97d.Size = UDim2.new(0.55, 0, 0, 22)
-_vc29xemk97d.Position = UDim2.new(0.28, 0, 0, 10)
-_vc29xemk97d.BackgroundTransparency = 1
-_vc29xemk97d.Text = _S("67|144|172|177|168|164|99|139|184|165|99|158|99|185|122|99|160")
-_vc29xemk97d.TextColor3 = Theme.Text
-_vc29xemk97d.Font = Enum.Font.GothamBold
-_vc29xemk97d.TextSize = _vgle8yoef1q and 14 or 17
-_vc29xemk97d.TextXAlignment = Enum.TextXAlignment.Left
-_vc29xemk97d.ZIndex = 6
-_vc29xemk97d.Parent = _v37qpihrw43
+local _vi8wfm6i1b4 = Instance.new(_S("82|166|183|202|198|158|179|180|183|190"))
+_vi8wfm6i1b4.Size = UDim2.new(0.55, 0, 0, 22)
+_vi8wfm6i1b4.Position = UDim2.new(0.28, 0, 0, 10)
+_vi8wfm6i1b4.BackgroundTransparency = 1
+_vi8wfm6i1b4.Text = _S("96|173|201|206|197|193|128|168|213|194|128|187|128|214|151|128|189")
+_vi8wfm6i1b4.TextColor3 = Theme.Text
+_vi8wfm6i1b4.Font = Enum.Font.GothamBold
+_vi8wfm6i1b4.TextSize = _v04hlk5ce7d and 14 or 17
+_vi8wfm6i1b4.TextXAlignment = Enum.TextXAlignment.Left
+_vi8wfm6i1b4.ZIndex = 6
+_vi8wfm6i1b4.Parent = _vn4141jg4ip
 
-local _v3aa1a1wwb3 = Instance.new(_S("90|174|191|210|206|166|187|188|191|198"))
-_v3aa1a1wwb3.Size = UDim2.new(0.55, 0, 0, 16)
-_v3aa1a1wwb3.Position = UDim2.new(0.28, 0, 0, 32)
-_v3aa1a1wwb3.BackgroundTransparency = 1
-_v3aa1a1wwb3.Text = _S("69|146|174|179|170|101|166|101|146|180|186|179|185|166|174|179|101|252|101") .. os.date(_S("80|117|145|124|112|117|146|112|117|180|112|117|169"))
-_v3aa1a1wwb3.TextColor3 = Theme.SubText
-_v3aa1a1wwb3.Font = Enum.Font.Gotham
-_v3aa1a1wwb3.TextSize = 10
-_v3aa1a1wwb3.TextXAlignment = Enum.TextXAlignment.Left
-_v3aa1a1wwb3.ZIndex = 6
-_v3aa1a1wwb3.Parent = _v37qpihrw43
+local _ve6yztfuwkh = Instance.new(_S("69|153|170|189|185|145|166|167|170|177"))
+_ve6yztfuwkh.Size = UDim2.new(0.55, 0, 0, 16)
+_ve6yztfuwkh.Position = UDim2.new(0.28, 0, 0, 32)
+_ve6yztfuwkh.BackgroundTransparency = 1
+_ve6yztfuwkh.Text = _S("119|196|224|229|220|151|216|151|196|230|236|229|235|216|224|229|151|302|151") .. os.date(_S("124|161|189|168|156|161|190|156|161|224|156|161|213"))
+_ve6yztfuwkh.TextColor3 = Theme.SubText
+_ve6yztfuwkh.Font = Enum.Font.Gotham
+_ve6yztfuwkh.TextSize = 10
+_ve6yztfuwkh.TextXAlignment = Enum.TextXAlignment.Left
+_ve6yztfuwkh.ZIndex = 6
+_ve6yztfuwkh.Parent = _vn4141jg4ip
 
-local _vsim8nr64dk = Instance.new(_S("93|177|194|213|209|159|210|209|209|204|203"))
-_vsim8nr64dk.Size = UDim2.new(0, 32, 0, 32)
-_vsim8nr64dk.Position = UDim2.new(1, -42, 0.5, -16)
-_vsim8nr64dk.BackgroundTransparency = 1
-_vsim8nr64dk.Text = _S("81|10086")
-_vsim8nr64dk.TextColor3 = Theme.SubText
-_vsim8nr64dk.Font = Enum.Font.GothamBold
-_vsim8nr64dk.TextSize = 16
-_vsim8nr64dk.ZIndex = 6
-_vsim8nr64dk.Parent = _v37qpihrw43
-_vsim8nr64dk.MouseButton1Click:Connect(function()
-    _v63jbp5gyvx.Enabled = false
+local _vhajivmradw = Instance.new(_S("91|175|192|211|207|157|208|207|207|202|201"))
+_vhajivmradw.Size = UDim2.new(0, 32, 0, 32)
+_vhajivmradw.Position = UDim2.new(1, -42, 0.5, -16)
+_vhajivmradw.BackgroundTransparency = 1
+_vhajivmradw.Text = _S("111|10116")
+_vhajivmradw.TextColor3 = Theme.SubText
+_vhajivmradw.Font = Enum.Font.GothamBold
+_vhajivmradw.TextSize = 16
+_vhajivmradw.ZIndex = 6
+_vhajivmradw.Parent = _vn4141jg4ip
+_vhajivmradw.MouseButton1Click:Connect(function()
+    _vz90e7eogvf.Enabled = false
     State.GUIHidden = true
 end)
 
-local _vz9lnqvrntq = Instance.new(_S("68|152|169|188|184|134|185|184|184|179|178"))
-_vz9lnqvrntq.Size = UDim2.new(0, 32, 0, 32)
-_vz9lnqvrntq.Position = UDim2.new(1, -78, 0.5, -16)
-_vz9lnqvrntq.BackgroundTransparency = 1
-_vz9lnqvrntq.Text = _S("71|8283")
-_vz9lnqvrntq.TextColor3 = Theme.SubText
-_vz9lnqvrntq.Font = Enum.Font.GothamBold
-_vz9lnqvrntq.TextSize = 18
-_vz9lnqvrntq.ZIndex = 6
-_vz9lnqvrntq.Parent = _v37qpihrw43
+local _vr3l1yiomxp = Instance.new(_S("128|212|229|248|244|194|245|244|244|239|238"))
+_vr3l1yiomxp.Size = UDim2.new(0, 32, 0, 32)
+_vr3l1yiomxp.Position = UDim2.new(1, -78, 0.5, -16)
+_vr3l1yiomxp.BackgroundTransparency = 1
+_vr3l1yiomxp.Text = _S("72|8284")
+_vr3l1yiomxp.TextColor3 = Theme.SubText
+_vr3l1yiomxp.Font = Enum.Font.GothamBold
+_vr3l1yiomxp.TextSize = 18
+_vr3l1yiomxp.ZIndex = 6
+_vr3l1yiomxp.Parent = _vn4141jg4ip
 
-local _veotsgdmeuc = _vz9lnqvrntq
+local _v3cti1v8rqx = _vr3l1yiomxp
 
-local _v5n8u6uij7w = Instance.new(_S("93|163|207|190|202|194"))
-_v5n8u6uij7w.Name = _S("106|189|211|206|207|204|203|220")
-_v5n8u6uij7w.Size = UDim2.new(0, _v9edvrg50xl, 1, -54)
-_v5n8u6uij7w.Position = UDim2.new(0, 0, 0, 54)
-_v5n8u6uij7w.BackgroundColor3 = Theme.Sidebar
-_v5n8u6uij7w.BorderSizePixel = 0
-_v5n8u6uij7w.ZIndex = 2
-_v5n8u6uij7w.Parent = _vw5uhdt5rf2
+local _v0hy6akiewi = Instance.new(_S("61|131|175|158|170|162"))
+_v0hy6akiewi.Name = _S("77|160|182|177|178|175|174|191")
+_v0hy6akiewi.Size = UDim2.new(0, _vj00ia02wpa, 1, -54)
+_v0hy6akiewi.Position = UDim2.new(0, 0, 0, 54)
+_v0hy6akiewi.BackgroundColor3 = Theme.Sidebar
+_v0hy6akiewi.BorderSizePixel = 0
+_v0hy6akiewi.ZIndex = 2
+_v0hy6akiewi.Parent = _vgyp3jjazs2
 
-local _v34iehsuane = Instance.new(_S("110|180|224|207|219|211"))
-_v34iehsuane.Size = UDim2.new(0, 1, 1, 0)
-_v34iehsuane.Position = UDim2.new(1, -1, 0, 0)
-_v34iehsuane.BackgroundColor3 = Theme.Accent
-_v34iehsuane.BackgroundTransparency = 0.7
-_v34iehsuane.BorderSizePixel = 0
-_v34iehsuane.Parent = _v5n8u6uij7w
+local _vkaw9emxv34 = Instance.new(_S("85|155|199|182|194|186"))
+_vkaw9emxv34.Size = UDim2.new(0, 1, 1, 0)
+_vkaw9emxv34.Position = UDim2.new(1, -1, 0, 0)
+_vkaw9emxv34.BackgroundColor3 = Theme.Accent
+_vkaw9emxv34.BackgroundTransparency = 0.7
+_vkaw9emxv34.BorderSizePixel = 0
+_vkaw9emxv34.Parent = _v0hy6akiewi
 
-local _vmapy982gog = Instance.new(_S("124|194|238|221|233|225"))
-_vmapy982gog.Size = UDim2.new(1, 0, 1, -8)
-_vmapy982gog.Position = UDim2.new(0, 0, 0, 4)
-_vmapy982gog.BackgroundTransparency = 1
-_vmapy982gog.Parent = _v5n8u6uij7w
+local _vt4kcl54ngv = Instance.new(_S("126|196|240|223|235|227"))
+_vt4kcl54ngv.Size = UDim2.new(1, 0, 1, -8)
+_vt4kcl54ngv.Position = UDim2.new(0, 0, 0, 4)
+_vt4kcl54ngv.BackgroundTransparency = 1
+_vt4kcl54ngv.Parent = _v0hy6akiewi
 
-local _v1to1wrmx4m = Instance.new(_S("72|157|145|148|177|187|188|148|169|193|183|189|188"))
-_v1to1wrmx4m.SortOrder = Enum.SortOrder.LayoutOrder
-_v1to1wrmx4m.Padding = UDim.new(0, 4)
-_v1to1wrmx4m.Parent = _vmapy982gog
+local _v0l8oaluacu = Instance.new(_S("103|188|176|179|208|218|219|179|200|224|214|220|219"))
+_v0l8oaluacu.SortOrder = Enum.SortOrder.LayoutOrder
+_v0l8oaluacu.Padding = UDim.new(0, 4)
+_v0l8oaluacu.Parent = _vt4kcl54ngv
 
-local _ve3dnga961i = Instance.new(_S("63|148|136|143|160|163|163|168|173|166"))
-_ve3dnga961i.PaddingTop = UDim.new(0, 6)
-_ve3dnga961i.PaddingLeft = UDim.new(0, 6)
-_ve3dnga961i.PaddingRight = UDim.new(0, 6)
-_ve3dnga961i.Parent = _vmapy982gog
+local _vtrkmdhfp0m = Instance.new(_S("115|200|188|195|212|215|215|220|225|218"))
+_vtrkmdhfp0m.PaddingTop = UDim.new(0, 6)
+_vtrkmdhfp0m.PaddingLeft = UDim.new(0, 6)
+_vtrkmdhfp0m.PaddingRight = UDim.new(0, 6)
+_vtrkmdhfp0m.Parent = _vt4kcl54ngv
 
-local _ven1ll52zg1 = Instance.new(_S("129|199|243|226|238|230"))
-_ven1ll52zg1.Size = UDim2.new(1, -_v9edvrg50xl - 16, 0, 36)
-_ven1ll52zg1.Position = UDim2.new(0, _v9edvrg50xl + 8, 0, 62)
-_ven1ll52zg1.BackgroundTransparency = 1
-_ven1ll52zg1.Parent = _vw5uhdt5rf2
+local _vxr9guffp7q = Instance.new(_S("83|153|197|180|192|184"))
+_vxr9guffp7q.Size = UDim2.new(1, -_vj00ia02wpa - 16, 0, 36)
+_vxr9guffp7q.Position = UDim2.new(0, _vj00ia02wpa + 8, 0, 62)
+_vxr9guffp7q.BackgroundTransparency = 1
+_vxr9guffp7q.Parent = _vgyp3jjazs2
 
-local _v6av4al7oa2 = Instance.new(_S("87|171|188|207|203|163|184|185|188|195"))
-_v6av4al7oa2.Size = UDim2.new(1, 0, 1, 0)
-_v6av4al7oa2.BackgroundTransparency = 1
-_v6av4al7oa2.Text = _S("100|171|201|210|201|214|197|208")
-_v6av4al7oa2.TextColor3 = Theme.Text
-_v6av4al7oa2.Font = Enum.Font.GothamBold
-_v6av4al7oa2.TextSize = 15
-_v6av4al7oa2.TextXAlignment = Enum.TextXAlignment.Left
-_v6av4al7oa2.Parent = _ven1ll52zg1
+local _v7xvb1wqt00 = Instance.new(_S("97|181|198|217|213|173|194|195|198|205"))
+_v7xvb1wqt00.Size = UDim2.new(1, 0, 1, 0)
+_v7xvb1wqt00.BackgroundTransparency = 1
+_v7xvb1wqt00.Text = _S("112|183|213|222|213|226|209|220")
+_v7xvb1wqt00.TextColor3 = Theme.Text
+_v7xvb1wqt00.Font = Enum.Font.GothamBold
+_v7xvb1wqt00.TextSize = 15
+_v7xvb1wqt00.TextXAlignment = Enum.TextXAlignment.Left
+_v7xvb1wqt00.Parent = _vxr9guffp7q
 
-local _vcl1nazmotj = Instance.new(_S("92|162|206|189|201|193"))
-_vcl1nazmotj.Name = _S("111|178|222|221|227|212|221|227|176|225|212|208")
-_vcl1nazmotj.Size = UDim2.new(1, -_v9edvrg50xl - 16, 1, -108)
-_vcl1nazmotj.Position = UDim2.new(0, _v9edvrg50xl + 8, 0, 98)
-_vcl1nazmotj.BackgroundTransparency = 1
-_vcl1nazmotj.ClipsDescendants = true
-_vcl1nazmotj.Parent = _vw5uhdt5rf2
+local _vqqb9fm06yd = Instance.new(_S("86|156|200|183|195|187"))
+_vqqb9fm06yd.Name = _S("118|185|229|228|234|219|228|234|183|232|219|215")
+_vqqb9fm06yd.Size = UDim2.new(1, -_vj00ia02wpa - 16, 1, -108)
+_vqqb9fm06yd.Position = UDim2.new(0, _vj00ia02wpa + 8, 0, 98)
+_vqqb9fm06yd.BackgroundTransparency = 1
+_vqqb9fm06yd.ClipsDescendants = true
+_vqqb9fm06yd.Parent = _vgyp3jjazs2
 
-local Tabs = {_S("125|195|222|239|234"), _S("96|179|197|204|204"), _S("101|170|184|181"), _S("63|132|183|175|171|174|168|179"), _S("102|186|213|213|210|217"), _S("127|204|232|242|226")}
-local _vhw2b6jg8if = {
-    Farm = {Icon = _S("107|9988"), Title = _S("72|143|173|182|173|186|169|180"), Sub = _S("77|142|194|193|188|109|186|182|187|178|109|115|109|179|174|191|186")},
-    Sell = {Icon = _S("64|9953"), Title = _S("65|130|182|181|176|174|162|181|170|164"), Sub = _S("98|181|199|206|206|130|136|130|215|210|201|212|195|198|199|213")},
-    ESP = {Icon = _S("82|128147"), Title = _S("111|197|216|226|228|208|219|226"), Sub = _S("112|181|195|192|144|150|144|228|226|209|211|213|226|227")},
-    Exploit = {Icon = _S("80|127997"), Title = _S("78|147|198|190|186|189|183|194|193"), Sub = _S("66|143|177|184|167|175|167|176|182|98|104|98|166|183|178|167|181")},
-    Tools = {Icon = _S("115|128410"), Title = _S("104|188|215|215|212|219"), Sub = _S("114|197|226|235|146|152|146|233|211|235|226|225|219|224|230|229")},
-    Misc = {Icon = _S("63|9944"), Title = _S("107|190|208|223|223|212|217|210|222"), Sub = _S("60|127|171|170|162|165|163|92|98|92|169|165|175|159")},
+local Tabs = {_S("99|169|196|213|208"), _S("83|166|184|191|191"), _S("65|134|148|145"), _S("90|159|210|202|198|201|195|206"), _S("130|214|241|241|238|245"), _S("70|147|175|185|169")}
+local _vpbq6gikw19 = {
+    Farm = {Icon = _S("103|9984"), Title = _S("128|199|229|238|229|242|225|236"), Sub = _S("66|131|183|182|177|98|175|171|176|167|98|104|98|168|163|180|175")},
+    Sell = {Icon = _S("93|9982"), Title = _S("116|181|233|232|227|225|213|232|221|215"), Sub = _S("129|212|230|237|237|161|167|161|246|241|232|243|226|229|230|244")},
+    ESP = {Icon = _S("125|128190"), Title = _S("87|173|192|202|204|184|195|202"), Sub = _S("79|148|162|159|111|117|111|195|193|176|178|180|193|194")},
+    Exploit = {Icon = _S("68|127985"), Title = _S("112|181|232|224|220|223|217|228|227"), Sub = _S("95|172|206|213|196|204|196|205|211|127|133|127|195|212|207|196|210")},
+    Tools = {Icon = _S("60|128355"), Title = _S("105|189|216|216|213|220"), Sub = _S("124|207|236|245|156|162|156|243|221|245|236|235|229|234|240|239")},
+    Misc = {Icon = _S("91|9972"), Title = _S("122|205|223|238|238|227|232|225|237"), Sub = _S("80|147|191|190|182|185|183|112|118|112|189|185|195|179")},
 }
-local _veegirac8r7 = {}
-local _vrbcwulrfru = {}
-local _v1zbmpbrx3u = {}
+local _vk55m61vbk5 = {}
+local _vlfy2ujsr8w = {}
+local _vbjpoc019cd = {}
 
 for i, tabName in ipairs(Tabs) do
-    local info = _vhw2b6jg8if[tabName]
-    local _v7ejhz8jgmt = Instance.new(_S("61|145|162|181|177|127|178|177|177|172|171"))
-    _v7ejhz8jgmt.Name = tabName .. _S("86|170|183|184")
-    _v7ejhz8jgmt.Size = UDim2.new(1, 0, 0, _vgle8yoef1q and 44 or 52)
-    _v7ejhz8jgmt.BackgroundColor3 = Theme.Panel
-    _v7ejhz8jgmt.BackgroundTransparency = tabName == _S("102|172|199|216|211") and 0 or 0.35
-    _v7ejhz8jgmt.BorderSizePixel = 0
-    _v7ejhz8jgmt.Text = _S("85|")
-    _v7ejhz8jgmt.AutoButtonColor = false
-    _v7ejhz8jgmt.LayoutOrder = i
-    _v7ejhz8jgmt.Parent = _vmapy982gog
+    local info = _vpbq6gikw19[tabName]
+    local _vdirrnxowvc = Instance.new(_S("93|177|194|213|209|159|210|209|209|204|203"))
+    _vdirrnxowvc.Name = tabName .. _S("84|168|181|182")
+    _vdirrnxowvc.Size = UDim2.new(1, 0, 0, _v04hlk5ce7d and 44 or 52)
+    _vdirrnxowvc.BackgroundColor3 = Theme.Panel
+    _vdirrnxowvc.BackgroundTransparency = tabName == _S("111|181|208|225|220") and 0 or 0.35
+    _vdirrnxowvc.BorderSizePixel = 0
+    _vdirrnxowvc.Text = _S("78|")
+    _vdirrnxowvc.AutoButtonColor = false
+    _vdirrnxowvc.LayoutOrder = i
+    _vdirrnxowvc.Parent = _vt4kcl54ngv
 
-    local _vjsdh4h27q9 = Instance.new(_S("79|164|152|146|190|193|189|180|193"))
-    _vjsdh4h27q9.CornerRadius = UDim.new(0, 8)
-    _vjsdh4h27q9.Parent = _v7ejhz8jgmt
+    local _v550h7n1nme = Instance.new(_S("102|187|175|169|213|216|212|203|216"))
+    _v550h7n1nme.CornerRadius = UDim.new(0, 8)
+    _v550h7n1nme.Parent = _vdirrnxowvc
 
-    local icon = Instance.new(_S("70|154|171|190|186|146|167|168|171|178"))
+    local icon = Instance.new(_S("64|148|165|184|180|140|161|162|165|172"))
     icon.Size = UDim2.new(0, 28, 0, 28)
     icon.Position = UDim2.new(0, 8, 0.5, -14)
     icon.BackgroundTransparency = 1
@@ -2220,143 +2229,143 @@ for i, tabName in ipairs(Tabs) do
     icon.TextColor3 = Theme.Accent
     icon.TextSize = 16
     icon.Font = Enum.Font.GothamBold
-    icon.Parent = _v7ejhz8jgmt
+    icon.Parent = _vdirrnxowvc
 
-    local _vlrih9bd06z = Instance.new(_S("129|213|230|249|245|205|226|227|230|237"))
-    _vlrih9bd06z.Size = UDim2.new(1, -44, 0, 18)
-    _vlrih9bd06z.Position = UDim2.new(0, 38, 0, _vgle8yoef1q and 6 or 8)
-    _vlrih9bd06z.BackgroundTransparency = 1
-    _vlrih9bd06z.Text = info.Title
-    _vlrih9bd06z.TextColor3 = Theme.Text
-    _vlrih9bd06z.Font = Enum.Font.GothamBold
-    _vlrih9bd06z.TextSize = _vgle8yoef1q and 10 or 12
-    _vlrih9bd06z.TextXAlignment = Enum.TextXAlignment.Left
-    _vlrih9bd06z.Parent = _v7ejhz8jgmt
+    local _vfb32kywzmp = Instance.new(_S("97|181|198|217|213|173|194|195|198|205"))
+    _vfb32kywzmp.Size = UDim2.new(1, -44, 0, 18)
+    _vfb32kywzmp.Position = UDim2.new(0, 38, 0, _v04hlk5ce7d and 6 or 8)
+    _vfb32kywzmp.BackgroundTransparency = 1
+    _vfb32kywzmp.Text = info.Title
+    _vfb32kywzmp.TextColor3 = Theme.Text
+    _vfb32kywzmp.Font = Enum.Font.GothamBold
+    _vfb32kywzmp.TextSize = _v04hlk5ce7d and 10 or 12
+    _vfb32kywzmp.TextXAlignment = Enum.TextXAlignment.Left
+    _vfb32kywzmp.Parent = _vdirrnxowvc
 
-    local tSub = Instance.new(_S("114|198|215|234|230|190|211|212|215|222"))
+    local tSub = Instance.new(_S("93|177|194|213|209|169|190|191|194|201"))
     tSub.Size = UDim2.new(1, -44, 0, 14)
-    tSub.Position = UDim2.new(0, 38, 0, _vgle8yoef1q and 24 or 28)
+    tSub.Position = UDim2.new(0, 38, 0, _v04hlk5ce7d and 24 or 28)
     tSub.BackgroundTransparency = 1
     tSub.Text = info.Sub
     tSub.TextColor3 = Theme.SubText
     tSub.Font = Enum.Font.Gotham
     tSub.TextSize = 9
     tSub.TextXAlignment = Enum.TextXAlignment.Left
-    tSub.Parent = _v7ejhz8jgmt
+    tSub.Parent = _vdirrnxowvc
 
-    local _v4yryx7ctqh = Instance.new(_S("124|194|238|221|233|225"))
-    _v4yryx7ctqh.Size = UDim2.new(0, 3, 0.7, 0)
-    _v4yryx7ctqh.Position = UDim2.new(1, -4, 0.15, 0)
-    _v4yryx7ctqh.BackgroundColor3 = Theme.Accent
-    _v4yryx7ctqh.BorderSizePixel = 0
-    _v4yryx7ctqh.Visible = (tabName == _S("87|157|184|201|196"))
-    _v4yryx7ctqh.Parent = _v7ejhz8jgmt
-    local iC = Instance.new(_S("79|164|152|146|190|193|189|180|193"))
+    local _viv2u8muzot = Instance.new(_S("102|172|216|199|211|203"))
+    _viv2u8muzot.Size = UDim2.new(0, 3, 0.7, 0)
+    _viv2u8muzot.Position = UDim2.new(1, -4, 0.15, 0)
+    _viv2u8muzot.BackgroundColor3 = Theme.Accent
+    _viv2u8muzot.BorderSizePixel = 0
+    _viv2u8muzot.Visible = (tabName == _S("122|192|219|236|231"))
+    _viv2u8muzot.Parent = _vdirrnxowvc
+    local iC = Instance.new(_S("81|166|154|148|192|195|191|182|195"))
     iC.CornerRadius = UDim.new(1, 0)
-    iC.Parent = _v4yryx7ctqh
+    iC.Parent = _viv2u8muzot
 
-    _veegirac8r7[tabName] = _v7ejhz8jgmt
-    _v1zbmpbrx3u[tabName] = _v4yryx7ctqh
+    _vk55m61vbk5[tabName] = _vdirrnxowvc
+    _vbjpoc019cd[tabName] = _viv2u8muzot
 
-    local _vt7osl30v02 = Instance.new(_S("114|197|213|228|225|222|222|219|224|217|184|228|211|223|215"))
-    _vt7osl30v02.Name = tabName .. _S("84|151|195|194|200|185|194|200")
-    _vt7osl30v02.Size = UDim2.new(1, 0, 1, 0)
-    _vt7osl30v02.BackgroundTransparency = 1
-    _vt7osl30v02.BorderSizePixel = 0
-    _vt7osl30v02.ScrollBarThickness = 3
-    _vt7osl30v02.ScrollBarImageColor3 = Theme.Accent
-    _vt7osl30v02.CanvasSize = UDim2.new(0, 0, 0, 0)
-    _vt7osl30v02.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    _vt7osl30v02.Visible = (tabName == _S("89|159|186|203|198"))
-    _vt7osl30v02.Parent = _vcl1nazmotj
+    local _veeaw5nkxp7 = Instance.new(_S("78|161|177|192|189|186|186|183|188|181|148|192|175|187|179"))
+    _veeaw5nkxp7.Name = tabName .. _S("60|127|171|170|176|161|170|176")
+    _veeaw5nkxp7.Size = UDim2.new(1, 0, 1, 0)
+    _veeaw5nkxp7.BackgroundTransparency = 1
+    _veeaw5nkxp7.BorderSizePixel = 0
+    _veeaw5nkxp7.ScrollBarThickness = 3
+    _veeaw5nkxp7.ScrollBarImageColor3 = Theme.Accent
+    _veeaw5nkxp7.CanvasSize = UDim2.new(0, 0, 0, 0)
+    _veeaw5nkxp7.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    _veeaw5nkxp7.Visible = (tabName == _S("115|185|212|229|224"))
+    _veeaw5nkxp7.Parent = _vqqb9fm06yd
 
-    local _vkelwshjc9m = Instance.new(_S("73|158|146|149|178|188|189|149|170|194|184|190|189"))
-    _vkelwshjc9m.SortOrder = Enum.SortOrder.LayoutOrder
-    _vkelwshjc9m.Padding = UDim.new(0, 6)
-    _vkelwshjc9m.Parent = _vt7osl30v02
+    local _v7q1vn14btv = Instance.new(_S("117|202|190|193|222|232|233|193|214|238|228|234|233"))
+    _v7q1vn14btv.SortOrder = Enum.SortOrder.LayoutOrder
+    _v7q1vn14btv.Padding = UDim.new(0, 6)
+    _v7q1vn14btv.Parent = _veeaw5nkxp7
 
-    local _vtyirahfyca = Instance.new(_S("82|167|155|162|179|182|182|187|192|185"))
-    _vtyirahfyca.PaddingTop = UDim.new(0, 4)
-    _vtyirahfyca.PaddingBottom = UDim.new(0, 8)
-    _vtyirahfyca.PaddingLeft = UDim.new(0, 2)
-    _vtyirahfyca.PaddingRight = UDim.new(0, 6)
-    _vtyirahfyca.Parent = _vt7osl30v02
+    local _vi5icndtc6l = Instance.new(_S("76|161|149|156|173|176|176|181|186|179"))
+    _vi5icndtc6l.PaddingTop = UDim.new(0, 4)
+    _vi5icndtc6l.PaddingBottom = UDim.new(0, 8)
+    _vi5icndtc6l.PaddingLeft = UDim.new(0, 2)
+    _vi5icndtc6l.PaddingRight = UDim.new(0, 6)
+    _vi5icndtc6l.Parent = _veeaw5nkxp7
 
-    _vrbcwulrfru[tabName] = _vt7osl30v02
+    _vlfy2ujsr8w[tabName] = _veeaw5nkxp7
 end
 
-local function _vnkycx3xa95(tabName)
+local function _v4vgp3serpy(tabName)
     State.TabOpen = tabName
-    local info = _vhw2b6jg8if[tabName]
-    if info then _v6av4al7oa2.Text = info.Title end
-    for name, frame in pairs(_vrbcwulrfru) do
+    local info = _vpbq6gikw19[tabName]
+    if info then _v7xvb1wqt00.Text = info.Title end
+    for name, frame in pairs(_vlfy2ujsr8w) do
         frame.Visible = (name == tabName)
     end
-    for name, btn in pairs(_veegirac8r7) do
+    for name, btn in pairs(_vk55m61vbk5) do
         btn.BackgroundTransparency = (name == tabName) and 0 or 0.35
-        if _v1zbmpbrx3u[name] then
-            _v1zbmpbrx3u[name].Visible = (name == tabName)
+        if _vbjpoc019cd[name] then
+            _vbjpoc019cd[name].Visible = (name == tabName)
         end
     end
 end
 
-for tabName, btn in pairs(_veegirac8r7) do
+for tabName, btn in pairs(_vk55m61vbk5) do
     btn.MouseButton1Click:Connect(function()
-        _vnkycx3xa95(tabName)
+        _v4vgp3serpy(tabName)
     end)
 end
 
-local _v1hazk9pc0f = Instance.new(_S("101|171|215|198|210|202"))
-_v1hazk9pc0f.Size = _vee2umr3ro9
-_v1hazk9pc0f.Position = _v9a482le31k
-_v1hazk9pc0f.BackgroundColor3 = Theme.Bg
-_v1hazk9pc0f.BorderSizePixel = 0
-_v1hazk9pc0f.Visible = false
-_v1hazk9pc0f.Parent = _v63jbp5gyvx
-local miniC = Instance.new(_S("92|177|165|159|203|206|202|193|206"))
+local _v87hjdvjbdd = Instance.new(_S("72|142|186|169|181|173"))
+_v87hjdvjbdd.Size = _v1wm4rpvb8p
+_v87hjdvjbdd.Position = _vh1hqzjuk53
+_v87hjdvjbdd.BackgroundColor3 = Theme.Bg
+_v87hjdvjbdd.BorderSizePixel = 0
+_v87hjdvjbdd.Visible = false
+_v87hjdvjbdd.Parent = _vz90e7eogvf
+local miniC = Instance.new(_S("104|189|177|171|215|218|214|205|218"))
 miniC.CornerRadius = UDim.new(0, 10)
-miniC.Parent = _v1hazk9pc0f
-local miniS = Instance.new(_S("105|190|178|188|221|219|216|212|206"))
+miniC.Parent = _v87hjdvjbdd
+local miniS = Instance.new(_S("92|177|165|175|208|206|203|199|193"))
 miniS.Color = Theme.Accent
 miniS.Thickness = 1
 miniS.Transparency = 0.5
-miniS.Parent = _v1hazk9pc0f
+miniS.Parent = _v87hjdvjbdd
 
-local _vwoycwkldub = Instance.new(_S("85|169|186|205|201|161|182|183|186|193"))
-_vwoycwkldub.Size = UDim2.new(0.65, 0, 1, 0)
-_vwoycwkldub.Position = UDim2.new(0.08, 0, 0, 0)
-_vwoycwkldub.BackgroundTransparency = 1
-_vwoycwkldub.Text = _S("126|10061|158|203|231|236|227|223|158|198|243|224")
-_vwoycwkldub.TextColor3 = Theme.Accent
-_vwoycwkldub.Font = Enum.Font.GothamBold
-_vwoycwkldub.TextSize = 12
-_vwoycwkldub.TextXAlignment = Enum.TextXAlignment.Left
-_vwoycwkldub.Parent = _v1hazk9pc0f
+local _vqnkwj4acr5 = Instance.new(_S("72|156|173|192|188|148|169|170|173|180"))
+_vqnkwj4acr5.Size = UDim2.new(0.65, 0, 1, 0)
+_vqnkwj4acr5.Position = UDim2.new(0.08, 0, 0, 0)
+_vqnkwj4acr5.BackgroundTransparency = 1
+_vqnkwj4acr5.Text = _S("90|10025|122|167|195|200|191|187|122|162|207|188")
+_vqnkwj4acr5.TextColor3 = Theme.Accent
+_vqnkwj4acr5.Font = Enum.Font.GothamBold
+_vqnkwj4acr5.TextSize = 12
+_vqnkwj4acr5.TextXAlignment = Enum.TextXAlignment.Left
+_vqnkwj4acr5.Parent = _v87hjdvjbdd
 
-local _vx49tv4cbul = Instance.new(_S("65|149|166|185|181|131|182|181|181|176|175"))
-_vx49tv4cbul.Size = UDim2.new(0, 36, 0, 26)
-_vx49tv4cbul.Position = UDim2.new(1, -42, 0.5, -13)
-_vx49tv4cbul.BackgroundColor3 = Theme.Accent
-_vx49tv4cbul.Text = _S("125|9758")
-_vx49tv4cbul.TextColor3 = Color3.fromRGB(10, 10, 12)
-_vx49tv4cbul.Font = Enum.Font.GothamBold
-_vx49tv4cbul.TextSize = 14
-_vx49tv4cbul.Parent = _v1hazk9pc0f
-local expC = Instance.new(_S("101|186|174|168|212|215|211|202|215"))
+local _vb4lcf1de13 = Instance.new(_S("84|168|185|204|200|150|201|200|200|195|194"))
+_vb4lcf1de13.Size = UDim2.new(0, 36, 0, 26)
+_vb4lcf1de13.Position = UDim2.new(1, -42, 0.5, -13)
+_vb4lcf1de13.BackgroundColor3 = Theme.Accent
+_vb4lcf1de13.Text = _S("93|9726")
+_vb4lcf1de13.TextColor3 = Color3.fromRGB(10, 10, 12)
+_vb4lcf1de13.Font = Enum.Font.GothamBold
+_vb4lcf1de13.TextSize = 14
+_vb4lcf1de13.Parent = _v87hjdvjbdd
+local expC = Instance.new(_S("121|206|194|188|232|235|231|222|235"))
 expC.CornerRadius = UDim.new(0, 6)
-expC.Parent = _vx49tv4cbul
+expC.Parent = _vb4lcf1de13
 
-local _vzqzu0pk5no = 0
+local _vnpt16bcf9s = 0
 
-local function _vem71kuorez(parent, title)
-    _vzqzu0pk5no = _vzqzu0pk5no + 1
+local function _vosu223p3ac(parent, title)
+    _vnpt16bcf9s = _vnpt16bcf9s + 1
     local wrap = Instance.new(_S("115|185|229|212|224|216"))
     wrap.Size = UDim2.new(1, 0, 0, 32)
     wrap.BackgroundTransparency = 1
-    wrap.LayoutOrder = _vzqzu0pk5no
+    wrap.LayoutOrder = _vnpt16bcf9s
     wrap.Parent = parent
 
-    local line = Instance.new(_S("110|180|224|207|219|211"))
+    local line = Instance.new(_S("94|164|208|191|203|195"))
     line.Size = UDim2.new(1, 0, 0, 1)
     line.Position = UDim2.new(0, 0, 0, 0)
     line.BackgroundColor3 = Theme.Accent
@@ -2364,85 +2373,85 @@ local function _vem71kuorez(parent, title)
     line.BorderSizePixel = 0
     line.Parent = wrap
 
-    local _v7mtusf3cmo = Instance.new(_S("123|207|224|243|239|199|220|221|224|231"))
-    _v7mtusf3cmo.Size = UDim2.new(0, 18, 0, 18)
-    _v7mtusf3cmo.Position = UDim2.new(0, 0, 0, 8)
-    _v7mtusf3cmo.BackgroundTransparency = 1
-    _v7mtusf3cmo.Text = _S("117|128390")
-    _v7mtusf3cmo.TextSize = 12
-    _v7mtusf3cmo.Parent = wrap
+    local _v3un54j33wa = Instance.new(_S("70|154|171|190|186|146|167|168|171|178"))
+    _v3un54j33wa.Size = UDim2.new(0, 18, 0, 18)
+    _v3un54j33wa.Position = UDim2.new(0, 0, 0, 8)
+    _v3un54j33wa.BackgroundTransparency = 1
+    _v3un54j33wa.Text = _S("90|128363")
+    _v3un54j33wa.TextSize = 12
+    _v3un54j33wa.Parent = wrap
 
-    local label = Instance.new(_S("130|214|231|250|246|206|227|228|231|238"))
+    local label = Instance.new(_S("92|176|193|212|208|168|189|190|193|200"))
     label.Size = UDim2.new(1, -24, 0, 20)
     label.Position = UDim2.new(0, 22, 0, 8)
     label.BackgroundTransparency = 1
     label.Text = title
     label.TextColor3 = Theme.Text
     label.Font = Enum.Font.GothamBold
-    label.TextSize = _vgle8yoef1q and 11 or 12
+    label.TextSize = _v04hlk5ce7d and 11 or 12
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = wrap
     return wrap
 end
 
-local function _vj8fij4gt5t(parent, name, default, callback)
-    _vzqzu0pk5no = _vzqzu0pk5no + 1
-    local frame = Instance.new(_S("89|159|203|186|198|190"))
+local function _v40dlfttzzw(parent, name, default, callback)
+    _vnpt16bcf9s = _vnpt16bcf9s + 1
+    local frame = Instance.new(_S("63|133|177|160|172|164"))
     frame.Size = UDim2.new(1, 0, 0, 36)
     frame.BackgroundColor3 = Theme.Panel
     frame.BackgroundTransparency = 0.15
     frame.BorderSizePixel = 0
-    frame.LayoutOrder = _vzqzu0pk5no
+    frame.LayoutOrder = _vnpt16bcf9s
     frame.Parent = parent
 
-    local _vsr6fg33r69 = Instance.new(_S("119|204|192|186|230|233|229|220|233"))
-    _vsr6fg33r69.CornerRadius = UDim.new(0, 8)
-    _vsr6fg33r69.Parent = frame
+    local _vq3458w1ts3 = Instance.new(_S("124|209|197|191|235|238|234|225|238"))
+    _vq3458w1ts3.CornerRadius = UDim.new(0, 8)
+    _vq3458w1ts3.Parent = frame
 
-    local _v8imqiz25wt = Instance.new(_S("67|152|140|150|183|181|178|174|168"))
-    _v8imqiz25wt.Color = Theme.Accent
-    _v8imqiz25wt.Thickness = 1
-    _v8imqiz25wt.Transparency = 0.85
-    _v8imqiz25wt.Parent = frame
+    local _vjl3c037s0l = Instance.new(_S("62|147|135|145|178|176|173|169|163"))
+    _vjl3c037s0l.Color = Theme.Accent
+    _vjl3c037s0l.Thickness = 1
+    _vjl3c037s0l.Transparency = 0.85
+    _vjl3c037s0l.Parent = frame
 
-    local label = Instance.new(_S("111|195|212|231|227|187|208|209|212|219"))
+    local label = Instance.new(_S("72|156|173|192|188|148|169|170|173|180"))
     label.Size = UDim2.new(1, -40, 1, 0)
     label.Position = UDim2.new(0, 12, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = Theme.Text
     label.Font = Enum.Font.Gotham
-    label.TextSize = _vgle8yoef1q and 11 or 12
+    label.TextSize = _v04hlk5ce7d and 11 or 12
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
 
-    local check = Instance.new(_S("84|168|185|204|200|150|201|200|200|195|194"))
+    local check = Instance.new(_S("67|151|168|187|183|133|184|183|183|178|177"))
     check.Size = UDim2.new(0, 20, 0, 20)
     check.Position = UDim2.new(1, -30, 0.5, -10)
     check.BackgroundColor3 = default and Theme.Accent or Theme.Input
     check.BorderSizePixel = 0
-    check.Text = default and _S("126|10129") or _S("129|")
+    check.Text = default and _S("64|10067") or _S("113|")
     check.TextColor3 = Color3.fromRGB(10, 10, 12)
     check.Font = Enum.Font.GothamBold
     check.TextSize = 14
     check.Parent = frame
-    local cC = Instance.new(_S("70|155|143|137|181|184|180|171|184"))
+    local cC = Instance.new(_S("107|192|180|174|218|221|217|208|221"))
     cC.CornerRadius = UDim.new(0, 4)
     cC.Parent = check
 
-    local _v2cf4uf95au = default
+    local _vl4t8xlq6yg = default
     check.MouseButton1Click:Connect(function()
-        _v2cf4uf95au = not _v2cf4uf95au
-        check.BackgroundColor3 = _v2cf4uf95au and Theme.Accent or Theme.Input
-        check.Text = _v2cf4uf95au and _S("72|10075") or _S("83|")
-        callback(_v2cf4uf95au)
+        _vl4t8xlq6yg = not _vl4t8xlq6yg
+        check.BackgroundColor3 = _vl4t8xlq6yg and Theme.Accent or Theme.Input
+        check.Text = _vl4t8xlq6yg and _S("63|10066") or _S("72|")
+        callback(_vl4t8xlq6yg)
     end)
     return frame, check
 end
 
-local function _vnblxjh1qhs(parent, name, _, callback)
-    _vzqzu0pk5no = _vzqzu0pk5no + 1
-    local btn = Instance.new(_S("92|176|193|212|208|158|209|208|208|203|202"))
+local function _vbho7yb8i6d(parent, name, _, callback)
+    _vnpt16bcf9s = _vnpt16bcf9s + 1
+    local btn = Instance.new(_S("89|173|190|209|205|155|206|205|205|200|199"))
     btn.Size = UDim2.new(1, 0, 0, 34)
     btn.BackgroundColor3 = Theme.Panel
     btn.BackgroundTransparency = 0.1
@@ -2450,145 +2459,145 @@ local function _vnblxjh1qhs(parent, name, _, callback)
     btn.Text = name
     btn.TextColor3 = Theme.Text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = _vgle8yoef1q and 11 or 12
-    btn.LayoutOrder = _vzqzu0pk5no
+    btn.TextSize = _v04hlk5ce7d and 11 or 12
+    btn.LayoutOrder = _vnpt16bcf9s
     btn.AutoButtonColor = false
     btn.Parent = parent
 
-    local _vsr6fg33r69 = Instance.new(_S("92|177|165|159|203|206|202|193|206"))
-    _vsr6fg33r69.CornerRadius = UDim.new(0, 8)
-    _vsr6fg33r69.Parent = btn
+    local _vq3458w1ts3 = Instance.new(_S("107|192|180|174|218|221|217|208|221"))
+    _vq3458w1ts3.CornerRadius = UDim.new(0, 8)
+    _vq3458w1ts3.Parent = btn
 
-    local _v8imqiz25wt = Instance.new(_S("93|178|166|176|209|207|204|200|194"))
-    _v8imqiz25wt.Color = Theme.Accent
-    _v8imqiz25wt.Thickness = 1
-    _v8imqiz25wt.Transparency = 0.55
-    _v8imqiz25wt.Parent = btn
+    local _vjl3c037s0l = Instance.new(_S("127|212|200|210|243|241|238|234|228"))
+    _vjl3c037s0l.Color = Theme.Accent
+    _vjl3c037s0l.Thickness = 1
+    _vjl3c037s0l.Transparency = 0.55
+    _vjl3c037s0l.Parent = btn
 
     btn.MouseEnter:Connect(function()
         btn.BackgroundColor3 = Theme.Input
-        _v8imqiz25wt.Transparency = 0.2
+        _vjl3c037s0l.Transparency = 0.2
     end)
     btn.MouseLeave:Connect(function()
         btn.BackgroundColor3 = Theme.Panel
         btn.BackgroundTransparency = 0.1
-        _v8imqiz25wt.Transparency = 0.55
+        _vjl3c037s0l.Transparency = 0.55
     end)
     btn.MouseButton1Click:Connect(callback)
     return btn
 end
 
-local function _vjx3w9kzjl8(parent, name, minVal, maxVal, defaultVal, callback)
-    _vzqzu0pk5no = _vzqzu0pk5no + 1
-    local frame = Instance.new(_S("108|178|222|205|217|209"))
+local function _vbwqm1ke6fr(parent, name, minVal, maxVal, defaultVal, callback)
+    _vnpt16bcf9s = _vnpt16bcf9s + 1
+    local frame = Instance.new(_S("73|143|187|170|182|174"))
     frame.Size = UDim2.new(1, 0, 0, 48)
     frame.BackgroundColor3 = Theme.Panel
     frame.BackgroundTransparency = 0.15
     frame.BorderSizePixel = 0
-    frame.LayoutOrder = _vzqzu0pk5no
+    frame.LayoutOrder = _vnpt16bcf9s
     frame.Parent = parent
 
-    local _vsr6fg33r69 = Instance.new(_S("119|204|192|186|230|233|229|220|233"))
-    _vsr6fg33r69.CornerRadius = UDim.new(0, 8)
-    _vsr6fg33r69.Parent = frame
+    local _vq3458w1ts3 = Instance.new(_S("130|215|203|197|241|244|240|231|244"))
+    _vq3458w1ts3.CornerRadius = UDim.new(0, 8)
+    _vq3458w1ts3.Parent = frame
 
-    local label = Instance.new(_S("74|158|175|194|190|150|171|172|175|182"))
+    local label = Instance.new(_S("129|213|230|249|245|205|226|227|230|237"))
     label.Size = UDim2.new(0.7, 0, 0, 18)
     label.Position = UDim2.new(0, 12, 0, 6)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = Theme.SubText
     label.Font = Enum.Font.Gotham
-    label.TextSize = _vgle8yoef1q and 10 or 11
+    label.TextSize = _v04hlk5ce7d and 10 or 11
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
 
-    local _v52gkckjilb = Instance.new(_S("125|209|226|245|241|201|222|223|226|233"))
-    _v52gkckjilb.Size = UDim2.new(0, 50, 0, 18)
-    _v52gkckjilb.Position = UDim2.new(1, -58, 0, 6)
-    _v52gkckjilb.BackgroundTransparency = 1
-    _v52gkckjilb.Text = tostring(defaultVal)
-    _v52gkckjilb.TextColor3 = Theme.Accent
-    _v52gkckjilb.Font = Enum.Font.GothamBold
-    _v52gkckjilb.TextSize = 11
-    _v52gkckjilb.TextXAlignment = Enum.TextXAlignment.Right
-    _v52gkckjilb.Parent = frame
+    local _vgsw7wjbbqr = Instance.new(_S("82|166|183|202|198|158|179|180|183|190"))
+    _vgsw7wjbbqr.Size = UDim2.new(0, 50, 0, 18)
+    _vgsw7wjbbqr.Position = UDim2.new(1, -58, 0, 6)
+    _vgsw7wjbbqr.BackgroundTransparency = 1
+    _vgsw7wjbbqr.Text = tostring(defaultVal)
+    _vgsw7wjbbqr.TextColor3 = Theme.Accent
+    _vgsw7wjbbqr.Font = Enum.Font.GothamBold
+    _vgsw7wjbbqr.TextSize = 11
+    _vgsw7wjbbqr.TextXAlignment = Enum.TextXAlignment.Right
+    _vgsw7wjbbqr.Parent = frame
 
-    local _v0dur5vvlx5 = Instance.new(_S("130|200|244|227|239|231"))
-    _v0dur5vvlx5.Size = UDim2.new(1, -24, 0, 8)
-    _v0dur5vvlx5.Position = UDim2.new(0, 12, 0, 30)
-    _v0dur5vvlx5.BackgroundColor3 = Theme.Input
-    _v0dur5vvlx5.BorderSizePixel = 0
-    _v0dur5vvlx5.Parent = frame
+    local _vv04ubo0nha = Instance.new(_S("118|188|232|215|227|219"))
+    _vv04ubo0nha.Size = UDim2.new(1, -24, 0, 8)
+    _vv04ubo0nha.Position = UDim2.new(0, 12, 0, 30)
+    _vv04ubo0nha.BackgroundColor3 = Theme.Input
+    _vv04ubo0nha.BorderSizePixel = 0
+    _vv04ubo0nha.Parent = frame
 
-    local _vdh1rkfzg2j = Instance.new(_S("88|173|161|155|199|202|198|189|202"))
-    _vdh1rkfzg2j.CornerRadius = UDim.new(1, 0)
-    _vdh1rkfzg2j.Parent = _v0dur5vvlx5
+    local _vig0e07yiip = Instance.new(_S("74|159|147|141|185|188|184|175|188"))
+    _vig0e07yiip.CornerRadius = UDim.new(1, 0)
+    _vig0e07yiip.Parent = _vv04ubo0nha
 
     local pct = (defaultVal - minVal) / (maxVal - minVal)
-    local _v4nep7hp53m = Instance.new(_S("96|166|210|193|205|197"))
-    _v4nep7hp53m.Size = UDim2.new(pct, 0, 1, 0)
-    _v4nep7hp53m.BackgroundColor3 = Theme.Accent
-    _v4nep7hp53m.BorderSizePixel = 0
-    _v4nep7hp53m.Parent = _v0dur5vvlx5
-    local _vmmy29f5ec8 = Instance.new(_S("77|162|150|144|188|191|187|178|191"))
-    _vmmy29f5ec8.CornerRadius = UDim.new(1, 0)
-    _vmmy29f5ec8.Parent = _v4nep7hp53m
+    local _vqqm7vc6d37 = Instance.new(_S("98|168|212|195|207|199"))
+    _vqqm7vc6d37.Size = UDim2.new(pct, 0, 1, 0)
+    _vqqm7vc6d37.BackgroundColor3 = Theme.Accent
+    _vqqm7vc6d37.BorderSizePixel = 0
+    _vqqm7vc6d37.Parent = _vv04ubo0nha
+    local _v8wce317whm = Instance.new(_S("98|183|171|165|209|212|208|199|212"))
+    _v8wce317whm.CornerRadius = UDim.new(1, 0)
+    _v8wce317whm.Parent = _vqqm7vc6d37
 
-    local _v7wmes7fzk8 = false
-    local function _v4knuqjv62r(input)
-        local relX = math.clamp((input.Position.X - _v0dur5vvlx5.AbsolutePosition.X) / _v0dur5vvlx5.AbsoluteSize.X, 0, 1)
+    local _vckr60mg9tw = false
+    local function _v39z12pb4s7(input)
+        local relX = math.clamp((input.Position.X - _vv04ubo0nha.AbsolutePosition.X) / _vv04ubo0nha.AbsoluteSize.X, 0, 1)
         local val = math.floor(minVal + (maxVal - minVal) * relX)
-        _v4nep7hp53m.Size = UDim2.new(relX, 0, 1, 0)
-        _v52gkckjilb.Text = tostring(val)
+        _vqqm7vc6d37.Size = UDim2.new(relX, 0, 1, 0)
+        _vgsw7wjbbqr.Text = tostring(val)
         callback(val)
     end
 
-    _v0dur5vvlx5.InputBegan:Connect(function(input)
+    _vv04ubo0nha.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            _v7wmes7fzk8 = true
-            _v4knuqjv62r(input)
+            _vckr60mg9tw = true
+            _v39z12pb4s7(input)
         end
     end)
-    _vnqiki4fvlv.InputChanged:Connect(function(input)
-        if _v7wmes7fzk8 and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-            _v4knuqjv62r(input)
+    _vlokuaz0syl.InputChanged:Connect(function(input)
+        if _vckr60mg9tw and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+            _v39z12pb4s7(input)
         end
     end)
-    _vnqiki4fvlv.InputEnded:Connect(function(input)
+    _vlokuaz0syl.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            _v7wmes7fzk8 = false
+            _vckr60mg9tw = false
         end
     end)
     return frame
 end
 
-local function _v6z8s0kx4p9(parent, name, defaultText, callback)
-    _vzqzu0pk5no = _vzqzu0pk5no + 1
-    local frame = Instance.new(_S("114|184|228|211|223|215"))
+local function _vk0vwewlyez(parent, name, defaultText, callback)
+    _vnpt16bcf9s = _vnpt16bcf9s + 1
+    local frame = Instance.new(_S("74|144|188|171|183|175"))
     frame.Size = UDim2.new(1, 0, 0, 40)
     frame.BackgroundColor3 = Theme.Panel
     frame.BackgroundTransparency = 0.15
     frame.BorderSizePixel = 0
-    frame.LayoutOrder = _vzqzu0pk5no
+    frame.LayoutOrder = _vnpt16bcf9s
     frame.Parent = parent
 
-    local _vsr6fg33r69 = Instance.new(_S("81|166|154|148|192|195|191|182|195"))
-    _vsr6fg33r69.CornerRadius = UDim.new(0, 8)
-    _vsr6fg33r69.Parent = frame
+    local _vq3458w1ts3 = Instance.new(_S("68|153|141|135|179|182|178|169|182"))
+    _vq3458w1ts3.CornerRadius = UDim.new(0, 8)
+    _vq3458w1ts3.Parent = frame
 
-    local label = Instance.new(_S("121|205|222|241|237|197|218|219|222|229"))
+    local label = Instance.new(_S("113|197|214|233|229|189|210|211|214|221"))
     label.Size = UDim2.new(0.38, 0, 1, 0)
     label.Position = UDim2.new(0, 10, 0, 0)
     label.BackgroundTransparency = 1
     label.Text = name
     label.TextColor3 = Theme.SubText
     label.Font = Enum.Font.Gotham
-    label.TextSize = _vgle8yoef1q and 10 or 11
+    label.TextSize = _v04hlk5ce7d and 10 or 11
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
 
-    local input = Instance.new(_S("83|167|184|203|199|149|194|203"))
+    local input = Instance.new(_S("129|213|230|249|245|195|240|249"))
     input.Size = UDim2.new(0.55, 0, 0, 26)
     input.Position = UDim2.new(0.42, 0, 0.5, -13)
     input.BackgroundColor3 = Theme.Input
@@ -2598,19 +2607,19 @@ local function _v6z8s0kx4p9(parent, name, defaultText, callback)
     input.TextColor3 = Theme.Text
     input.PlaceholderColor3 = Theme.Muted
     input.Font = Enum.Font.Gotham
-    input.TextSize = _vgle8yoef1q and 10 or 11
+    input.TextSize = _v04hlk5ce7d and 10 or 11
     input.ClearTextOnFocus = false
     input.Parent = frame
 
-    local _vvaxkw7ic9u = Instance.new(_S("68|153|141|135|179|182|178|169|182"))
-    _vvaxkw7ic9u.CornerRadius = UDim.new(0, 6)
-    _vvaxkw7ic9u.Parent = input
+    local _vakdrxbmsh3 = Instance.new(_S("85|170|158|152|196|199|195|186|199"))
+    _vakdrxbmsh3.CornerRadius = UDim.new(0, 6)
+    _vakdrxbmsh3.Parent = input
 
-    local _vf2lplfv921 = Instance.new(_S("73|158|146|156|189|187|184|180|174"))
-    _vf2lplfv921.Color = Theme.Accent
-    _vf2lplfv921.Thickness = 1
-    _vf2lplfv921.Transparency = 0.75
-    _vf2lplfv921.Parent = input
+    local _v4vmt5yhvo2 = Instance.new(_S("71|156|144|154|187|185|182|178|172"))
+    _v4vmt5yhvo2.Color = Theme.Accent
+    _v4vmt5yhvo2.Thickness = 1
+    _v4vmt5yhvo2.Transparency = 0.75
+    _v4vmt5yhvo2.Parent = input
 
     input.FocusLost:Connect(function()
         callback(input.Text)
@@ -2618,242 +2627,242 @@ local function _v6z8s0kx4p9(parent, name, defaultText, callback)
     return frame, input
 end
 
-local function _ve3tsiui727()
-    _vzqzu0pk5no = 0
+local function _vfaort8wf1c()
+    _vnpt16bcf9s = 0
 end
 
-local _vhx920me9zg = _vrbcwulrfru[_S("101|171|198|215|210")]
-_ve3tsiui727()
+local _vvtb7aw4srh = _vlfy2ujsr8w[_S("101|171|198|215|210")]
+_vfaort8wf1c()
 
-_vem71kuorez(_vhx920me9zg, _S("111|128313|143|194|195|176|195|194"))
-_vzqzu0pk5no = _vzqzu0pk5no + 1
-local _vrf3wm1ksn3 = Instance.new(_S("76|146|190|173|185|177"))
-_vrf3wm1ksn3.Size = UDim2.new(1, 0, 0, 52)
-_vrf3wm1ksn3.BackgroundColor3 = Theme.Panel
-_vrf3wm1ksn3.BackgroundTransparency = 0.1
-_vrf3wm1ksn3.BorderSizePixel = 0
-_vrf3wm1ksn3.LayoutOrder = _vzqzu0pk5no
-_vrf3wm1ksn3.Parent = _vhx920me9zg
+_vosu223p3ac(_vvtb7aw4srh, _S("121|128323|153|204|205|186|205|204"))
+_vnpt16bcf9s = _vnpt16bcf9s + 1
+local _vruoax9arz1 = Instance.new(_S("77|147|191|174|186|178"))
+_vruoax9arz1.Size = UDim2.new(1, 0, 0, 52)
+_vruoax9arz1.BackgroundColor3 = Theme.Panel
+_vruoax9arz1.BackgroundTransparency = 0.1
+_vruoax9arz1.BorderSizePixel = 0
+_vruoax9arz1.LayoutOrder = _vnpt16bcf9s
+_vruoax9arz1.Parent = _vvtb7aw4srh
 
-local _vjb01t391ji = Instance.new(_S("111|196|184|178|222|225|221|212|225"))
-_vjb01t391ji.CornerRadius = UDim.new(0, 8)
-_vjb01t391ji.Parent = _vrf3wm1ksn3
+local _vm5alw99m28 = Instance.new(_S("111|196|184|178|222|225|221|212|225"))
+_vm5alw99m28.CornerRadius = UDim.new(0, 8)
+_vm5alw99m28.Parent = _vruoax9arz1
 
-local _vtiu8c369hs = Instance.new(_S("63|148|136|146|179|177|174|170|164"))
-_vtiu8c369hs.Color = Theme.Accent
-_vtiu8c369hs.Thickness = 1
-_vtiu8c369hs.Transparency = 0.8
-_vtiu8c369hs.Parent = _vrf3wm1ksn3
+local _vvfisk120xm = Instance.new(_S("110|195|183|193|226|224|221|217|211"))
+_vvfisk120xm.Color = Theme.Accent
+_vvfisk120xm.Thickness = 1
+_vvfisk120xm.Transparency = 0.8
+_vvfisk120xm.Parent = _vruoax9arz1
 
-local _vnsr1o0tdho = Instance.new(_S("118|202|219|238|234|194|215|216|219|226"))
-_vnsr1o0tdho.Name = _S("92|175|208|189|208|207|176|193|212|208")
-_vnsr1o0tdho.Size = UDim2.new(1, -12, 0, 28)
-_vnsr1o0tdho.Position = UDim2.new(0, 10, 0, 4)
-_vnsr1o0tdho.BackgroundTransparency = 1
-_vnsr1o0tdho.Text = _S("89|166|194|199|190|189|147|121|137|121|213|121|172|190|197|197|204|147|121|137|121|213|121|173|186|203|192|190|205|147|121|167|200|199|190")
-_vnsr1o0tdho.TextColor3 = Theme.SubText
-_vnsr1o0tdho.Font = Enum.Font.Gotham
-_vnsr1o0tdho.TextSize = _vgle8yoef1q and 9 or 10
-_vnsr1o0tdho.TextXAlignment = Enum.TextXAlignment.Left
-_vnsr1o0tdho.TextWrapped = true
-_vnsr1o0tdho.Parent = _vrf3wm1ksn3
+local _vipiftt7ogd = Instance.new(_S("83|167|184|203|199|159|180|181|184|191"))
+_vipiftt7ogd.Name = _S("130|213|246|227|246|245|214|231|250|246")
+_vipiftt7ogd.Size = UDim2.new(1, -12, 0, 28)
+_vipiftt7ogd.Position = UDim2.new(0, 10, 0, 4)
+_vipiftt7ogd.BackgroundTransparency = 1
+_vipiftt7ogd.Text = _S("65|142|170|175|166|165|123|97|113|97|189|97|148|166|173|173|180|123|97|113|97|189|97|149|162|179|168|166|181|123|97|143|176|175|166")
+_vipiftt7ogd.TextColor3 = Theme.SubText
+_vipiftt7ogd.Font = Enum.Font.Gotham
+_vipiftt7ogd.TextSize = _v04hlk5ce7d and 9 or 10
+_vipiftt7ogd.TextXAlignment = Enum.TextXAlignment.Left
+_vipiftt7ogd.TextWrapped = true
+_vipiftt7ogd.Parent = _vruoax9arz1
 
-CashLabel = Instance.new(_S("77|161|178|197|193|153|174|175|178|185"))
-CashLabel.Name = _S("111|178|208|226|215|195|212|231|227")
+CashLabel = Instance.new(_S("74|158|175|194|190|150|171|172|175|182"))
+CashLabel.Name = _S("108|175|205|223|212|192|209|228|224")
 CashLabel.Size = UDim2.new(1, -12, 0, 18)
 CashLabel.Position = UDim2.new(0, 10, 0, 30)
 CashLabel.BackgroundTransparency = 1
-CashLabel.Text = _S("82|149|179|197|186|140|114|130|114|206|114|169|183|187|185|186|198|140|114|130|129|131|130|130")
+CashLabel.Text = _S("93|160|190|208|197|151|125|141|125|217|125|180|194|198|196|197|209|151|125|141|140|142|141|141")
 CashLabel.TextColor3 = Theme.Accent
 CashLabel.Font = Enum.Font.GothamBold
-CashLabel.TextSize = _vgle8yoef1q and 9 or 10
+CashLabel.TextSize = _v04hlk5ce7d and 9 or 10
 CashLabel.TextXAlignment = Enum.TextXAlignment.Left
-CashLabel.Parent = _vrf3wm1ksn3
+CashLabel.Parent = _vruoax9arz1
 
-local function _vykn7t4hb8g()
-    _vnsr1o0tdho.Text = _S("97|174|202|207|198|197|155|129") .. State.FarmCount .. _S("92|124|216|124|175|193|200|200|207|150|124") .. State.SellCount .. _S("97|129|221|129|165|214|209|198|155|129") .. State.DupeCount .. _S("82|114|206|114|166|179|196|185|183|198|140|114") .. (State.CurrentTarget or _S("108|186|219|218|209"))
+local function _vvuv0mfvkex()
+    _vipiftt7ogd.Text = _S("72|149|177|182|173|172|130|104") .. State.FarmCount .. _S("97|129|221|129|180|198|205|205|212|155|129") .. State.SellCount .. _S("66|98|190|98|134|183|178|167|124|98") .. State.DupeCount .. _S("123|155|247|155|207|220|237|226|224|239|181|155") .. (State.CurrentTarget or _S("73|151|184|183|174"))
     if CashLabel then
-        CashLabel.Text = _S("76|143|173|191|180|134|108") .. _vkd8xnh0cyx() .. _S("66|98|190|98|153|167|171|169|170|182|124|98") .. math.floor(_v03c4c37rjx()) .. _S("63|110") .. math.floor(_vrbly5rkwrv())
+        CashLabel.Text = _S("76|143|173|191|180|134|108") .. _vmay3n2rhhp() .. _S("101|133|225|133|188|202|206|204|205|217|159|133") .. math.floor(_v8gl3yj8joa()) .. _S("86|133") .. math.floor(_v14jr4ebc0z())
     end
 end
 
-_vem71kuorez(_vhx920me9zg, _S("122|128382|154|205|199|187|204|206|154|198|201|201|202"))
+_vosu223p3ac(_vvtb7aw4srh, _S("80|128340|112|163|157|145|162|164|112|156|159|159|160"))
 
-_vj8fij4gt5t(_vhx920me9zg, _S("92|175|201|189|206|208|124|168|203|203|204|124|132|162|189|206|201|8686|175|193|200|200|8686|177|204|195|206|189|192|193|133"), false, function(val)
-    _v7waz68vjhn.SmartLoop = val
-    if val then _v1yqj5byw0q() else _vjrd7o2l9jf() end
+_v40dlfttzzw(_vvtb7aw4srh, _S("120|203|229|217|234|236|152|196|231|231|232|152|160|190|217|234|229|8714|203|221|228|228|8714|205|232|223|234|217|220|221|161"), false, function(val)
+    _v6sw8escnb8.SmartLoop = val
+    if val then _vfxmh0gf14j() else _vz2b4tz2i8v() end
 end)
 
-_vj8fij4gt5t(_vhx920me9zg, _S("113|178|230|229|224|145|182|226|230|218|225|145|179|214|228|229|145|193|218|212|220|210|233|214"), false, function(val)
-    _v7waz68vjhn.AutoEquipPickaxe = val
+_v40dlfttzzw(_vvtb7aw4srh, _S("117|182|234|233|228|149|186|230|234|222|229|149|183|218|232|233|149|197|222|216|224|214|237|218"), false, function(val)
+    _v6sw8escnb8.AutoEquipPickaxe = val
 end)
 
-_vj8fij4gt5t(_vhx920me9zg, _S("94|176|191|206|199|194|126|171|199|204|195|126|134|203|211|202|210|199|139|198|199|210|135"), false, function(val)
-    _v7waz68vjhn.RapidMine = val
+_v40dlfttzzw(_vvtb7aw4srh, _S("124|206|221|236|229|224|156|201|229|234|225|156|164|233|241|232|240|229|169|228|229|240|165"), false, function(val)
+    _v6sw8escnb8.RapidMine = val
 end)
 
-_vjx3w9kzjl8(_vhx920me9zg, _S("108|190|205|220|213|208|140|185|213|218|209|140|180|213|224|223"), 1, 10, 3, function(val)
-    _v7waz68vjhn.RapidMineCount = val
+_vbwqm1ke6fr(_vvtb7aw4srh, _S("121|203|218|233|226|221|153|198|226|231|222|153|193|226|237|236"), 1, 10, 3, function(val)
+    _v6sw8escnb8.RapidMineCount = val
 end)
 
-_vj8fij4gt5t(_vhx920me9zg, _S("96|161|213|212|207|128|163|207|204|204|197|195|212|128|164|210|207|208|211"), false, function(val)
-    _v7waz68vjhn.AutoCollectDrops = val
-    if val then _v0ngom9zhsp() else State.DropCollectConn = nil end
+_v40dlfttzzw(_vvtb7aw4srh, _S("100|165|217|216|211|132|167|211|208|208|201|199|216|132|168|214|211|212|215"), false, function(val)
+    _v6sw8escnb8.AutoCollectDrops = val
+    if val then _vbxesk88vl2() else State.DropCollectConn = nil end
 end)
 
-_vj8fij4gt5t(_vhx920me9zg, _S("113|179|234|225|210|228|228|145|193|227|224|222|225|229|145|185|224|221|213"), true, function(val)
-    _v7waz68vjhn.BypassPromptHold = val
+_v40dlfttzzw(_vvtb7aw4srh, _S("125|191|246|237|222|240|240|157|205|239|236|234|237|241|157|197|236|233|225"), true, function(val)
+    _v6sw8escnb8.BypassPromptHold = val
 end)
 
-_vj8fij4gt5t(_vhx920me9zg, _S("127|211|246|228|228|237|159|211|228|235|228|239|238|241|243"), false, function(val)
-    _v7waz68vjhn.TweenTeleport = val
+_v40dlfttzzw(_vvtb7aw4srh, _S("97|181|216|198|198|207|129|181|198|205|198|209|208|211|213"), false, function(val)
+    _v6sw8escnb8.TweenTeleport = val
 end)
 
-_vem71kuorez(_vhx920me9zg, _S("100|128019|132|179|182|169|132|170|173|176|184|169|182"))
+_vosu223p3ac(_vvtb7aw4srh, _S("80|127999|112|159|162|149|112|150|153|156|164|149|162"))
 
-_vj8fij4gt5t(_vhx920me9zg, _S("107|176|217|204|205|215|208|139|186|221|208|139|177|212|215|223|208|221"), false, function(val)
-    _v7waz68vjhn.OreFilterEnabled = val
+_v40dlfttzzw(_vvtb7aw4srh, _S("87|156|197|184|185|195|188|119|166|201|188|119|157|192|195|203|188|201"), false, function(val)
+    _v6sw8escnb8.OreFilterEnabled = val
 end)
 
-_v6z8s0kx4p9(_vhx920me9zg, _S("107|194|211|212|223|208|215|212|222|223|139|186|221|208|222"), _v7waz68vjhn.OreFilter, function(text)
-    _v7waz68vjhn.OreFilter = text
+_vk0vwewlyez(_vvtb7aw4srh, _S("99|186|203|204|215|200|207|204|214|215|131|178|213|200|214"), _v6sw8escnb8.OreFilter, function(text)
+    _v6sw8escnb8.OreFilter = text
 end)
 
-_v6z8s0kx4p9(_vhx920me9zg, _S("91|157|199|188|190|198|199|196|206|207|123|170|205|192|206"), _v7waz68vjhn.OreBlacklist, function(text)
-    _v7waz68vjhn.OreBlacklist = text
+_vk0vwewlyez(_vvtb7aw4srh, _S("116|182|224|213|215|223|224|221|231|232|148|195|230|217|231"), _v6sw8escnb8.OreBlacklist, function(text)
+    _v6sw8escnb8.OreBlacklist = text
 end)
 
-_vem71kuorez(_vhx920me9zg, _S("75|10010|107|140|160|159|154|107|145|140|157|152"))
+_vosu223p3ac(_vvtb7aw4srh, _S("126|10061|158|191|211|210|205|158|196|191|208|203"))
 
-_vj8fij4gt5t(_vhx920me9zg, _S("130|195|247|246|241|162|200|227|244|239|162|212|241|229|237|245|177|197|244|251|245|246|227|238|245"), false, function(val)
-    _v7waz68vjhn.AutoFarm = val
-    if val then _vmxf3w0runt() else _vg3ft1nprj0() end
+_v40dlfttzzw(_vvtb7aw4srh, _S("88|153|205|204|199|120|158|185|202|197|120|170|199|187|195|203|135|155|202|209|203|204|185|196|203"), false, function(val)
+    _v6sw8escnb8.AutoFarm = val
+    if val then _vuzi1rglazv() else _vfd9vsjy6dq() end
 end)
 
-_vj8fij4gt5t(_vhx920me9zg, _S("109|189|223|214|220|223|214|225|230|141|181|214|212|213|210|224|225|141|195|206|217|226|210"), false, function(val)
-    _v7waz68vjhn.PriorityHighestValue = val
-    if val then _v7waz68vjhn.PriorityClosest = false end
+_v40dlfttzzw(_vvtb7aw4srh, _S("82|162|196|187|193|196|187|198|203|114|154|187|185|186|183|197|198|114|168|179|190|199|183"), false, function(val)
+    _v6sw8escnb8.PriorityHighestValue = val
+    if val then _v6sw8escnb8.PriorityClosest = false end
 end)
 
-_vj8fij4gt5t(_vhx920me9zg, _S("115|195|229|220|226|229|220|231|236|147|182|223|226|230|216|230|231"), true, function(val)
-    _v7waz68vjhn.PriorityClosest = val
-    if val then _v7waz68vjhn.PriorityHighestValue = false end
+_v40dlfttzzw(_vvtb7aw4srh, _S("94|174|208|199|205|208|199|210|215|126|161|202|205|209|195|209|210"), true, function(val)
+    _v6sw8escnb8.PriorityClosest = val
+    if val then _v6sw8escnb8.PriorityHighestValue = false end
 end)
 
-_vjx3w9kzjl8(_vhx920me9zg, _S("119|189|216|233|228|151|201|216|219|224|236|234"), 50, 2000, 500, function(val)
-    _v7waz68vjhn.FarmRadius = val
+_vbwqm1ke6fr(_vvtb7aw4srh, _S("107|177|204|221|216|139|189|204|207|212|224|222"), 50, 2000, 500, function(val)
+    _v6sw8escnb8.FarmRadius = val
 end)
 
-_vjx3w9kzjl8(_vhx920me9zg, _S("86|156|183|200|195|118|154|187|194|183|207"), 1, 100, 5, function(val)
-    _v7waz68vjhn.FarmDelay = val / 100
+_vbwqm1ke6fr(_vvtb7aw4srh, _S("130|200|227|244|239|162|198|231|238|227|251"), 1, 100, 5, function(val)
+    _v6sw8escnb8.FarmDelay = val / 100
 end)
 
-_vnblxjh1qhs(_vhx920me9zg, _S("86|128355|118|169|185|183|196|118|168|197|185|193|201|118|164|197|205"), Color3.fromRGB(40, 80, 160), function()
-    local rocks = _v1y2wurcl0l()
-    _vv6vvad4d9h(_S("60|130|171|177|170|160|92") .. #rocks .. _S("87|119|201|198|186|194|202|134|186|201|208|202|203|184|195|202"))
+_vbho7yb8i6d(_vvtb7aw4srh, _S("79|128348|111|162|178|176|189|111|161|190|178|186|194|111|157|190|198"), Color3.fromRGB(40, 80, 160), function()
+    local rocks = _vvkj7mz5kfi()
+    _vke6snlfgah(_S("99|169|210|216|209|199|131") .. #rocks .. _S("66|98|180|177|165|173|181|113|165|180|187|181|182|163|174|181"))
 end)
 
-_vnblxjh1qhs(_vhx920me9zg, _S("108|10043|140|185|213|218|209|140|186|209|205|222|209|223|224|140|190|219|207|215"), Color3.fromRGB(40, 120, 60), function()
-    local rocks = _v1y2wurcl0l()
+_vbho7yb8i6d(_vvtb7aw4srh, _S("86|10021|118|163|191|196|187|118|164|187|183|200|187|201|202|118|168|197|185|193"), Color3.fromRGB(40, 120, 60), function()
+    local rocks = _vvkj7mz5kfi()
     if #rocks > 0 then
-        _vf37ku9f4vl(rocks[1])
+        _vc594g6v3oz(rocks[1])
     else
-        _vv6vvad4d9h(_S("82|160|193|114|196|193|181|189|197|114|184|193|199|192|182|115"))
+        _vke6snlfgah(_S("77|155|188|109|191|188|176|184|192|109|179|188|194|187|177|110"))
     end
 end)
 
-_vnblxjh1qhs(_vhx920me9zg, _S("120|10009|152|187|217|219|224|221|152|202|221|229|231|236|221|235"), Color3.fromRGB(100, 50, 150), function()
-    _v9ohaz27yl5()
+_vbho7yb8i6d(_vvtb7aw4srh, _S("102|9991|134|169|199|201|206|203|134|184|203|211|213|218|203|217"), Color3.fromRGB(100, 50, 150), function()
+    _v7j1h15u98j()
 end)
 
-local _vo7q1f12spj = _vrbcwulrfru[_S("125|208|226|233|233")]
-_ve3tsiui727()
+local _vlkb6va96wh = _vlfy2ujsr8w[_S("116|199|217|224|224")]
+_vfaort8wf1c()
 
-_vem71kuorez(_vo7q1f12spj, _S("101|128277|133|166|186|185|180|133|184|170|177|177"))
+_vosu223p3ac(_vlkb6va96wh, _S("70|128246|102|135|155|154|149|102|153|139|146|146"))
 
-_vj8fij4gt5t(_vo7q1f12spj, _S("74|157|175|182|182|106|161|178|175|184|106|140|171|173|181|186|171|173|181|106|144|191|182|182"), true, function(val)
-    _v7waz68vjhn.SellWhenFull = val
+_v40dlfttzzw(_vlkb6va96wh, _S("114|197|215|222|222|146|201|218|215|224|146|180|211|213|221|226|211|213|221|146|184|231|222|222"), true, function(val)
+    _v6sw8escnb8.SellWhenFull = val
 end)
 
-_vjx3w9kzjl8(_vo7q1f12spj, _S("119|202|220|227|227|151|196|224|229|151|186|216|234|223|151|203|223|233|220|234|223|230|227|219"), 0, 500000, 0, function(val)
-    _v7waz68vjhn.SellMinCash = val
+_vbwqm1ke6fr(_vlkb6va96wh, _S("95|178|196|203|203|127|172|200|205|127|162|192|210|199|127|179|199|209|196|210|199|206|203|195"), 0, 500000, 0, function(val)
+    _v6sw8escnb8.SellMinCash = val
 end)
 
-_vj8fij4gt5t(_vo7q1f12spj, _S("85|150|202|201|196|117|168|186|193|193"), false, function(val)
-    _v7waz68vjhn.AutoSell = val
-    if val then _vfe6auuyq2a() else _v6ljjlim2a7() end
+_v40dlfttzzw(_vlkb6va96wh, _S("73|138|190|189|184|105|156|174|181|181"), false, function(val)
+    _v6sw8escnb8.AutoSell = val
+    if val then _vbgmozo1ahz() else _vuq97ifew3y() end
 end)
 
-_vjx3w9kzjl8(_vo7q1f12spj, _S("81|164|182|189|189|113|163|178|181|186|198|196"), 50, 1000, 300, function(val)
-    _v7waz68vjhn.SellRadius = val
+_vbwqm1ke6fr(_vlkb6va96wh, _S("129|212|230|237|237|161|211|226|229|234|246|244"), 50, 1000, 300, function(val)
+    _v6sw8escnb8.SellRadius = val
 end)
 
-_vjx3w9kzjl8(_vo7q1f12spj, _S("91|174|192|199|199|123|159|192|199|188|212"), 1, 50, 3, function(val)
-    _v7waz68vjhn.SellDelay = val / 10
+_vbwqm1ke6fr(_vlkb6va96wh, _S("66|149|167|174|174|98|134|167|174|163|187"), 1, 50, 3, function(val)
+    _v6sw8escnb8.SellDelay = val / 10
 end)
 
-_vnblxjh1qhs(_vo7q1f12spj, _S("84|128260|116|167|185|192|192|116|181|200|116|162|185|181|198|185|199|200|116|167|188|195|196"), Color3.fromRGB(140, 100, 30), function()
-    local shops = _vwi0vrnlz4s()
+_vbho7yb8i6d(_vlkb6va96wh, _S("112|128288|144|195|213|220|220|144|209|228|144|190|213|209|226|213|227|228|144|195|216|223|224"), Color3.fromRGB(140, 100, 30), function()
+    local shops = _vkgv156tecx()
     if #shops > 0 then
-        _vfklcf8eoiw(shops[1])
+        _vyoan4flcrh(shops[1])
     else
-        _vv6vvad4d9h(_S("122|200|233|154|237|226|233|234|237|154|224|233|239|232|222|155"))
+        _vke6snlfgah(_S("127|205|238|159|242|231|238|239|242|159|229|238|244|237|227|160"))
     end
 end)
 
-_vnblxjh1qhs(_vo7q1f12spj, _S("82|128050|114|153|193|114|154|193|191|183|114|129|114|166|183|190|183|194|193|196|198|114|198|193|114|165|186|193|194"), Color3.fromRGB(80, 50, 150), function()
-    local shops = _vwi0vrnlz4s()
+_vbho7yb8i6d(_vlkb6va96wh, _S("108|128076|140|179|219|140|180|219|217|209|140|155|140|192|209|216|209|220|219|222|224|140|224|219|140|191|212|219|220"), Color3.fromRGB(80, 50, 150), function()
+    local shops = _vkgv156tecx()
     if #shops > 0 then
-        _vmax6nag1aa(shops[1].Part.Position)
-        _vv6vvad4d9h(_S("78|162|179|186|179|190|189|192|194|179|178|110|194|189|136|110") .. shops[1].Name)
+        _v8dr8vc6i13(shops[1].Part.Position)
+        _vke6snlfgah(_S("89|173|190|197|190|201|200|203|205|190|189|121|205|200|147|121") .. shops[1].Name)
     end
 end)
 
-_vem71kuorez(_vo7q1f12spj, _S("76|128798|108|141|161|160|155|108|142|161|165|108|161|156|147|158|141|144|145|159"))
+_vosu223p3ac(_vlkb6va96wh, _S("120|128842|152|185|205|204|199|152|186|205|209|152|205|200|191|202|185|188|189|203"))
 
-_vj8fij4gt5t(_vo7q1f12spj, _S("82|147|199|198|193|114|148|199|203|114|162|187|181|189|179|202|183"), false, function(val) _v7waz68vjhn.AutoBuyPickaxe = val end)
-_vj8fij4gt5t(_vo7q1f12spj, _S("124|189|241|240|235|156|190|241|245|156|190|221|223|231|236|221|223|231"), false, function(val) _v7waz68vjhn.AutoBuyBackpack = val end)
-_vj8fij4gt5t(_vo7q1f12spj, _S("107|172|224|223|218|139|173|224|228|139|183|224|206|214"), false, function(val) _v7waz68vjhn.AutoBuyLuck = val end)
-_vj8fij4gt5t(_vo7q1f12spj, _S("72|137|189|188|183|104|138|189|193|104|159|169|186|181|188|176"), false, function(val) _v7waz68vjhn.AutoBuyWarmth = val end)
+_v40dlfttzzw(_vlkb6va96wh, _S("86|151|203|202|197|118|152|203|207|118|166|191|185|193|183|206|187"), false, function(val) _v6sw8escnb8.AutoBuyPickaxe = val end)
+_v40dlfttzzw(_vlkb6va96wh, _S("102|167|219|218|213|134|168|219|223|134|168|199|201|209|214|199|201|209"), false, function(val) _v6sw8escnb8.AutoBuyBackpack = val end)
+_v40dlfttzzw(_vlkb6va96wh, _S("123|188|240|239|234|155|189|240|244|155|199|240|222|230"), false, function(val) _v6sw8escnb8.AutoBuyLuck = val end)
+_v40dlfttzzw(_vlkb6va96wh, _S("115|180|232|231|226|147|181|232|236|147|202|212|229|224|231|219"), false, function(val) _v6sw8escnb8.AutoBuyWarmth = val end)
 
-_vj8fij4gt5t(_vo7q1f12spj, _S("76|141|193|192|187|108|158|177|174|181|190|192|180"), false, function(val) _v7waz68vjhn.AutoRebirth = val end)
+_v40dlfttzzw(_vlkb6va96wh, _S("130|195|247|246|241|162|212|231|228|235|244|246|234"), false, function(val) _v6sw8escnb8.AutoRebirth = val end)
 
-_vjx3w9kzjl8(_vo7q1f12spj, _S("95|177|196|193|200|209|211|199|127|162|192|210|199|127|179|199|209|196|210|199|206|203|195"), 1000, 1000000, 50000, function(val)
-    _v7waz68vjhn.RebirthCashThreshold = val
+_vbwqm1ke6fr(_vlkb6va96wh, _S("94|176|195|192|199|208|210|198|126|161|191|209|198|126|178|198|208|195|209|198|205|202|194"), 1000, 1000000, 50000, function(val)
+    _v6sw8escnb8.RebirthCashThreshold = val
 end)
 
-_vj8fij4gt5t(_vo7q1f12spj, _S("120|185|237|236|231|152|187|228|217|225|229|152|188|217|225|228|241|167|187|231|220|221"), false, function(val) _v7waz68vjhn.AutoClaimDaily = val end)
+_v40dlfttzzw(_vlkb6va96wh, _S("60|125|177|176|171|92|127|168|157|165|169|92|128|157|165|168|181|107|127|171|160|161"), false, function(val) _v6sw8escnb8.AutoClaimDaily = val end)
 
-_v6z8s0kx4p9(_vo7q1f12spj, _S("107|187|221|218|216|218|139|174|218|207|208"), _S("103|"), function(text) _v7waz68vjhn.PromoCode = text end)
+_vk0vwewlyez(_vlkb6va96wh, _S("92|172|206|203|201|203|124|159|203|192|193"), _S("68|"), function(text) _v6sw8escnb8.PromoCode = text end)
 
-_vnblxjh1qhs(_vo7q1f12spj, _S("75|127948|107|142|183|172|180|184|107|143|172|180|183|196|107|153|186|194"), Color3.fromRGB(180, 130, 40), function()
-    _vsz5u8329xb()
-    _vv6vvad4d9h(_S("84|151|192|181|189|193|185|184|116|184|181|189|192|205|116|198|185|203|181|198|184|199"))
+_vbho7yb8i6d(_vlkb6va96wh, _S("92|127965|124|159|200|189|197|201|124|160|189|197|200|213|124|170|203|211"), Color3.fromRGB(180, 130, 40), function()
+    _v3lmil1tf08()
+    _vke6snlfgah(_S("85|152|193|182|190|194|186|185|117|185|182|190|193|206|117|199|186|204|182|199|185|200"))
 end)
 
-_vem71kuorez(_vo7q1f12spj, _S("116|128376|148|181|201|200|195|148|201|196|187|198|181|184|185"))
+_vosu223p3ac(_vlkb6va96wh, _S("76|128336|108|141|161|160|155|108|161|156|147|158|141|144|145"))
 
-_vj8fij4gt5t(_vo7q1f12spj, _S("111|176|228|227|222|143|196|223|214|225|208|211|212"), false, function(val)
-    _v7waz68vjhn.AutoUpgrade = val
-    if val then _v976re6fk96() else _va469as3ox3() end
+_v40dlfttzzw(_vlkb6va96wh, _S("100|165|217|216|211|132|185|212|203|214|197|200|201"), false, function(val)
+    _v6sw8escnb8.AutoUpgrade = val
+    if val then _vlan4nqf1gk() else _vffsy0igmzp() end
 end)
 
-_vnblxjh1qhs(_vo7q1f12spj, _S("73|11087|105|158|185|176|187|170|173|174|105|138|181|181"), Color3.fromRGB(50, 130, 180), function()
-    _vme4qihhqx7(_S("122|239|234|225|236|219|222|223"))
-    _vme4qihhqx7(_S("117|215|234|238"))
-    _vme4qihhqx7(_S("111|223|228|225|210|215|208|226|212"))
-    _vme4qihhqx7(_S("114|233|211|228|223|230|218"))
-    _vme4qihhqx7(_S("81|193|186|180|188|178|201|182"))
-    _vme4qihhqx7(_S("86|184|183|185|193|198|183|185|193"))
-    _vme4qihhqx7(_S("78|193|190|179|179|178"))
-    _vv6vvad4d9h(_S("88|158|193|202|189|188|120|205|200|191|202|185|188|189|120|202|189|197|199|204|189|203"))
+_vbho7yb8i6d(_vlkb6va96wh, _S("89|11103|121|174|201|192|203|186|189|190|121|154|197|197"), Color3.fromRGB(50, 130, 180), function()
+    _vv8iciwgl48(_S("76|193|188|179|190|173|176|177"))
+    _vv8iciwgl48(_S("100|198|217|221"))
+    _vv8iciwgl48(_S("117|229|234|231|216|221|214|232|218"))
+    _vv8iciwgl48(_S("78|197|175|192|187|194|182"))
+    _vv8iciwgl48(_S("127|239|232|226|234|224|247|228"))
+    _vv8iciwgl48(_S("69|167|166|168|176|181|166|168|176"))
+    _vv8iciwgl48(_S("93|208|205|194|194|193"))
+    _vke6snlfgah(_S("73|143|178|187|174|173|105|190|185|176|187|170|173|174|105|187|174|182|184|189|174|188"))
 end)
 
-_vem71kuorez(_vo7q1f12spj, _S("109|128087|141|177|178|193|178|176|193|178|177|141|192|181|188|189|192"))
+_vosu223p3ac(_vlkb6va96wh, _S("119|128097|151|187|188|203|188|186|203|188|187|151|202|191|198|199|202"))
 
-local _vxwofmh1l5l = Instance.new(_S("127|210|226|241|238|235|235|232|237|230|197|241|224|236|228"))
-ShopList = _vxwofmh1l5l
-ShopList.Name = _S("69|152|173|180|181|145|174|184|185")
+local _vx43f3wvgzj = Instance.new(_S("128|211|227|242|239|236|236|233|238|231|198|242|225|237|229"))
+ShopList = _vx43f3wvgzj
+ShopList.Name = _S("71|154|175|182|183|147|176|186|187")
 ShopList.Size = UDim2.new(1, 0, 0, 90)
 ShopList.BackgroundColor3 = Theme.Panel
 ShopList.BackgroundTransparency = 0.15
@@ -2862,78 +2871,78 @@ ShopList.ScrollBarThickness = 3
 ShopList.ScrollBarImageColor3 = Theme.Accent
 ShopList.CanvasSize = UDim2.new(0, 0, 0, 0)
 ShopList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-_vzqzu0pk5no = _vzqzu0pk5no + 1
-ShopList.LayoutOrder = _vzqzu0pk5no
-ShopList.Parent = _vo7q1f12spj
+_vnpt16bcf9s = _vnpt16bcf9s + 1
+ShopList.LayoutOrder = _vnpt16bcf9s
+ShopList.Parent = _vlkb6va96wh
 
-local _vfxjbuv4ng8 = Instance.new(_S("129|214|202|196|240|243|239|230|243"))
-_vfxjbuv4ng8.CornerRadius = UDim.new(0, 6)
-_vfxjbuv4ng8.Parent = ShopList
+local _v46z0oz3yjl = Instance.new(_S("74|159|147|141|185|188|184|175|188"))
+_v46z0oz3yjl.CornerRadius = UDim.new(0, 6)
+_v46z0oz3yjl.Parent = ShopList
 
-local _valfvg67soy = Instance.new(_S("105|190|178|181|210|220|221|181|202|226|216|222|221"))
-_valfvg67soy.SortOrder = Enum.SortOrder.LayoutOrder
-_valfvg67soy.Padding = UDim.new(0, 2)
-_valfvg67soy.Parent = ShopList
+local _v0cwyqh46ie = Instance.new(_S("94|179|167|170|199|209|210|170|191|215|205|211|210"))
+_v0cwyqh46ie.SortOrder = Enum.SortOrder.LayoutOrder
+_v0cwyqh46ie.Padding = UDim.new(0, 2)
+_v0cwyqh46ie.Parent = ShopList
 
-local _v9bbt0c7zxj = Instance.new(_S("128|213|201|208|225|228|228|233|238|231"))
-_v9bbt0c7zxj.PaddingTop = UDim.new(0, 2)
-_v9bbt0c7zxj.PaddingBottom = UDim.new(0, 2)
-_v9bbt0c7zxj.PaddingLeft = UDim.new(0, 2)
-_v9bbt0c7zxj.PaddingRight = UDim.new(0, 2)
-_v9bbt0c7zxj.Parent = ShopList
+local _vqfj1l74lzl = Instance.new(_S("126|211|199|206|223|226|226|231|236|229"))
+_vqfj1l74lzl.PaddingTop = UDim.new(0, 2)
+_vqfj1l74lzl.PaddingBottom = UDim.new(0, 2)
+_vqfj1l74lzl.PaddingLeft = UDim.new(0, 2)
+_vqfj1l74lzl.PaddingRight = UDim.new(0, 2)
+_vqfj1l74lzl.Parent = ShopList
 
-local _v1hgjw3rj9e = _vrbcwulrfru[_S("95|164|178|175")]
-_ve3tsiui727()
+local _v93c1shhpk7 = _vlfy2ujsr8w[_S("127|196|210|207")]
+_vfaort8wf1c()
 
-_vem71kuorez(_v1hgjw3rj9e, _S("110|128175|142|179|193|190|142|157|142|196|183|193|195|175|186|193"))
+_vosu223p3ac(_v93c1shhpk7, _S("120|128185|152|189|203|200|152|167|152|206|193|203|205|185|196|203"))
 
-_vj8fij4gt5t(_v1hgjw3rj9e, _S("81|148|195|202|196|197|178|189|113|128|113|163|192|180|188|113|150|164|161"), false, function(val)
-    _v7waz68vjhn.ESPEnabled = val
-    if val then _viqkdi2an3c() else _vcjbsky4wca() end
+_v40dlfttzzw(_v93c1shhpk7, _S("93|160|207|214|208|209|190|201|125|140|125|175|204|192|200|125|162|176|173"), false, function(val)
+    _v6sw8escnb8.ESPEnabled = val
+    if val then _vgj21848tpp() else _v38ajuvobj2() end
 end)
 
-_vj8fij4gt5t(_v1hgjw3rj9e, _S("116|200|230|213|215|217|230|231|148|156|198|227|215|223|231|163|199|220|227|228|231|157"), false, function(val)
-    _v7waz68vjhn.Tracers = val
-    if not val then _vzfgkygt8d4() end
+_v40dlfttzzw(_v93c1shhpk7, _S("73|157|187|170|172|174|187|188|105|113|155|184|172|180|188|120|156|177|184|185|188|114"), false, function(val)
+    _v6sw8escnb8.Tracers = val
+    if not val then _vojug3ef0vt() end
 end)
 
-_vj8fij4gt5t(_v1hgjw3rj9e, _S("67|147|175|164|188|168|181|99|136|150|147"), false, function(val)
-    _v7waz68vjhn.PlayerESP = val
-    if not val then _vgi705eg68c() end
+_v40dlfttzzw(_v93c1shhpk7, _S("125|205|233|222|246|226|239|157|194|208|205"), false, function(val)
+    _v6sw8escnb8.PlayerESP = val
+    if not val then _vitpv1dj25h() end
 end)
 
-_vj8fij4gt5t(_v1hgjw3rj9e, _S("67|134|171|168|182|183|99|114|99|136|185|168|177|183|99|136|150|147"), false, function(val)
-    _v7waz68vjhn.ChestESP = val
-    if not val then _vjpa1gixp55() end
+_v40dlfttzzw(_v93c1shhpk7, _S("122|189|226|223|237|238|154|169|154|191|240|223|232|238|154|191|205|202"), false, function(val)
+    _v6sw8escnb8.ChestESP = val
+    if not val then _vhrk3y03yqx() end
 end)
 
-_vj8fij4gt5t(_v1hgjw3rj9e, _S("129|199|246|237|237|227|243|234|232|233|245"), false, function(val)
-    _v7waz68vjhn.Fullbright = val
-    if val then _vwlliduxaxp() else _vnp38yekj16() end
+_v40dlfttzzw(_v93c1shhpk7, _S("95|165|212|203|203|193|209|200|198|199|211"), false, function(val)
+    _v6sw8escnb8.Fullbright = val
+    if val then _vnda051adsq() else _vm8z8ktb1d8() end
 end)
 
-_vj8fij4gt5t(_v1hgjw3rj9e, _S("80|152|185|180|181|112|159|196|184|181|194|112|160|188|177|201|181|194|195"), false, function(val)
-    _v7waz68vjhn.HideOtherPlayers = val
-    _vlijjol47uc()
+_v40dlfttzzw(_v93c1shhpk7, _S("118|190|223|218|219|150|197|234|222|219|232|150|198|226|215|239|219|232|233"), false, function(val)
+    _v6sw8escnb8.HideOtherPlayers = val
+    _vlx1pscxgrc()
 end)
 
-_vnblxjh1qhs(_v1hgjw3rj9e, _S("122|128382|154|204|223|224|236|223|237|226|154|191|205|202"), Color3.fromRGB(50, 90, 160), function()
-    if _v7waz68vjhn.ESPEnabled then
-        _v8vr1101p6x()
+_vbho7yb8i6d(_v93c1shhpk7, _S("66|128326|98|148|167|168|180|167|181|170|98|135|149|146"), Color3.fromRGB(50, 90, 160), function()
+    if _v6sw8escnb8.ESPEnabled then
+        _v6wzkp945uc()
     else
-        _vv6vvad4d9h(_S("102|171|212|199|200|210|203|134|171|185|182|134|204|207|216|217|218|135"))
+        _vke6snlfgah(_S("64|133|174|161|162|172|165|96|133|147|144|96|166|169|178|179|180|97"))
     end
 end)
 
-_vnblxjh1qhs(_v1hgjw3rj9e, _S("129|10189|161|196|237|230|226|243|161|198|212|209"), Color3.fromRGB(150, 50, 50), function()
-    _vcjbsky4wca()
+_vbho7yb8i6d(_v93c1shhpk7, _S("78|10138|110|145|186|179|175|192|110|147|161|158"), Color3.fromRGB(150, 50, 50), function()
+    _v38ajuvobj2()
 end)
 
-_vem71kuorez(_v1hgjw3rj9e, _S("120|129824|152|188|189|204|189|187|204|189|188|152|202|199|187|195|203"))
+_vosu223p3ac(_v93c1shhpk7, _S("127|129831|159|195|196|211|196|194|211|196|195|159|209|206|194|202|210"))
 
-local _vjco266pr9b = Instance.new(_S("62|145|161|176|173|170|170|167|172|165|132|176|159|171|163"))
-RockList = _vjco266pr9b
-RockList.Name = _S("78|160|189|177|185|154|183|193|194")
+local _vbjl45412gt = Instance.new(_S("75|158|174|189|186|183|183|180|185|178|145|189|172|184|176"))
+RockList = _vbjl45412gt
+RockList.Name = _S("118|200|229|217|225|194|223|233|234")
 RockList.Size = UDim2.new(1, 0, 0, 120)
 RockList.BackgroundColor3 = Theme.Panel
 RockList.BackgroundTransparency = 0.15
@@ -2942,183 +2951,183 @@ RockList.ScrollBarThickness = 3
 RockList.ScrollBarImageColor3 = Theme.Accent
 RockList.CanvasSize = UDim2.new(0, 0, 0, 0)
 RockList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-_vzqzu0pk5no = _vzqzu0pk5no + 1
-RockList.LayoutOrder = _vzqzu0pk5no
-RockList.Parent = _v1hgjw3rj9e
+_vnpt16bcf9s = _vnpt16bcf9s + 1
+RockList.LayoutOrder = _vnpt16bcf9s
+RockList.Parent = _v93c1shhpk7
 
-local _v75gpiscnzr = Instance.new(_S("129|214|202|196|240|243|239|230|243"))
-_v75gpiscnzr.CornerRadius = UDim.new(0, 6)
-_v75gpiscnzr.Parent = RockList
+local _vj31gff8sn4 = Instance.new(_S("129|214|202|196|240|243|239|230|243"))
+_vj31gff8sn4.CornerRadius = UDim.new(0, 6)
+_vj31gff8sn4.Parent = RockList
 
-local _vaaeazrwpxe = Instance.new(_S("127|212|200|203|232|242|243|203|224|248|238|244|243"))
-_vaaeazrwpxe.SortOrder = Enum.SortOrder.LayoutOrder
-_vaaeazrwpxe.Padding = UDim.new(0, 2)
-_vaaeazrwpxe.Parent = RockList
+local _v2bpaszvisw = Instance.new(_S("71|156|144|147|176|186|187|147|168|192|182|188|187"))
+_v2bpaszvisw.SortOrder = Enum.SortOrder.LayoutOrder
+_v2bpaszvisw.Padding = UDim.new(0, 2)
+_v2bpaszvisw.Parent = RockList
 
-local rLPad = Instance.new(_S("101|186|174|181|198|201|201|206|211|204"))
+local rLPad = Instance.new(_S("62|147|135|142|159|162|162|167|172|165"))
 rLPad.PaddingTop = UDim.new(0, 2)
 rLPad.PaddingBottom = UDim.new(0, 2)
 rLPad.PaddingLeft = UDim.new(0, 2)
 rLPad.PaddingRight = UDim.new(0, 2)
 rLPad.Parent = RockList
 
-local _vydd8r2lfni = _vrbcwulrfru[_S("88|157|208|200|196|199|193|204")]
-_ve3tsiui727()
+local _va2nouxk1ml = _vlfy2ujsr8w[_S("121|190|241|233|229|232|226|237")]
+_vfaort8wf1c()
 
-_vem71kuorez(_vydd8r2lfni, _S("93|127983|125|162|181|173|169|172|166|177|176"))
+_vosu223p3ac(_va2nouxk1ml, _S("66|127956|98|135|154|146|142|145|139|150|149"))
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("122|207|232|230|227|231|227|238|223|222|154|188|219|221|229|234|219|221|229"), false, function(val)
-    _v7waz68vjhn.UnlimitedBackpack = val
-    if val then _v2w74nz9wje() end
+_v40dlfttzzw(_va2nouxk1ml, _S("129|214|239|237|234|238|234|245|230|229|161|195|226|228|236|241|226|228|236"), false, function(val)
+    _v6sw8escnb8.UnlimitedBackpack = val
+    if val then _vf5maiinbu8() end
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("99|184|209|207|204|208|204|215|200|199|131|175|216|198|206"), false, function(val)
-    _v7waz68vjhn.UnlimitedLuck = val
-    if val then _viozocvluoe() end
+_v40dlfttzzw(_va2nouxk1ml, _S("115|200|225|223|220|224|220|231|216|215|147|191|232|214|222"), false, function(val)
+    _v6sw8escnb8.UnlimitedLuck = val
+    if val then _vctsieush67() end
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("71|136|181|187|176|103|139|168|180|168|174|172"), false, function(val)
-    _v7waz68vjhn.AntiDamage = val
-    if val then _vbw4lcu8jky() else _v38vluifqi9() end
+_v40dlfttzzw(_va2nouxk1ml, _S("103|168|213|219|208|135|171|200|212|200|206|204"), false, function(val)
+    _v6sw8escnb8.AntiDamage = val
+    if val then _vxztgumrssa() else _v88qf4v4bra() end
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("97|162|207|213|202|129|167|211|198|198|219|198|129|137|184|194|211|206|213|201|138"), false, function(val)
-    _v7waz68vjhn.AntiFreeze = val
-    if val and not _v7waz68vjhn.AntiDamage then
-        _v7waz68vjhn.AntiDamage = true
-        _vbw4lcu8jky()
+_v40dlfttzzw(_va2nouxk1ml, _S("78|143|188|194|183|110|148|192|179|179|200|179|110|118|165|175|192|187|194|182|119"), false, function(val)
+    _v6sw8escnb8.AntiFreeze = val
+    if val and not _v6sw8escnb8.AntiDamage then
+        _v6sw8escnb8.AntiDamage = true
+        _vxztgumrssa()
     end
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("93|180|190|207|202|209|197|125|168|194|194|205|194|207"), false, function(val)
-    _v7waz68vjhn.WarmthKeeper = val
-    if val or _v7waz68vjhn.StaminaKeeper then _vyknuy031k5() else _vio6kma08xn() end
+_v40dlfttzzw(_va2nouxk1ml, _S("64|151|161|178|173|180|168|96|139|165|165|176|165|178"), false, function(val)
+    _v6sw8escnb8.WarmthKeeper = val
+    if val or _v6sw8escnb8.StaminaKeeper then _v2bipzjm8pv() else _vtx890mj3yn() end
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("117|200|233|214|226|222|227|214|149|192|218|218|229|218|231"), false, function(val)
-    _v7waz68vjhn.StaminaKeeper = val
-    if val or _v7waz68vjhn.WarmthKeeper then _vyknuy031k5() else _vio6kma08xn() end
+_v40dlfttzzw(_va2nouxk1ml, _S("126|209|242|223|235|231|236|223|158|201|227|227|238|227|240"), false, function(val)
+    _v6sw8escnb8.StaminaKeeper = val
+    if val or _v6sw8escnb8.WarmthKeeper then _v2bipzjm8pv() else _vtx890mj3yn() end
 end)
 
-_vem71kuorez(_vydd8r2lfni, _S("109|128026|141|186|188|195|178|186|178|187|193"))
+_vosu223p3ac(_va2nouxk1ml, _S("101|128018|133|178|180|187|170|178|170|179|185"))
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("79|162|191|180|180|179|111|145|190|190|194|195"), false, function(val)
-    _v7waz68vjhn.SpeedBoost = val
-    _vb0zw0tduye()
+_v40dlfttzzw(_va2nouxk1ml, _S("83|166|195|184|184|183|115|149|194|194|198|199"), false, function(val)
+    _v6sw8escnb8.SpeedBoost = val
+    _vrfkp7amk9k()
 end)
 
-_vjx3w9kzjl8(_vydd8r2lfni, _S("65|152|162|173|172|97|148|177|166|166|165"), 16, 200, 50, function(val)
-    _v7waz68vjhn.WalkSpeed = val
-    if _v7waz68vjhn.SpeedBoost then _vb0zw0tduye() end
+_vbwqm1ke6fr(_va2nouxk1ml, _S("97|184|194|205|204|129|180|209|198|198|197"), 16, 200, 50, function(val)
+    _v6sw8escnb8.WalkSpeed = val
+    if _v6sw8escnb8.SpeedBoost then _vrfkp7amk9k() end
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("92|170|203|191|200|197|204"), false, function(val)
-    _v7waz68vjhn.Noclip = val
-    if val then _vkm9n5mxhp2() else _vqulkb5gnc2() end
+_v40dlfttzzw(_va2nouxk1ml, _S("60|138|171|159|168|165|172"), false, function(val)
+    _v6sw8escnb8.Noclip = val
+    if val then _vh23oykjfce() else _vm7ug8ajp1o() end
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("130|200|238|251"), false, function(val)
-    _v7waz68vjhn.FlyEnabled = val
-    if val then _v1vyt4wih0r() else _vjnercdb1pz() end
+_v40dlfttzzw(_va2nouxk1ml, _S("77|147|185|198"), false, function(val)
+    _v6sw8escnb8.FlyEnabled = val
+    if val then _vpwcd8goxkp() else _vtsizpq0fzh() end
 end)
 
-_vjx3w9kzjl8(_vydd8r2lfni, _S("95|165|203|216|127|178|207|196|196|195"), 10, 200, 60, function(val)
-    _v7waz68vjhn.FlySpeed = val
+_vbwqm1ke6fr(_va2nouxk1ml, _S("122|192|230|243|154|205|234|223|223|222"), 10, 200, 60, function(val)
+    _v6sw8escnb8.FlySpeed = val
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("74|147|184|176|179|184|179|190|175|106|148|191|183|186"), false, function(val)
-    _v7waz68vjhn.InfiniteJump = val
-    if val then _vkhvmp0vzuf() else _v9iyu3x3m2k() end
+_v40dlfttzzw(_va2nouxk1ml, _S("104|177|214|206|209|214|209|220|205|136|178|221|213|216"), false, function(val)
+    _v6sw8escnb8.InfiniteJump = val
+    if val then _vabborehzic() else _v5h8twcc98l() end
 end)
 
-_vj8fij4gt5t(_vydd8r2lfni, _S("82|149|190|187|181|189|114|166|183|190|183|194|193|196|198|114|122|149|198|196|190|125|149|190|187|181|189|123"), false, function(val)
-    _v7waz68vjhn.ClickTeleport = val
-    if val then _voygtbe4zr9() else _vyqgv4evc1t() end
+_v40dlfttzzw(_va2nouxk1ml, _S("124|191|232|229|223|231|156|208|225|232|225|236|235|238|240|156|164|191|240|238|232|167|191|232|229|223|231|165"), false, function(val)
+    _v6sw8escnb8.ClickTeleport = val
+    if val then _vestfrmfpc5() else _vhbcvy8y7hc() end
 end)
 
-_vem71kuorez(_vydd8r2lfni, _S("77|128307|109|150|161|146|154|109|145|162|157|146"))
+_vosu223p3ac(_va2nouxk1ml, _S("93|128323|125|166|177|162|170|125|161|178|173|162"))
 
 local dupeInput, dupeTextBox
-dupeInput, dupeTextBox = _v6z8s0kx4p9(_vydd8r2lfni, _S("127|195|244|239|228|159|208|243|248"), _S("102|151"), function(text)
+dupeInput, dupeTextBox = _vk0vwewlyez(_va2nouxk1ml, _S("115|183|232|227|216|147|196|231|236"), _S("105|154"), function(text)
     local num = tonumber(text)
     if num and num > 0 then
-        _v7waz68vjhn.DupeAmount = math.floor(num)
+        _v6sw8escnb8.DupeAmount = math.floor(num)
     end
 end)
 
-_vnblxjh1qhs(_vydd8r2lfni, _S("97|128327|129|165|214|209|198|129|170|213|198|206|212|129|137") .. _v7waz68vjhn.DupeAmount .. _S("61|181|102"), Color3.fromRGB(180, 60, 180), function()
-    _vdxokk31e4o(_v7waz68vjhn.DupeAmount)
+_vbho7yb8i6d(_va2nouxk1ml, _S("112|128342|144|180|229|224|213|144|185|228|213|221|227|144|152") .. _v6sw8escnb8.DupeAmount .. _S("98|218|139"), Color3.fromRGB(180, 60, 180), function()
+    _va98mjfm1t4(_v6sw8escnb8.DupeAmount)
 end)
 
-_vnblxjh1qhs(_vydd8r2lfni, _S("61|128291|93|129|175|172|173|93|129|178|173|162|93|138|162|177|165|172|161"), Color3.fromRGB(140, 50, 140), function()
-    _vz1pixo5q1v()
+_vbho7yb8i6d(_va2nouxk1ml, _S("111|128341|143|179|225|222|223|143|179|228|223|212|143|188|212|227|215|222|211"), Color3.fromRGB(140, 50, 140), function()
+    _vldiorhze7r()
 end)
 
-_vem71kuorez(_vydd8r2lfni, _S("111|128336|143|193|180|188|190|195|180|143|180|199|191|187|190|184|195|194"))
+_vosu223p3ac(_va2nouxk1ml, _S("114|128339|146|196|183|191|193|198|183|146|183|202|194|190|193|187|198|197"))
 
-_vnblxjh1qhs(_vydd8r2lfni, _S("113|128406|145|183|218|227|214|145|178|221|221|145|190|218|223|214|145|195|214|222|224|229|214|228"), Color3.fromRGB(160, 40, 40), function()
-    _vme4qihhqx7(_S("92|201|197|202|193"))
-    _vme4qihhqx7(_S("83|183|188|186"))
-    _vme4qihhqx7(_S("74|178|171|188|192|175|189|190"))
-    _vme4qihhqx7(_S("88|187|199|196|196|189|187|204"))
-    _vme4qihhqx7(_S("79|177|193|180|176|186"))
-    _vv6vvad4d9h(_S("119|189|224|233|220|219|151|228|224|229|220|151|233|220|228|230|235|220|234"))
+_vbho7yb8i6d(_va2nouxk1ml, _S("109|128402|141|179|214|223|210|141|174|217|217|141|186|214|219|210|141|191|210|218|220|225|210|224"), Color3.fromRGB(160, 40, 40), function()
+    _vv8iciwgl48(_S("60|169|165|170|161"))
+    _vv8iciwgl48(_S("99|199|204|202"))
+    _vv8iciwgl48(_S("126|230|223|240|244|227|241|242"))
+    _vv8iciwgl48(_S("126|225|237|234|234|227|225|242"))
+    _vv8iciwgl48(_S("86|184|200|187|183|193"))
+    _vke6snlfgah(_S("121|191|226|235|222|221|153|230|226|231|222|153|235|222|230|232|237|222|236"))
 end)
 
-_vnblxjh1qhs(_vydd8r2lfni, _S("65|128241|97|135|170|179|166|97|130|173|173|97|148|166|173|173|97|147|166|174|176|181|166|180"), Color3.fromRGB(40, 140, 40), function()
-    _vme4qihhqx7(_S("119|234|220|227|227"))
-    _vme4qihhqx7(_S("66|181|167|174|174|163|174|174"))
-    _vme4qihhqx7(_S("103|202|200|218|207"))
-    _vme4qihhqx7(_S("106|215|217|216|207|227"))
-    _vme4qihhqx7(_S("63|179|177|160|163|164"))
-    _vv6vvad4d9h(_S("99|169|204|213|200|199|131|214|200|207|207|131|213|200|208|210|215|200|214"))
+_vbho7yb8i6d(_va2nouxk1ml, _S("108|128284|140|178|213|222|209|140|173|216|216|140|191|209|216|216|140|190|209|217|219|224|209|223"), Color3.fromRGB(40, 140, 40), function()
+    _vv8iciwgl48(_S("105|220|206|213|213"))
+    _vv8iciwgl48(_S("89|204|190|197|197|186|197|197"))
+    _vv8iciwgl48(_S("99|198|196|214|203"))
+    _vv8iciwgl48(_S("89|198|200|199|190|210"))
+    _vv8iciwgl48(_S("82|198|196|179|182|183"))
+    _vke6snlfgah(_S("127|197|232|241|228|227|159|242|228|235|235|159|241|228|236|238|243|228|242"))
 end)
 
-_vnblxjh1qhs(_vydd8r2lfni, _S("85|11099|117|155|190|199|186|117|150|193|193|117|170|197|188|199|182|185|186|117|167|186|194|196|201|186|200"), Color3.fromRGB(40, 100, 160), function()
-    _vme4qihhqx7(_S("117|234|229|220|231|214|217|218"))
-    _vme4qihhqx7(_S("92|190|209|213"))
-    _vme4qihhqx7(_S("105|217|222|219|204|209|202|220|206"))
-    _vme4qihhqx7(_S("98|217|195|212|207|214|202"))
-    _vme4qihhqx7(_S("81|193|186|180|188|178|201|182"))
-    _vme4qihhqx7(_S("105|203|202|204|212|217|202|204|212"))
-    _vv6vvad4d9h(_S("98|168|203|212|199|198|130|215|210|201|212|195|198|199|130|212|199|207|209|214|199|213"))
+_vbho7yb8i6d(_va2nouxk1ml, _S("112|11126|144|182|217|226|213|144|177|220|220|144|197|224|215|226|209|212|213|144|194|213|221|223|228|213|227"), Color3.fromRGB(40, 100, 160), function()
+    _vv8iciwgl48(_S("119|236|231|222|233|216|219|220"))
+    _vv8iciwgl48(_S("105|203|222|226"))
+    _vv8iciwgl48(_S("66|178|183|180|165|170|163|181|167"))
+    _vv8iciwgl48(_S("95|214|192|209|204|211|199"))
+    _vv8iciwgl48(_S("73|185|178|172|180|170|193|174"))
+    _vv8iciwgl48(_S("92|190|189|191|199|204|189|191|199"))
+    _vke6snlfgah(_S("130|200|235|244|231|230|162|247|242|233|244|227|230|231|162|244|231|239|241|246|231|245"))
 end)
 
-_vnblxjh1qhs(_vydd8r2lfni, _S("101|128023|133|171|206|215|202|133|166|209|209|133|177|218|200|208|133|183|202|210|212|217|202|216"), Color3.fromRGB(140, 140, 40), function()
-    _vme4qihhqx7(_S("122|230|239|221|229"))
-    _vme4qihhqx7(_S("122|230|239|221|229|243"))
-    _vme4qihhqx7(_S("90|192|201|204|206|207|200|191"))
-    _vme4qihhqx7(_S("89|187|197|190|204|204|194|199|192"))
-    _vv6vvad4d9h(_S("63|133|168|177|164|163|95|171|180|162|170|95|177|164|172|174|179|164|178"))
+_vbho7yb8i6d(_va2nouxk1ml, _S("101|128023|133|171|206|215|202|133|166|209|209|133|177|218|200|208|133|183|202|210|212|217|202|216"), Color3.fromRGB(140, 140, 40), function()
+    _vv8iciwgl48(_S("95|203|212|194|202"))
+    _vv8iciwgl48(_S("108|216|225|207|215|229"))
+    _vv8iciwgl48(_S("75|177|186|189|191|192|185|176"))
+    _vv8iciwgl48(_S("88|186|196|189|203|203|193|198|191"))
+    _vke6snlfgah(_S("112|182|217|226|213|212|144|220|229|211|219|144|226|213|221|223|228|213|227"))
 end)
 
-_vnblxjh1qhs(_vydd8r2lfni, _S("87|128250|119|157|192|201|188|119|152|163|163|119|169|188|196|198|203|188|202|119|127|165|204|194|188|128"), Color3.fromRGB(200, 50, 50), function()
+_vbho7yb8i6d(_va2nouxk1ml, _S("90|128253|122|160|195|204|191|122|155|166|166|122|172|191|199|201|206|191|205|122|130|168|207|197|191|131"), Color3.fromRGB(200, 50, 50), function()
     for _, remote in ipairs(State.RemoteCache) do
         pcall(function()
-            if remote.Type == _S("112|194|213|221|223|228|213|181|230|213|222|228") then
+            if remote.Type == _S("119|201|220|228|230|235|220|188|237|220|229|235") then
                 remote.Instance:FireServer()
-            elseif remote.Type == _S("110|192|211|219|221|226|211|180|227|220|209|226|215|221|220") then
+            elseif remote.Type == _S("125|207|226|234|236|241|226|195|242|235|224|241|230|236|235") then
                 remote.Instance:InvokeServer()
             end
         end)
     end
-    _vv6vvad4d9h(_S("129|207|214|204|198|197|161|226|237|237|161") .. #State.RemoteCache .. _S("76|108|190|177|185|187|192|177|191|109"))
+    _vke6snlfgah(_S("111|189|196|186|180|179|143|208|219|219|143") .. #State.RemoteCache .. _S("126|158|240|227|235|237|242|227|241|159"))
 end)
 
-local _v9v21o7qb0g = _vrbcwulrfru[_S("66|150|177|177|174|181")]
-_ve3tsiui727()
+local _v4633l9i8ym = _vlfy2ujsr8w[_S("118|202|229|229|226|233")]
+_vfaort8wf1c()
 
-_vem71kuorez(_v9v21o7qb0g, _S("84|128309|116|166|153|161|163|168|153|116|167|164|173"))
+_vosu223p3ac(_v4633l9i8ym, _S("86|128311|118|168|155|163|165|170|155|118|169|166|175"))
 
-_vj8fij4gt5t(_v9v21o7qb0g, _S("113|195|214|222|224|229|214|145|196|225|234|145|153|189|224|216|145|183|218|227|214|196|214|227|231|214|227|154"), false, function(val)
-    _v7waz68vjhn.RemoteSpy = val
-    if val then _vz6wlv6t48l() else _v4u1wr7tpmt() end
+_v40dlfttzzw(_v4633l9i8ym, _S("128|210|229|237|239|244|229|160|211|240|249|160|168|204|239|231|160|198|233|242|229|211|229|242|246|229|242|169"), false, function(val)
+    _v6sw8escnb8.RemoteSpy = val
+    if val then _vo9rkwly7oi() else _vx7y8h74a5n() end
 end)
 
-_vzqzu0pk5no = _vzqzu0pk5no + 1
-local _vgjzz1489ki = Instance.new(_S("126|209|225|240|237|234|234|231|236|229|196|240|223|235|227"))
-RemoteSpyList = _vgjzz1489ki
-RemoteSpyList.Name = _S("72|154|173|181|183|188|173|155|184|193|148|177|187|188")
+_vnpt16bcf9s = _vnpt16bcf9s + 1
+local _vy5xrqhdl0z = Instance.new(_S("105|188|204|219|216|213|213|210|215|208|175|219|202|214|206"))
+RemoteSpyList = _vy5xrqhdl0z
+RemoteSpyList.Name = _S("119|201|220|228|230|235|220|202|231|240|195|224|234|235")
 RemoteSpyList.Size = UDim2.new(1, 0, 0, 100)
 RemoteSpyList.BackgroundColor3 = Theme.Panel
 RemoteSpyList.BackgroundTransparency = 0.15
@@ -3127,135 +3136,135 @@ RemoteSpyList.ScrollBarThickness = 3
 RemoteSpyList.ScrollBarImageColor3 = Theme.Accent
 RemoteSpyList.CanvasSize = UDim2.new(0, 0, 0, 0)
 RemoteSpyList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-RemoteSpyList.LayoutOrder = _vzqzu0pk5no
-RemoteSpyList.Parent = _v9v21o7qb0g
+RemoteSpyList.LayoutOrder = _vnpt16bcf9s
+RemoteSpyList.Parent = _v4633l9i8ym
 
-local _v119n5ywm33 = Instance.new(_S("63|148|136|130|174|177|173|164|177"))
-_v119n5ywm33.CornerRadius = UDim.new(0, 6)
-_v119n5ywm33.Parent = RemoteSpyList
+local _vkvsfy65u93 = Instance.new(_S("126|211|199|193|237|240|236|227|240"))
+_vkvsfy65u93.CornerRadius = UDim.new(0, 6)
+_vkvsfy65u93.Parent = RemoteSpyList
 
-local _v53t0sacv6y = Instance.new(_S("117|202|190|193|222|232|233|193|214|238|228|234|233"))
-_v53t0sacv6y.SortOrder = Enum.SortOrder.LayoutOrder
-_v53t0sacv6y.Padding = UDim.new(0, 2)
-_v53t0sacv6y.Parent = RemoteSpyList
+local _vllueivirvq = Instance.new(_S("100|185|173|176|205|215|216|176|197|221|211|217|216"))
+_vllueivirvq.SortOrder = Enum.SortOrder.LayoutOrder
+_vllueivirvq.Padding = UDim.new(0, 2)
+_vllueivirvq.Parent = RemoteSpyList
 
-local _v1s7qkopwtw = Instance.new(_S("126|211|199|206|223|226|226|231|236|229"))
-_v1s7qkopwtw.PaddingTop = UDim.new(0, 2)
-_v1s7qkopwtw.PaddingLeft = UDim.new(0, 2)
-_v1s7qkopwtw.PaddingRight = UDim.new(0, 2)
-_v1s7qkopwtw.Parent = RemoteSpyList
+local _vld6px570nj = Instance.new(_S("130|215|203|210|227|230|230|235|240|233"))
+_vld6px570nj.PaddingTop = UDim.new(0, 2)
+_vld6px570nj.PaddingLeft = UDim.new(0, 2)
+_vld6px570nj.PaddingRight = UDim.new(0, 2)
+_vld6px570nj.Parent = RemoteSpyList
 
-_vnblxjh1qhs(_v9v21o7qb0g, _S("62|128527|94|129|170|163|159|176|94|145|174|183|94|138|173|165"), Color3.fromRGB(100, 50, 50), function()
+_vbho7yb8i6d(_v4633l9i8ym, _S("84|128549|116|151|192|185|181|198|116|167|196|205|116|160|195|187"), Color3.fromRGB(100, 50, 50), function()
     State.RemoteSpyLogs = {}
-    if RemoteSpyList then _vdmb3sdada7(RemoteSpyList) end
+    if RemoteSpyList then _vli1jii61e7(RemoteSpyList) end
 end)
 
-_vem71kuorez(_v9v21o7qb0g, _S("121|128040|153|188|206|204|205|200|198|153|203|190|198|200|205|190"))
+_vosu223p3ac(_v4633l9i8ym, _S("98|128017|130|165|183|181|182|177|175|130|180|167|175|177|182|167"))
 
-_v6z8s0kx4p9(_v9v21o7qb0g, _S("72|154|173|181|183|188|173|104|150|169|181|173"), _S("66|"), function(text)
-    _v7waz68vjhn.CustomRemoteName = text
+_vk0vwewlyez(_v4633l9i8ym, _S("74|156|175|183|185|190|175|106|152|171|183|175"), _S("77|"), function(text)
+    _v6sw8escnb8.CustomRemoteName = text
 end)
 
-_v6z8s0kx4p9(_v9v21o7qb0g, _S("103|168|217|206|218|135|143|202|214|212|212|200|135|218|204|215|200|217|200|219|204|203|144"), _S("83|"), function(text)
-    _v7waz68vjhn.CustomRemoteArgs = text
+_vk0vwewlyez(_v4633l9i8ym, _S("126|191|240|229|241|158|166|225|237|235|235|223|158|241|227|238|223|240|223|242|227|226|167"), _S("95|"), function(text)
+    _v6sw8escnb8.CustomRemoteArgs = text
 end)
 
-_vnblxjh1qhs(_v9v21o7qb0g, _S("72|128712|104|142|177|186|173|104|139|189|187|188|183|181|104|154|173|181|183|188|173"), Color3.fromRGB(160, 80, 40), function()
-    _va9h0k3xui8()
+_vbho7yb8i6d(_v4633l9i8ym, _S("75|128715|107|145|180|189|176|107|142|192|190|191|186|184|107|157|176|184|186|191|176"), Color3.fromRGB(160, 80, 40), function()
+    _vhes57e8vkt()
 end)
 
-_vem71kuorez(_v9v21o7qb0g, _S("120|128325|152|207|185|209|200|199|193|198|204|203"))
+_vosu223p3ac(_v4633l9i8ym, _S("129|128334|161|216|194|218|209|208|202|207|213|212"))
 
-_vnblxjh1qhs(_v9v21o7qb0g, _S("97|128287|129|180|194|215|198|155|129|180|201|208|209"), Color3.fromRGB(50, 100, 160), function()
-    _v5edf1wp9gy(_S("111|194|215|222|223"))
+_vbho7yb8i6d(_v4633l9i8ym, _S("78|128268|110|161|175|196|179|136|110|161|182|189|190"), Color3.fromRGB(50, 100, 160), function()
+    _vxitmwvevj0(_S("127|210|231|238|239"))
 end)
 
-_vnblxjh1qhs(_v9v21o7qb0g, _S("66|128256|98|149|163|184|167|124|98|136|163|180|175|98|149|178|177|182"), Color3.fromRGB(50, 130, 80), function()
-    _v5edf1wp9gy(_S("94|164|191|208|203"))
+_vbho7yb8i6d(_v4633l9i8ym, _S("70|128260|102|153|167|188|171|128|102|140|167|184|179|102|153|182|181|186"), Color3.fromRGB(50, 130, 80), function()
+    _vxitmwvevj0(_S("103|173|200|217|212"))
 end)
 
-_vnblxjh1qhs(_v9v21o7qb0g, _S("64|128254|96|147|161|182|165|122|96|147|176|161|183|174"), Color3.fromRGB(80, 80, 140), function()
-    _v5edf1wp9gy(_S("117|200|229|214|236|227"))
+_vbho7yb8i6d(_v4633l9i8ym, _S("114|128304|146|197|211|232|215|172|146|197|226|211|233|224"), Color3.fromRGB(80, 80, 140), function()
+    _vxitmwvevj0(_S("85|168|197|182|204|195"))
 end)
 
-_vnblxjh1qhs(_v9v21o7qb0g, _S("75|128280|107|159|155|107|8669|107|158|179|186|187"), Color3.fromRGB(40, 90, 140), function()
-    _v3e5sqvvzg4(_S("87|170|191|198|199"))
+_vbho7yb8i6d(_v4633l9i8ym, _S("77|128282|109|161|157|109|8671|109|160|181|188|189"), Color3.fromRGB(40, 90, 140), function()
+    _vomq738oyz1(_S("99|182|203|210|211"))
 end)
 
-_vnblxjh1qhs(_v9v21o7qb0g, _S("128|128333|160|212|208|160|8722|160|198|225|242|237|160|211|240|239|244"), Color3.fromRGB(40, 120, 70), function()
-    _v3e5sqvvzg4(_S("129|199|226|243|238"))
+_vbho7yb8i6d(_v4633l9i8ym, _S("111|128316|143|195|191|143|8705|143|181|208|225|220|143|194|223|222|227"), Color3.fromRGB(40, 120, 70), function()
+    _vomq738oyz1(_S("125|195|222|239|234"))
 end)
 
-_vnblxjh1qhs(_v9v21o7qb0g, _S("103|128308|135|187|183|135|8697|135|186|215|200|222|213"), Color3.fromRGB(70, 70, 130), function()
-    _v3e5sqvvzg4(_S("67|150|179|164|186|177"))
+_vbho7yb8i6d(_v4633l9i8ym, _S("126|128331|158|210|206|158|8720|158|209|238|223|245|236"), Color3.fromRGB(70, 70, 130), function()
+    _vomq738oyz1(_S("90|173|202|187|209|200"))
 end)
 
-local _vttew3stu6x = _vrbcwulrfru[_S("86|163|191|201|185")]
-_ve3tsiui727()
+local _v2divy45123 = _vlfy2ujsr8w[_S("115|192|220|230|214")]
+_vfaort8wf1c()
 
-_vem71kuorez(_vttew3stu6x, _S("122|10003|154|205|191|206|206|195|200|193|205"))
+_vosu223p3ac(_v2divy45123, _S("104|9985|136|187|173|188|188|177|182|175|187"))
 
-_vj8fij4gt5t(_vttew3stu6x, _S("88|153|198|204|193|133|153|158|163"), false, function(val)
-    _v7waz68vjhn.AntiAFK = val
-    if val then _vzj5rgcjfn3() else _v8dxpvy8aqj() end
+_v40dlfttzzw(_v2divy45123, _S("82|147|192|198|187|127|147|152|157"), false, function(val)
+    _v6sw8escnb8.AntiAFK = val
+    if val then _vh5zi6xqdjt() else _vivikqob5mk() end
 end)
 
-_vj8fij4gt5t(_vttew3stu6x, _S("124|189|241|240|235|156|206|225|239|236|221|243|234|156|167|156|206|225|221|236|236|232|245"), false, function(val)
-    _v7waz68vjhn.AutoRespawn = val
+_v40dlfttzzw(_v2divy45123, _S("127|192|244|243|238|159|209|228|242|239|224|246|237|159|170|159|209|228|224|239|239|235|248"), false, function(val)
+    _v6sw8escnb8.AutoRespawn = val
 end)
 
-_vj8fij4gt5t(_vttew3stu6x, _S("110|180|190|193|142|176|221|221|225|226|211|224"), false, function(val)
-    _v7waz68vjhn.FPSBooster = val
-    if val then _vuu45qgitw3() end
+_v40dlfttzzw(_v2divy45123, _S("117|187|197|200|149|183|228|228|232|233|218|231"), false, function(val)
+    _v6sw8escnb8.FPSBooster = val
+    if val then _vpphhvi3qqb() end
 end)
 
-_vjx3w9kzjl8(_vttew3stu6x, _S("112|195|213|226|230|213|226|144|184|223|224|144|152|221|217|222|156|144|160|173|223|214|214|153"), 0, 120, 0, function(val)
-    _v7waz68vjhn.ServerHopInterval = val
-    _v1gykbuih0y()
-    if val > 0 then _v8s0ld9io6n() end
+_vbwqm1ke6fr(_v2divy45123, _S("101|184|202|215|219|202|215|133|173|212|213|133|141|210|206|211|145|133|149|162|212|203|203|142"), 0, 120, 0, function(val)
+    _v6sw8escnb8.ServerHopInterval = val
+    _vi1hq7g0yo5()
+    if val > 0 then _vl1hz0cwg9l() end
 end)
 
-_vnblxjh1qhs(_vttew3stu6x, _S("92|127852|124|175|193|206|210|193|206|124|164|203|204|124|170|203|211"), Color3.fromRGB(60, 100, 160), function()
-    _v2m06cb8caz()
+_vbho7yb8i6d(_v2divy45123, _S("112|127872|144|195|213|226|230|213|226|144|184|223|224|144|190|223|231"), Color3.fromRGB(60, 100, 160), function()
+    _v6idno3rd7y()
 end)
 
-_vnblxjh1qhs(_vttew3stu6x, _S("77|128267|109|160|174|195|178|109|144|188|187|179|182|180"), Color3.fromRGB(50, 120, 80), function()
-    _vf3t8kn2cud()
+_vbho7yb8i6d(_v2divy45123, _S("94|128284|126|177|191|212|195|126|161|205|204|196|199|197"), Color3.fromRGB(50, 120, 80), function()
+    _vpamlislzxc()
 end)
 
-_vnblxjh1qhs(_vttew3stu6x, _S("74|128268|106|150|185|171|174|106|141|185|184|176|179|177"), Color3.fromRGB(80, 100, 160), function()
-    _v0lkfk91e2o()
+_vbho7yb8i6d(_v2divy45123, _S("71|128265|103|147|182|168|171|103|138|182|181|173|176|174"), Color3.fromRGB(80, 100, 160), function()
+    _v4xzwwjxl6g()
 end)
 
-_vnblxjh1qhs(_vttew3stu6x, _S("85|128765|117|165|150|163|158|152|117|125|168|201|196|197|117|150|193|193|126"), Color3.fromRGB(200, 40, 40), function()
-    _vb1z9ofns0r()
+_vbho7yb8i6d(_v2divy45123, _S("63|128743|95|143|128|141|136|130|95|103|146|179|174|175|95|128|171|171|104"), Color3.fromRGB(200, 40, 40), function()
+    _v1rxecgi1m8()
 end)
 
-_vem71kuorez(_vttew3stu6x, _S("118|9118|150|193|187|207|184|191|196|186|201"))
-_vzqzu0pk5no = _vzqzu0pk5no + 1
-local _v8j858qis8r = Instance.new(_S("105|189|206|225|221|181|202|203|206|213"))
-_v8j858qis8r.Size = UDim2.new(1, 0, 0, 70)
-_v8j858qis8r.BackgroundColor3 = Theme.Panel
-_v8j858qis8r.BackgroundTransparency = 0.1
-_v8j858qis8r.BorderSizePixel = 0
-_v8j858qis8r.Text = _S("85|117|117|167|190|188|189|201|168|189|190|187|201|117|146|117|169|196|188|188|193|186|117|156|170|158|177|195|117|117|155|117|146|117|169|196|188|188|193|186|117|155|193|206|177|195|117|117|156|117|146|117|169|196|188|188|193|186|117|150|202|201|196|117|155|182|199|194|177|195|117|117|157|117|146|117|169|196|188|188|193|186|117|168|194|182|199|201|117|161|196|196|197|177|195|117|117|165|117|146|117|165|182|195|190|184|117|168|201|196|197|117|150|193|193|177|195|117|117|152|201|199|193|128|152|193|190|184|192|117|146|117|152|193|190|184|192|117|169|165|117|125|190|187|117|186|195|182|183|193|186|185|126")
-_v8j858qis8r.TextColor3 = Theme.SubText
-_v8j858qis8r.Font = Enum.Font.Gotham
-_v8j858qis8r.TextSize = _vgle8yoef1q and 9 or 10
-_v8j858qis8r.TextXAlignment = Enum.TextXAlignment.Left
-_v8j858qis8r.TextYAlignment = Enum.TextYAlignment.Top
-_v8j858qis8r.TextWrapped = true
-_v8j858qis8r.LayoutOrder = _vzqzu0pk5no
-_v8j858qis8r.Parent = _vttew3stu6x
-local _v1st5fcg2n3 = Instance.new(_S("62|147|135|129|173|176|172|163|176"))
-_v1st5fcg2n3.CornerRadius = UDim.new(0, 6)
-_v1st5fcg2n3.Parent = _v8j858qis8r
+_vosu223p3ac(_v2divy45123, _S("92|9092|124|167|161|181|158|165|170|160|175"))
+_vnpt16bcf9s = _vnpt16bcf9s + 1
+local _vamna2192ta = Instance.new(_S("74|158|175|194|190|150|171|172|175|182"))
+_vamna2192ta.Size = UDim2.new(1, 0, 0, 70)
+_vamna2192ta.BackgroundColor3 = Theme.Panel
+_vamna2192ta.BackgroundTransparency = 0.1
+_vamna2192ta.BorderSizePixel = 0
+_vamna2192ta.Text = _S("61|93|93|143|166|164|165|177|144|165|166|163|177|93|122|93|145|172|164|164|169|162|93|132|146|134|153|171|93|93|131|93|122|93|145|172|164|164|169|162|93|131|169|182|153|171|93|93|132|93|122|93|145|172|164|164|169|162|93|126|178|177|172|93|131|158|175|170|153|171|93|93|133|93|122|93|145|172|164|164|169|162|93|144|170|158|175|177|93|137|172|172|173|153|171|93|93|141|93|122|93|141|158|171|166|160|93|144|177|172|173|93|126|169|169|153|171|93|93|128|177|175|169|104|128|169|166|160|168|93|122|93|128|169|166|160|168|93|145|141|93|101|166|163|93|162|171|158|159|169|162|161|102")
+_vamna2192ta.TextColor3 = Theme.SubText
+_vamna2192ta.Font = Enum.Font.Gotham
+_vamna2192ta.TextSize = _v04hlk5ce7d and 9 or 10
+_vamna2192ta.TextXAlignment = Enum.TextXAlignment.Left
+_vamna2192ta.TextYAlignment = Enum.TextYAlignment.Top
+_vamna2192ta.TextWrapped = true
+_vamna2192ta.LayoutOrder = _vnpt16bcf9s
+_vamna2192ta.Parent = _v2divy45123
+local _vuottwa4o4o = Instance.new(_S("73|158|146|140|184|187|183|174|187"))
+_vuottwa4o4o.CornerRadius = UDim.new(0, 6)
+_vuottwa4o4o.Parent = _vamna2192ta
 
-_vem71kuorez(_vttew3stu6x, _S("102|128305|134|178|181|173"))
+_vosu223p3ac(_v2divy45123, _S("104|128307|136|180|183|175"))
 
-local _v4hyo7m1qa6 = Instance.new(_S("117|200|216|231|228|225|225|222|227|220|187|231|214|226|218"))
-LogList = _v4hyo7m1qa6
-LogList.Name = _S("81|157|192|184|157|186|196|197")
+local _vo41dsvwsue = Instance.new(_S("99|182|198|213|210|207|207|204|209|202|169|213|196|208|200"))
+LogList = _vo41dsvwsue
+LogList.Name = _S("101|177|212|204|177|206|216|217")
 LogList.Size = UDim2.new(1, 0, 0, 100)
 LogList.BackgroundColor3 = Theme.Panel
 LogList.BackgroundTransparency = 0.15
@@ -3264,176 +3273,176 @@ LogList.ScrollBarThickness = 3
 LogList.ScrollBarImageColor3 = Theme.Accent
 LogList.CanvasSize = UDim2.new(0, 0, 0, 0)
 LogList.AutomaticCanvasSize = Enum.AutomaticSize.Y
-_vzqzu0pk5no = _vzqzu0pk5no + 1
-LogList.LayoutOrder = _vzqzu0pk5no
-LogList.Parent = _vttew3stu6x
+_vnpt16bcf9s = _vnpt16bcf9s + 1
+LogList.LayoutOrder = _vnpt16bcf9s
+LogList.Parent = _v2divy45123
 
-local _vum76xaz2dg = Instance.new(_S("64|149|137|131|175|178|174|165|178"))
-_vum76xaz2dg.CornerRadius = UDim.new(0, 6)
-_vum76xaz2dg.Parent = LogList
+local _v0bnw348aag = Instance.new(_S("77|162|150|144|188|191|187|178|191"))
+_v0bnw348aag.CornerRadius = UDim.new(0, 6)
+_v0bnw348aag.Parent = LogList
 
-local _v1w9dgvwzz1 = Instance.new(_S("126|211|199|202|231|241|242|202|223|247|237|243|242"))
-_v1w9dgvwzz1.SortOrder = Enum.SortOrder.LayoutOrder
-_v1w9dgvwzz1.Parent = LogList
+local _vqiw16p5lyi = Instance.new(_S("124|209|197|200|229|239|240|200|221|245|235|241|240"))
+_vqiw16p5lyi.SortOrder = Enum.SortOrder.LayoutOrder
+_vqiw16p5lyi.Parent = LogList
 
-local _vmtp4bd9bk1 = Instance.new(_S("109|194|182|189|206|209|209|214|219|212"))
-_vmtp4bd9bk1.PaddingTop = UDim.new(0, 3)
-_vmtp4bd9bk1.PaddingLeft = UDim.new(0, 3)
-_vmtp4bd9bk1.PaddingRight = UDim.new(0, 3)
-_vmtp4bd9bk1.Parent = LogList
+local _v2ogggu23ur = Instance.new(_S("64|149|137|144|161|164|164|169|174|167"))
+_v2ogggu23ur.PaddingTop = UDim.new(0, 3)
+_v2ogggu23ur.PaddingLeft = UDim.new(0, 3)
+_v2ogggu23ur.PaddingRight = UDim.new(0, 3)
+_v2ogggu23ur.Parent = LogList
 
-_vem71kuorez(_vttew3stu6x, _S("116|128395|148|184|189|199|183|195|198|184|148|203|185|182|188|195|195|191"))
+_vosu223p3ac(_v2divy45123, _S("121|128400|153|189|194|204|188|200|203|189|153|208|190|187|193|200|200|196"))
 
-_vj8fij4gt5t(_vttew3stu6x, _S("97|166|207|194|195|205|198|129|184|198|195|201|208|208|204"), false, function(val)
-    _v7waz68vjhn.WebhookEnabled = val
+_v40dlfttzzw(_v2divy45123, _S("106|175|216|203|204|214|207|138|193|207|204|210|217|217|213"), false, function(val)
+    _v6sw8escnb8.WebhookEnabled = val
 end)
 
-_v6z8s0kx4p9(_vttew3stu6x, _S("118|205|219|216|222|229|229|225|150|203|200|194"), _S("98|"), function(text)
-    _v7waz68vjhn.WebhookURL = text
+_vk0vwewlyez(_v2divy45123, _S("100|187|201|198|204|211|211|207|132|185|182|176"), _S("69|"), function(text)
+    _v6sw8escnb8.WebhookURL = text
 end)
 
-_vj8fij4gt5t(_vttew3stu6x, _S("127|197|224|241|236|159|203|238|230|242"), true, function(val)
-    _v7waz68vjhn.WebhookFarm = val
+_v40dlfttzzw(_v2divy45123, _S("128|198|225|242|237|160|204|239|231|243"), true, function(val)
+    _v6sw8escnb8.WebhookFarm = val
 end)
 
-_vj8fij4gt5t(_vttew3stu6x, _S("127|210|228|235|235|159|203|238|230|242"), true, function(val)
-    _v7waz68vjhn.WebhookSell = val
+_v40dlfttzzw(_v2divy45123, _S("117|200|218|225|225|149|193|228|220|232"), true, function(val)
+    _v6sw8escnb8.WebhookSell = val
 end)
 
-_vj8fij4gt5t(_vttew3stu6x, _S("116|199|232|213|232|231|148|192|227|219|231"), true, function(val)
-    _v7waz68vjhn.WebhookStats = val
+_v40dlfttzzw(_v2divy45123, _S("121|204|237|218|237|236|153|197|232|224|236"), true, function(val)
+    _v6sw8escnb8.WebhookStats = val
 end)
 
-_vnblxjh1qhs(_vttew3stu6x, _S("114|128346|146|197|215|224|214|146|197|230|211|230|229|146|192|225|233"), Color3.fromRGB(50, 90, 160), function()
-    _vzdu6ihz2jk()
-    _vv6vvad4d9h(_S("97|180|198|207|213|129|212|213|194|213|212|129|213|208|129|216|198|195|201|208|208|204"))
+_vbho7yb8i6d(_v2divy45123, _S("75|128307|107|158|176|185|175|107|158|191|172|191|190|107|153|186|194"), Color3.fromRGB(50, 90, 160), function()
+    _vp5zwljziql()
+    _vke6snlfgah(_S("69|152|170|179|185|101|184|185|166|185|184|101|185|180|101|188|170|167|173|180|180|176"))
 end)
 
-_vnblxjh1qhs(_vttew3stu6x, _S("62|129576|94|146|163|177|178|94|149|163|160|166|173|173|169"), Color3.fromRGB(90, 60, 140), function()
-    _vwpuc45t3bj({content = _S("95|137|137|186|172|200|205|196|192|127|172|206|212|205|211|192|200|205|127|213|150|188|137|137|127|182|196|193|199|206|206|202|127|211|196|210|211|127|210|212|194|194|196|210|210|197|212|203|128|127|10084")})
-    _vv6vvad4d9h(_S("87|171|188|202|203|188|187|119|206|188|185|191|198|198|194"))
+_vbho7yb8i6d(_v2divy45123, _S("118|129632|150|202|219|233|234|150|205|219|216|222|229|229|225"), Color3.fromRGB(90, 60, 140), function()
+    _vh7yhgsjjgy({content = _S("92|134|134|183|169|197|202|193|189|124|169|203|209|202|208|189|197|202|124|210|147|185|134|134|124|179|193|190|196|203|203|199|124|208|193|207|208|124|207|209|191|191|193|207|207|194|209|200|125|124|10081")})
+    _vke6snlfgah(_S("83|167|184|198|199|184|183|115|202|184|181|187|194|194|190"))
 end)
 
-_vem71kuorez(_vttew3stu6x, _S("100|128395|132|185|184|173|176|173|184|173|169|183"))
+_vosu223p3ac(_v2divy45123, _S("126|128421|158|211|210|199|202|199|210|199|195|209"))
 
-_vnblxjh1qhs(_vttew3stu6x, _S("66|128034|98|150|167|174|167|178|177|180|182|98|182|177|98|149|178|163|185|176"), Color3.fromRGB(60, 90, 140), function()
-    local _vpsezwq2uxx = _v92gucjek3x:FindFirstChild(_S("67|150|179|164|186|177|143|178|166|164|183|172|178|177")) or _v92gucjek3x:FindFirstChild(_S("109|192|221|206|228|219|224")) or _v92gucjek3x:FindFirstChild(_S("82|158|193|180|180|203"))
-    if _vpsezwq2uxx then
-        if _vpsezwq2uxx:IsA(_S("107|173|204|222|208|187|204|221|223")) then
-            _vmax6nag1aa(_vpsezwq2uxx.Position)
+_vbho7yb8i6d(_v2divy45123, _S("100|128068|132|184|201|208|201|212|211|214|216|132|216|211|132|183|212|197|219|210"), Color3.fromRGB(60, 90, 140), function()
+    local _v2chijgkpf7 = _v4au113ebz2:FindFirstChild(_S("103|186|215|200|222|213|179|214|202|200|219|208|214|213")) or _v4au113ebz2:FindFirstChild(_S("60|143|172|157|179|170|175")) or _v4au113ebz2:FindFirstChild(_S("75|151|186|173|173|196"))
+    if _v2chijgkpf7 then
+        if _v2chijgkpf7:IsA(_S("98|164|195|213|199|178|195|212|214")) then
+            _v8dr8vc6i13(_v2chijgkpf7.Position)
         else
-            local spawn = _vpsezwq2uxx:FindFirstChildWhichIsA(_S("93|159|190|208|194|173|190|207|209"))
-            if spawn then _vmax6nag1aa(spawn.Position) end
+            local spawn = _v2chijgkpf7:FindFirstChildWhichIsA(_S("89|155|186|204|190|169|186|203|205"))
+            if spawn then _v8dr8vc6i13(spawn.Position) end
         end
     else
-        _vv6vvad4d9h(_S("130|208|241|162|245|242|227|249|240|162|232|241|247|240|230|163"))
+        _vke6snlfgah(_S("127|205|238|159|242|239|224|246|237|159|229|238|244|237|227|160"))
     end
 end)
 
-_vnblxjh1qhs(_vttew3stu6x, _S("85|128041|117|169|186|193|186|197|196|199|201|117|201|196|117|162|196|202|195|201|182|190|195|117|169|196|197"), Color3.fromRGB(100, 60, 140), function()
-    if _vjwpa6b4z60() then
-        local _vwwjgp0112u = _vqxyh6gcfta.Position.Y
-        local _v5j9o3b4u2o = nil
-        for _, part in ipairs(_v92gucjek3x:GetDescendants()) do
-            if part:IsA(_S("78|144|175|193|179|158|175|192|194")) and part.Position.Y > _vwwjgp0112u then
-                _vwwjgp0112u = part.Position.Y
-                _v5j9o3b4u2o = part
+_vbho7yb8i6d(_v2divy45123, _S("124|128080|156|208|225|232|225|236|235|238|240|156|240|235|156|201|235|241|234|240|221|229|234|156|208|235|236"), Color3.fromRGB(100, 60, 140), function()
+    if _vv3bejf2upo() then
+        local _vll45ilyl27 = _vs1tasghk8v.Position.Y
+        local _v5su2djlpyd = nil
+        for _, part in ipairs(_v4au113ebz2:GetDescendants()) do
+            if part:IsA(_S("70|136|167|185|171|150|167|184|186")) and part.Position.Y > _vll45ilyl27 then
+                _vll45ilyl27 = part.Position.Y
+                _v5su2djlpyd = part
             end
         end
-        if _v5j9o3b4u2o then
-            _vmax6nag1aa(_v5j9o3b4u2o.Position + Vector3.new(0, 10, 0))
-            _vv6vvad4d9h(_S("126|210|227|234|227|238|237|240|242|227|226|158|242|237|158|230|231|229|230|227|241|242|158|238|237|231|236|242|184|158") .. math.floor(_vwwjgp0112u))
+        if _v5su2djlpyd then
+            _v8dr8vc6i13(_v5su2djlpyd.Position + Vector3.new(0, 10, 0))
+            _vke6snlfgah(_S("119|203|220|227|220|231|230|233|235|220|219|151|235|230|151|223|224|222|223|220|234|235|151|231|230|224|229|235|177|151") .. math.floor(_vll45ilyl27))
         end
     end
 end)
 
-_vnblxjh1qhs(_vttew3stu6x, _S("116|128376|148|198|217|222|227|221|226|148|199|217|230|234|217|230"), Color3.fromRGB(100, 100, 50), function()
+_vbho7yb8i6d(_v2divy45123, _S("74|128334|106|156|175|180|185|179|184|106|157|175|188|192|175|188"), Color3.fromRGB(100, 100, 50), function()
     pcall(function()
-        _v9qqaid831c:Kick(_S("83|165|184|189|194|188|193|188|193|186|129|129|129"))
+        _v9q42f8ekfn:Kick(_S("111|193|212|217|222|216|221|216|221|214|157|157|157"))
         task.wait(1)
-        game:GetService(_S("95|179|196|203|196|207|206|209|211|178|196|209|213|200|194|196")):TeleportToPlaceInstance(game.PlaceId, game.JobId, _v9qqaid831c)
+        game:GetService(_S("125|209|226|233|226|237|236|239|241|208|226|239|243|230|224|226")):TeleportToPlaceInstance(game.PlaceId, game.JobId, _v9q42f8ekfn)
     end)
 end)
 
-_vem71kuorez(_vttew3stu6x, _S("101|8606|133|174|179|171|180"))
+_vosu223p3ac(_v2divy45123, _S("97|8602|129|170|175|167|176"))
 
-_vzqzu0pk5no = _vzqzu0pk5no + 1
-local _vwplr3ka02r = Instance.new(_S("110|194|211|230|226|186|207|208|211|218"))
-_vwplr3ka02r.Size = UDim2.new(1, 0, 0, 50)
-_vwplr3ka02r.BackgroundColor3 = Theme.Panel
-_vwplr3ka02r.BackgroundTransparency = 0.1
-_vwplr3ka02r.Text = _S("95|172|200|205|196|192|127|167|212|193|127|213|150|127|219|127") .. Exec.Name .. _S("120|212|230|203|229|217|234|236|152|196|231|231|232|152|303|152|202|221|229|231|236|221|152|203|232|241|152|303|152|189|203|200|163|152|303|152|207|217|241|232|231|225|230|236|235")
-_vwplr3ka02r.TextColor3 = Theme.SubText
-_vwplr3ka02r.Font = Enum.Font.Gotham
-_vwplr3ka02r.TextSize = _vgle8yoef1q and 9 or 10
-_vwplr3ka02r.TextWrapped = true
-_vwplr3ka02r.LayoutOrder = _vzqzu0pk5no
-_vwplr3ka02r.Parent = _vttew3stu6x
+_vnpt16bcf9s = _vnpt16bcf9s + 1
+local _vqtvnuul2em = Instance.new(_S("116|200|217|236|232|192|213|214|217|224"))
+_vqtvnuul2em.Size = UDim2.new(1, 0, 0, 50)
+_vqtvnuul2em.BackgroundColor3 = Theme.Panel
+_vqtvnuul2em.BackgroundTransparency = 0.1
+_vqtvnuul2em.Text = _S("93|170|198|203|194|190|125|165|210|191|125|211|148|125|217|125") .. Exec.Name .. _S("64|156|174|147|173|161|178|180|96|140|175|175|176|96|247|96|146|165|173|175|180|165|96|147|176|185|96|247|96|133|147|144|107|96|247|96|151|161|185|176|175|169|174|180|179")
+_vqtvnuul2em.TextColor3 = Theme.SubText
+_vqtvnuul2em.Font = Enum.Font.Gotham
+_vqtvnuul2em.TextSize = _v04hlk5ce7d and 9 or 10
+_vqtvnuul2em.TextWrapped = true
+_vqtvnuul2em.LayoutOrder = _vnpt16bcf9s
+_vqtvnuul2em.Parent = _v2divy45123
 
-local _v31jslx8qby = Instance.new(_S("87|172|160|154|198|201|197|188|201"))
-_v31jslx8qby.CornerRadius = UDim.new(0, 6)
-_v31jslx8qby.Parent = _vwplr3ka02r
+local _vkr935p5q04 = Instance.new(_S("117|202|190|184|228|231|227|218|231"))
+_vkr935p5q04.CornerRadius = UDim.new(0, 6)
+_vkr935p5q04.Parent = _vqtvnuul2em
 
-_veotsgdmeuc.MouseButton1Click:Connect(function()
+_v3cti1v8rqx.MouseButton1Click:Connect(function()
     State.IsMinimized = true
-    local _vqr2bvow3cx = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-    local tween = _vjsydjh79x2:Create(_vw5uhdt5rf2, _vqr2bvow3cx, {
+    local _vqrju6czxzw = TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    local tween = _vqf0qk0zahi:Create(_vgyp3jjazs2, _vqrju6czxzw, {
         Size = UDim2.new(0, 0, 0, 0),
-        Position = _v9a482le31k,
+        Position = _vh1hqzjuk53,
     })
     tween:Play()
     tween.Completed:Connect(function()
-        _vw5uhdt5rf2.Visible = false
-        _v1hazk9pc0f.Visible = true
-        _v1hazk9pc0f.Size = UDim2.new(0, 0, 0, 0)
-        local _vz0v0k60iuv = _vjsydjh79x2:Create(_v1hazk9pc0f, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = _vee2umr3ro9,
+        _vgyp3jjazs2.Visible = false
+        _v87hjdvjbdd.Visible = true
+        _v87hjdvjbdd.Size = UDim2.new(0, 0, 0, 0)
+        local _vzp6r78c79n = _vqf0qk0zahi:Create(_v87hjdvjbdd, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = _v1wm4rpvb8p,
         })
-        _vz0v0k60iuv:Play()
+        _vzp6r78c79n:Play()
     end)
 end)
 
-_vx49tv4cbul.MouseButton1Click:Connect(function()
+_vb4lcf1de13.MouseButton1Click:Connect(function()
     State.IsMinimized = false
-    local _vqr2bvow3cx = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
-    local tween = _vjsydjh79x2:Create(_v1hazk9pc0f, _vqr2bvow3cx, {
+    local _vqrju6czxzw = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+    local tween = _vqf0qk0zahi:Create(_v87hjdvjbdd, _vqrju6czxzw, {
         Size = UDim2.new(0, 0, 0, 0),
     })
     tween:Play()
     tween.Completed:Connect(function()
-        _v1hazk9pc0f.Visible = false
-        _vw5uhdt5rf2.Visible = true
-        _vw5uhdt5rf2.Size = UDim2.new(0, 0, 0, 0)
-        local _vz0v0k60iuv = _vjsydjh79x2:Create(_vw5uhdt5rf2, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
-            Size = _vwwfao1t8dm,
+        _v87hjdvjbdd.Visible = false
+        _vgyp3jjazs2.Visible = true
+        _vgyp3jjazs2.Size = UDim2.new(0, 0, 0, 0)
+        local _vzp6r78c79n = _vqf0qk0zahi:Create(_vgyp3jjazs2, TweenInfo.new(0.3, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = _viq68ytww7c,
         })
-        _vz0v0k60iuv:Play()
+        _vzp6r78c79n:Play()
     end)
 end)
 
-local _vgno681vslf = false
+local _vcmqo2tphzq = false
 local dragInput
 local dragStart
 local startPos
 
-local function _vcb7cyy7ji9(input)
+local function _vaqz3ez7n75(input)
     local delta = input.Position - dragStart
-    local _vcr62f7vct7 = State.IsMinimized and _v1hazk9pc0f or _vw5uhdt5rf2
-    _vcr62f7vct7.Position = UDim2.new(
+    local _vgz3vpl9vnp = State.IsMinimized and _v87hjdvjbdd or _vgyp3jjazs2
+    _vgz3vpl9vnp.Position = UDim2.new(
         startPos.X.Scale, startPos.X.Offset + delta.X,
         startPos.Y.Scale, startPos.Y.Offset + delta.Y
     )
 end
 
-local function _v4uzyy4uzhz(frame)
+local function _vyxifjvan75(frame)
     frame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            _vgno681vslf = true
+            _vcmqo2tphzq = true
             dragStart = input.Position
             startPos = frame.Position
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
-                    _vgno681vslf = false
+                    _vcmqo2tphzq = false
                 end
             end)
         end
@@ -3443,26 +3452,26 @@ local function _v4uzyy4uzhz(frame)
             dragInput = input
         end
     end)
-    _vnqiki4fvlv.InputChanged:Connect(function(input)
-        if input == dragInput and _vgno681vslf then
-            _vcb7cyy7ji9(input)
+    _vlokuaz0syl.InputChanged:Connect(function(input)
+        if input == dragInput and _vcmqo2tphzq then
+            _vaqz3ez7n75(input)
         end
     end)
 end
 
-_v4uzyy4uzhz(_v37qpihrw43)
-_v4uzyy4uzhz(_v1hazk9pc0f)
+_vyxifjvan75(_vn4141jg4ip)
+_vyxifjvan75(_v87hjdvjbdd)
 
-local _vt75nyp0tgx = 0
+local _vewev5ah8fv = 0
 task.spawn(function()
     while true do
         task.wait(1)
-        pcall(_vykn7t4hb8g)
-        if _v7waz68vjhn.WebhookEnabled and _v7waz68vjhn.WebhookStats then
+        pcall(_vvuv0mfvkex)
+        if _v6sw8escnb8.WebhookEnabled and _v6sw8escnb8.WebhookStats then
             local now = tick()
-            if now - _vt75nyp0tgx >= 30 then
-                _vt75nyp0tgx = now
-                pcall(_vzdu6ihz2jk)
+            if now - _vewev5ah8fv >= 30 then
+                _vewev5ah8fv = now
+                pcall(_vp5zwljziql)
             end
         end
     end
@@ -3472,54 +3481,54 @@ task.spawn(function()
     while true do
         task.wait(10)
         pcall(function()
-            local shops = _vwi0vrnlz4s()
+            local shops = _vkgv156tecx()
             if ShopList then
-                _vdmb3sdada7(ShopList)
+                _vli1jii61e7(ShopList)
                 for i, shop in ipairs(shops) do
                     if i > 15 then break end
-                    local btn = Instance.new(_S("128|212|229|248|244|194|245|244|244|239|238"))
+                    local btn = Instance.new(_S("103|187|204|223|219|169|220|219|219|214|213"))
                     btn.Size = UDim2.new(1, 0, 0, 28)
                     btn.BackgroundColor3 = Theme.Input
                     btn.BorderSizePixel = 0
-                    btn.Text = shop.Name .. _S("122|154|213") .. math.floor(shop.Distance) .. _S("82|191|175")
+                    btn.Text = shop.Name .. _S("121|153|212") .. math.floor(shop.Distance) .. _S("66|175|159")
                     btn.TextColor3 = Theme.Text
                     btn.Font = Enum.Font.Gotham
                     btn.TextSize = 11
                     btn.LayoutOrder = i
                     btn.Parent = ShopList
-                    local _v4opdtp2xv4 = Instance.new(_S("113|198|186|180|224|227|223|214|227"))
-                    _v4opdtp2xv4.CornerRadius = UDim.new(0, 5)
-                    _v4opdtp2xv4.Parent = btn
+                    local _vzudf7pk4sg = Instance.new(_S("114|199|187|181|225|228|224|215|228"))
+                    _vzudf7pk4sg.CornerRadius = UDim.new(0, 5)
+                    _vzudf7pk4sg.Parent = btn
                     btn.MouseButton1Click:Connect(function()
-                        _vmax6nag1aa(shop.Part.Position)
-                        _vv6vvad4d9h(_S("107|191|208|215|208|219|218|221|223|208|207|139|223|218|165|139") .. shop.Name)
+                        _v8dr8vc6i13(shop.Part.Position)
+                        _vke6snlfgah(_S("61|145|162|169|162|173|172|175|177|162|161|93|177|172|119|93") .. shop.Name)
                     end)
                 end
             end
         end)
 
         pcall(function()
-            local rocks = _v1y2wurcl0l()
+            local rocks = _vvkj7mz5kfi()
             if RockList then
-                _vdmb3sdada7(RockList)
+                _vli1jii61e7(RockList)
                 for i, rock in ipairs(rocks) do
                     if i > 20 then break end
-                    local btn = Instance.new(_S("124|208|225|244|240|190|241|240|240|235|234"))
+                    local btn = Instance.new(_S("66|150|167|186|182|132|183|182|182|177|176"))
                     btn.Size = UDim2.new(1, 0, 0, 28)
                     btn.BackgroundColor3 = Theme.Input
                     btn.BorderSizePixel = 0
-                    btn.Text = rock.Name .. _S("65|97|156") .. math.floor(rock.Distance) .. _S("126|235|219") .. (rock.Value > 0 and (_S("122|154|158") .. rock.Value) or _S("89|"))
+                    btn.Text = rock.Name .. _S("68|100|159") .. math.floor(rock.Distance) .. _S("64|173|157") .. (rock.Value > 0 and (_S("96|128|132") .. rock.Value) or _S("66|"))
                     btn.TextColor3 = rock.Value > 0 and Theme.Accent or Theme.SubText
                     btn.Font = Enum.Font.Gotham
                     btn.TextSize = 11
                     btn.LayoutOrder = i
                     btn.Parent = RockList
-                    local _v4opdtp2xv4 = Instance.new(_S("107|192|180|174|218|221|217|208|221"))
-                    _v4opdtp2xv4.CornerRadius = UDim.new(0, 5)
-                    _v4opdtp2xv4.Parent = btn
+                    local _vzudf7pk4sg = Instance.new(_S("83|168|156|150|194|197|193|184|197"))
+                    _vzudf7pk4sg.CornerRadius = UDim.new(0, 5)
+                    _vzudf7pk4sg.Parent = btn
                     btn.MouseButton1Click:Connect(function()
-                        _vmax6nag1aa(rock.Part.Position)
-                        _vv6vvad4d9h(_S("107|191|208|215|208|219|218|221|223|208|207|139|223|218|165|139") .. rock.Name)
+                        _v8dr8vc6i13(rock.Part.Position)
+                        _vke6snlfgah(_S("89|173|190|197|190|201|200|203|205|190|189|121|205|200|147|121") .. rock.Name)
                     end)
                 end
             end
@@ -3527,30 +3536,30 @@ task.spawn(function()
     end
 end)
 
-_vnqiki4fvlv.InputBegan:Connect(function(input, processed)
+_vlokuaz0syl.InputBegan:Connect(function(input, processed)
     if processed then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
-        _v63jbp5gyvx.Enabled = not _v63jbp5gyvx.Enabled
-        State.GUIHidden = not _v63jbp5gyvx.Enabled
-        if _v63jbp5gyvx.Enabled then
-            _vw5uhdt5rf2.Visible = true
-            _v1hazk9pc0f.Visible = false
+        _vz90e7eogvf.Enabled = not _vz90e7eogvf.Enabled
+        State.GUIHidden = not _vz90e7eogvf.Enabled
+        if _vz90e7eogvf.Enabled then
+            _vgyp3jjazs2.Visible = true
+            _v87hjdvjbdd.Visible = false
         end
     elseif input.KeyCode == Enum.KeyCode.F then
-        _v7waz68vjhn.FlyEnabled = not _v7waz68vjhn.FlyEnabled
-        if _v7waz68vjhn.FlyEnabled then _v1vyt4wih0r() else _vjnercdb1pz() end
-        _vv6vvad4d9h(_S("103|173|211|224|161|135") .. (_v7waz68vjhn.FlyEnabled and _S("86|165|164") or _S("89|168|159|159")))
+        _v6sw8escnb8.FlyEnabled = not _v6sw8escnb8.FlyEnabled
+        if _v6sw8escnb8.FlyEnabled then _vpwcd8goxkp() else _vtsizpq0fzh() end
+        _vke6snlfgah(_S("94|164|202|215|152|126") .. (_v6sw8escnb8.FlyEnabled and _S("73|152|151") or _S("119|198|189|189")))
     elseif input.KeyCode == Enum.KeyCode.G then
-        _v7waz68vjhn.AutoFarm = not _v7waz68vjhn.AutoFarm
-        if _v7waz68vjhn.AutoFarm then _vmxf3w0runt() else _vg3ft1nprj0() end
-        _vv6vvad4d9h(_S("69|134|186|185|180|101|139|166|183|178|127|101") .. (_v7waz68vjhn.AutoFarm and _S("103|182|181") or _S("90|169|160|160")))
+        _v6sw8escnb8.AutoFarm = not _v6sw8escnb8.AutoFarm
+        if _v6sw8escnb8.AutoFarm then _vuzi1rglazv() else _vfd9vsjy6dq() end
+        _vke6snlfgah(_S("118|183|235|234|229|150|188|215|232|227|176|150") .. (_v6sw8escnb8.AutoFarm and _S("79|158|157") or _S("74|153|144|144")))
     elseif input.KeyCode == Enum.KeyCode.H then
-        _v7waz68vjhn.SmartLoop = not _v7waz68vjhn.SmartLoop
-        if _v7waz68vjhn.SmartLoop then _v1yqj5byw0q() else _vjrd7o2l9jf() end
-        _vv6vvad4d9h(_S("71|154|180|168|185|187|103|147|182|182|183|129|103") .. (_v7waz68vjhn.SmartLoop and _S("84|163|162") or _S("78|157|148|148")))
-    elseif input.KeyCode == Enum.KeyCode.P and _v7waz68vjhn.PanicEnabled then
-        _vb1z9ofns0r()
-        _v63jbp5gyvx.Enabled = false
+        _v6sw8escnb8.SmartLoop = not _v6sw8escnb8.SmartLoop
+        if _v6sw8escnb8.SmartLoop then _vfxmh0gf14j() else _vz2b4tz2i8v() end
+        _vke6snlfgah(_S("79|162|188|176|193|195|111|155|190|190|191|137|111") .. (_v6sw8escnb8.SmartLoop and _S("82|161|160") or _S("78|157|148|148")))
+    elseif input.KeyCode == Enum.KeyCode.P and _v6sw8escnb8.PanicEnabled then
+        _v1rxecgi1m8()
+        _vz90e7eogvf.Enabled = false
         State.GUIHidden = true
     end
 end)
@@ -3559,37 +3568,37 @@ task.spawn(function()
     while true do
         task.wait(3)
         pcall(function()
-            if _v7waz68vjhn.Tracers then _vfyh1s9eesc() end
-            if _v7waz68vjhn.PlayerESP then _vwnlqp7zj6f() end
-            if _v7waz68vjhn.ChestESP then _v0cz2jcife5() end
-            if _v7waz68vjhn.HideOtherPlayers then _vlijjol47uc() end
-            if _v7waz68vjhn.BypassPromptHold then _v19dcvsp9hu(_v92gucjek3x) end
+            if _v6sw8escnb8.Tracers then _vpoz5mqsik7() end
+            if _v6sw8escnb8.PlayerESP then _v3gp7hvkeu3() end
+            if _v6sw8escnb8.ChestESP then _vt7f1e9gp7q() end
+            if _v6sw8escnb8.HideOtherPlayers then _vlx1pscxgrc() end
+            if _v6sw8escnb8.BypassPromptHold then _vdr4qws4uos(_v4au113ebz2) end
         end)
     end
 end)
 
-_v9qqaid831c.CharacterAdded:Connect(function(char)
+_v9q42f8ekfn.CharacterAdded:Connect(function(char)
     Character = char
-    _vqxyh6gcfta = char:WaitForChild(_S("122|194|239|231|219|232|233|227|222|204|233|233|238|202|219|236|238"))
-    _vkhkeyt0oao = char:WaitForChild(_S("72|144|189|181|169|182|183|177|172"))
-    _vv6vvad4d9h(_S("116|183|220|213|230|213|215|232|217|230|148|230|217|231|228|213|235|226|217|216"))
+    _vs1tasghk8v = char:WaitForChild(_S("62|134|179|171|159|172|173|167|162|144|173|173|178|142|159|176|178"))
+    _vxx3bniaakb = char:WaitForChild(_S("72|144|189|181|169|182|183|177|172"))
+    _vke6snlfgah(_S("101|168|205|198|215|198|200|217|202|215|133|215|202|216|213|198|220|211|202|201"))
 
     task.delay(1, function()
-        if _v7waz68vjhn.SpeedBoost then _vb0zw0tduye() end
-        if _v7waz68vjhn.FlyEnabled then _vjnercdb1pz() _v1vyt4wih0r() end
-        if _v7waz68vjhn.InfiniteJump then _v9iyu3x3m2k() _vkhvmp0vzuf() end
-        if _v7waz68vjhn.AutoEquipPickaxe then _v4l7y64k05o() end
-        if _v7waz68vjhn.AutoFarm and not State.FarmConnection then _vmxf3w0runt() end
-        if _v7waz68vjhn.SmartLoop and not State.SmartLoopConn then _v1yqj5byw0q() end
-        if _v7waz68vjhn.WarmthKeeper or _v7waz68vjhn.StaminaKeeper then _vyknuy031k5() end
+        if _v6sw8escnb8.SpeedBoost then _vrfkp7amk9k() end
+        if _v6sw8escnb8.FlyEnabled then _vtsizpq0fzh() _vpwcd8goxkp() end
+        if _v6sw8escnb8.InfiniteJump then _v5h8twcc98l() _vabborehzic() end
+        if _v6sw8escnb8.AutoEquipPickaxe then _vw9kfb4vwri() end
+        if _v6sw8escnb8.AutoFarm and not State.FarmConnection then _vuzi1rglazv() end
+        if _v6sw8escnb8.SmartLoop and not State.SmartLoopConn then _vfxmh0gf14j() end
+        if _v6sw8escnb8.WarmthKeeper or _v6sw8escnb8.StaminaKeeper then _v2bipzjm8pv() end
     end)
 end)
 
-_v9qqaid831c.CharacterRemoving:Connect(function()
-    if _v7waz68vjhn.AutoRespawn then
+_v9q42f8ekfn.CharacterRemoving:Connect(function()
+    if _v6sw8escnb8.AutoRespawn then
         task.delay(3, function()
             pcall(function()
-                if not _v9qqaid831c.Character then
+                if not _v9q42f8ekfn.Character then
                     Exec.LoadCharacter()
                 end
             end)
@@ -3597,27 +3606,32 @@ _v9qqaid831c.CharacterRemoving:Connect(function()
     end
 end)
 
-if _vhr6gh6h8s0 then
-    _vhr6gh6h8s0:GetPropertyChangedSignal(_S("125|211|230|226|244|237|236|239|241|208|230|247|226")):Connect(function()
-        local _vjmzg0q7k7n = _vhr6gh6h8s0.ViewportSize
-        local isMob = _vjmzg0q7k7n.X < 800
-        _vwwfao1t8dm = isMob and UDim2.new(0, 340, 0, 420) or UDim2.new(0, 700, 0, 440)
+if _vhd2vjx3udq then
+    _vhd2vjx3udq:GetPropertyChangedSignal(_S("122|208|227|223|241|234|233|236|238|205|227|244|223")):Connect(function()
+        local _vxxv50bg0oh = _vhd2vjx3udq.ViewportSize
+        local isMob = _vxxv50bg0oh.X < 800
+        _viq68ytww7c = isMob and UDim2.new(0, 340, 0, 420) or UDim2.new(0, 700, 0, 440)
         if not State.IsMinimized then
-            _vw5uhdt5rf2.Size = _vwwfao1t8dm
+            _vgyp3jjazs2.Size = _viq68ytww7c
         end
-        _vc29xemk97d.TextSize = isMob and 13 or 15
+        _vi8wfm6i1b4.TextSize = isMob and 13 or 15
     end)
 end
 
 Exec.SetSimRadius()
 
 pcall(function()
-    _vv6vvad4d9h(_S("61|138|166|171|162|158|93|138|172|178|171|177|158|166|171|93|179|116|93|169|172|158|161|162|161|93|172|171|93") .. Exec.Name)
-    _vv6vvad4d9h(_S("78|147|198|179|177|195|194|189|192|110|143|158|151|193|136|110|150|162|162|158|139") .. tostring(Exec.Request ~= nil) .. _S("74|106|146|185|185|181|135") .. tostring(Exec.HasHookMeta) .. _S("108|140|175|216|213|207|215|169") .. tostring(Exec.HasFireClick))
-    _vv6vvad4d9h(_S("67|149|172|170|171|183|150|171|172|169|183|99|128|99|138|152|140|99|191|99|134|164|166|171|168|99|181|168|176|178|183|168|182|99|169|172|181|182|183|100"))
-    _v19dcvsp9hu(_v92gucjek3x)
+    _vke6snlfgah(_S("107|184|212|217|208|204|139|179|224|205|139|225|162|139|215|218|204|207|208|207|139|218|217|139") .. Exec.Name)
+    _vke6snlfgah(_S("111|180|231|212|210|228|227|222|225|143|176|191|184|226|169|143|183|195|195|191|172") .. tostring(Exec.Request ~= nil) .. _S("89|121|161|200|200|196|150") .. tostring(Exec.HasHookMeta) .. _S("115|147|182|223|220|214|222|176") .. tostring(Exec.HasFireClick))
+    _vke6snlfgah(_S("102|184|207|205|206|218|185|206|207|204|218|134|163|134|173|187|175|134|226|134|169|199|201|206|203|134|216|203|211|213|218|203|217|134|204|207|216|217|218|135"))
+    _vdr4qws4uos(_v4au113ebz2)
+    _v5pkwv48d2z:SetCore(_S("94|177|195|204|194|172|205|210|199|196|199|193|191|210|199|205|204"), {
+        Title = _S("88|165|193|198|189|185|120|160|205|186|120|206|143"),
+        Text = _S("93|169|204|190|193|194|193|126|125|173|207|194|208|208|125|175|198|196|197|209|176|197|198|195|209|125|209|204|125|209|204|196|196|201|194|125|164|178|166|139"),
+        Duration = 6,
+    })
 end)
 
 task.delay(3, function()
-    pcall(_v9ohaz27yl5)
+    pcall(_v7j1h15u98j)
 end)

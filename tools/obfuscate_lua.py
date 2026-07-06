@@ -19,8 +19,10 @@ PROTECTED_GLOBALS = [
 ]
 
 DECODER = (
-    'local _S=function(s)local o=tonumber(s:match("^(%d+)%|"))local r=""'
-    'for c in s:gmatch("(%d+)")do local n=tonumber(c)-o;if n>0 then r=r..string.char(n)end end;return r end\n'
+    'local _S=function(s)local o=tonumber(s:match("^(%d+)%|"))local t={}'
+    'for c in s:gmatch("(%d+)")do local n=tonumber(c)-o;if n>0 then t[#t+1]=n end end'
+    'if utf8 and utf8.char then local ok,res=pcall(utf8.char,table.unpack(t))if ok then return res end end'
+    'local r=""for i=1,#t do if t[i]<=255 then r=r..string.char(t[i])end end;return r end\n'
 )
 
 
