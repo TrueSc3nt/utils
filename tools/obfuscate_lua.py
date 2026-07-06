@@ -19,10 +19,25 @@ PROTECTED_GLOBALS = [
 ]
 
 DECODER = (
-    'local _S=function(s)local o=tonumber(s:match("^(%d+)%|"))local t={}'
-    'for c in s:gmatch("(%d+)")do local n=tonumber(c)-o;if n>0 then t[#t+1]=n end end'
-    'if utf8 and utf8.char then local ok,res=pcall(utf8.char,table.unpack(t))if ok then return res end end'
-    'local r=""for i=1,#t do if t[i]<=255 then r=r..string.char(t[i])end end;return r end\n'
+    "local _u=table.unpack or unpack\n"
+    "local function _S(s)\n"
+    "    local o=tonumber(s:match('^(%d+)|'))\n"
+    "    if not o then return '' end\n"
+    "    local t={}\n"
+    "    for c in s:gmatch('(%d+)') do\n"
+    "        local n=tonumber(c)-o\n"
+    "        if n>0 then t[#t+1]=n end\n"
+    "    end\n"
+    "    if utf8 and utf8.char then\n"
+    "        local ok,res=pcall(utf8.char,_u(t))\n"
+    "        if ok then return res end\n"
+    "    end\n"
+    "    local r=''\n"
+    "    for i=1,#t do\n"
+    "        if t[i]<=255 then r=r..string.char(t[i]) end\n"
+    "    end\n"
+    "    return r\n"
+    "end\n"
 )
 
 
@@ -104,6 +119,9 @@ def encode_strings(code: str) -> str:
     def enc(m):
         inner = m.group(1)
         if len(inner) > 800:
+            return m.group(0)
+        # Keep short tokens (e.g. select("#", ...)) and emoji/unicode as literals
+        if len(inner) < 3 or any(ord(c) > 127 for c in inner):
             return m.group(0)
         return f'_S("{encode_string(inner)}")'
 

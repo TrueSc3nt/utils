@@ -1,5 +1,5 @@
 --[[ Minea Hub v7 Loader | TrueSc3nt ]]
-local VERSION = "9"
+local VERSION = "10"
 local URL = "https://raw.githubusercontent.com/TrueSc3nt/utils/main/minea_clean_test_obf.lua?v=" .. VERSION
 
 local StarterGui = game:GetService("StarterGui")
@@ -48,9 +48,9 @@ local ok, err = pcall(function()
     if src:find("404: Not Found") or src:sub(1, 15) == "<!DOCTYPE html" then
         error("Script not found on GitHub")
     end
-    local fn = loadstring(src)
+    local fn, compileErr = loadstring(src)
     if not fn then
-        error("Script failed to compile")
+        error(compileErr or "Script failed to compile")
     end
     fn()
 end)
