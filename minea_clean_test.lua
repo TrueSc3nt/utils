@@ -10,8 +10,8 @@
     Features: Smart Loop, Ore Filter, Remote Spy, ESP+, Waypoints,
               Auto Farm/Sell/Upgrade, Exploits, Config Save, Keybinds
     
-    Compatible: Delta, Synapse X, KRNL, Fluxus, Wave, Codex
-    Usage: Execute in any Roblox executor
+    Compatible: Delta, Synapse X/Z, KRNL, Fluxus, Wave, Codex, Solara, Hydrogen
+    Universal executor compatibility layer — auto-detects APIs per executor
 ]]
 
 -- ========== SERVICES ==========
@@ -29,6 +29,9 @@ local CollectionService = game:GetService("CollectionService")
 
 -- ========== PLAYER ==========
 local LocalPlayer = Players.LocalPlayer
+if not LocalPlayer then
+    LocalPlayer = Players.PlayerAdded:Wait()
+end
 local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 local HumanoidRootPart = Character:WaitForChild("HumanoidRootPart")
 local Humanoid = Character:WaitForChild("Humanoid")
@@ -149,85 +152,267 @@ local State = {
     FullbrightApplied = false,
 }
 
--- ========== ENVIRONMENT CHECK ==========
-local IsExecutor = (getgenv ~= nil)
-local GetGEnv = IsExecutor and getgenv() or _G
-local HasHookMeta = (hookmetamethod ~= nil)
-local HasNewCClosure = (newcclosure ~= nil)
-local HasRawMeta = (getrawmetatable ~= nil)
-local HasSetReadonly = (setreadonly ~= nil)
-local HasFireClick = (fireclickdetector ~= nil)
-local HasFireProximity = (fireproximityprompt ~= nil)
-local HasFireTouch = (firetouchinterest ~= nil)
-local HasSetHidden = (sethiddenproperty ~= nil)
-local HasSetSimRadius = (setsimulationradius ~= nil)
-local HasGetConns = (getconnections ~= nil)
-local HasProtectGui = (syn ~= nil and syn.protect_gui ~= nil)
-local HasCheckCaller = (checkcaller ~= nil)
-
--- ========== ANTI-DETECTION ==========
-local AntiDetection = {}
+-- ========== EXECUTOR COMPATIBILITY LAYER ==========
+-- Works on: Delta, Synapse X/Z, KRNL, Fluxus, Wave, Codex, Solara, Hydrogen, etc.
+local Exec = {}
 
 do
-    -- Hook __namecall to intercept security checks
-    if HasHookMeta and HasNewCClosure and HasRawMeta and HasSetReadonly and getnamecallmethod then
-        local OldNamecall
-        OldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            local args = {...}
-            
-            -- Block anti-exploit scripts from detecting us
-            if method == "FindService" then
-                local serviceName = args[1]
-                if serviceName == "ExploitService" or serviceName == "CheatService" then
-                    return nil
-                end
+    local genv = getgenv and getgenv() or _G
+    local function first(...)
+        for i = 1, select("#", ...) do
+            local v = select(i, ...)
+            if v ~= nil then return v end
+        end
+    end
+
+    Exec.Unpack = table.unpack or unpack
+    Exec.Name = "Unknown"
+    pcall(function()
+        if identifyexecutor then
+            Exec.Name = identifyexecutor()
+        elseif EXECUTOR_NAME then
+            Exec.Name = EXECUTOR_NAME
+        elseif syn then
+            Exec.Name = "Synapse"
+        elseif KRNL_LOADED then
+            Exec.Name = "KRNL"
+        elseif Fluxus then
+            Exec.Name = "Fluxus"
+        elseif delta then
+            Exec.Name = "Delta"
+        end
+    end)
+
+    Exec.SafeCClosure = newcclosure or newlclosure or function(f) return f end
+    Exec.GetNamecallMethod = getnamecallmethod or getcallmethod or function() return "" end
+    Exec.HasHookMeta = hookmetamethod ~= nil
+    Exec.HasNewCClosure = newcclosure ~= nil
+    Exec.HasFireClick = fireclickdetector ~= nil
+    Exec.HasFireProximity = fireproximityprompt ~= nil
+    Exec.HasFireTouch = firetouchinterest ~= nil
+    Exec.HasSetSimRadius = setsimulationradius ~= nil
+    Exec.HasCheckCaller = checkcaller ~= nil
+    Exec.HasWriteFile = writefile ~= nil
+    Exec.HasReadFile = readfile ~= nil
+    Exec.HasIsFile = isfile ~= nil
+    Exec.HasClipboard = setclipboard ~= nil
+    Exec.HasLoadCharacter = loadcharacter ~= nil
+
+    Exec.Request = first(
+        syn and syn.request,
+        http and http.request,
+        request,
+        fluxus and fluxus.request,
+        genv.request,
+        genv.http_request
+    )
+
+    Exec.ProtectGui = function(gui)
+        pcall(function()
+            if syn and syn.protect_gui then syn.protect_gui(gui)
+            elseif protectgui then protectgui(gui)
+            elseif genv.protectgui then genv.protectgui(gui) end
+        end)
+    end
+
+    Exec.GetGuiParent = function()
+        local parent
+        pcall(function()
+            if gethui then parent = gethui() end
+        end)
+        if parent then return parent end
+        pcall(function()
+            if get_hidden_gui then parent = get_hidden_gui() end
+        end)
+        if parent then return parent end
+        pcall(function()
+            local cg = game:GetService("CoreGui")
+            if cloneref then cg = cloneref(cg) end
+            parent = cg
+        end)
+        if parent then return parent end
+        return LocalPlayer:WaitForChild("PlayerGui")
+    end
+
+    Exec.HttpGet = function(url)
+        local ok, result = pcall(function() return game:HttpGet(url) end)
+        if ok and result then return result end
+        if Exec.Request then
+            local res = Exec.Request({Url = url, Method = "GET"})
+            if type(res) == "table" then
+                return res.Body or res.body or res.BodyText
             end
-            
-            -- Spoof GetScriptBytecode calls (some games check for injected scripts)
-            if method == "GetScriptBytecode" then
-                if HasCheckCaller and checkcaller() then
+        end
+        return HttpService:GetAsync(url)
+    end
+
+    Exec.Post = function(url, body, contentType)
+        contentType = contentType or "application/json"
+        if Exec.Request then
+            return Exec.Request({
+                Url = url,
+                Method = "POST",
+                Headers = {["Content-Type"] = contentType},
+                Body = body,
+            })
+        end
+        return HttpService:PostAsync(url, body, Enum.HttpContentType.ApplicationJson)
+    end
+
+    Exec.FireClick = function(detector)
+        if not detector then return end
+        pcall(function()
+            if fireclickdetector then fireclickdetector(detector)
+            elseif clickdetector then clickdetector(detector) end
+        end)
+    end
+
+    Exec.FireProximity = function(prompt, amount)
+        if not prompt then return end
+        pcall(function()
+            if fireproximityprompt then
+                fireproximityprompt(prompt, amount or 1)
+            elseif proximityprompt then
+                proximityprompt(prompt)
+            end
+        end)
+    end
+
+    Exec.FireTouch = function(part0, part1, toggle)
+        if not part0 or not part1 then return end
+        pcall(function()
+            if firetouchinterest then firetouchinterest(part0, part1, toggle or 0) end
+        end)
+    end
+
+    Exec.WriteFile = function(path, data)
+        if writefile then pcall(writefile, path, data) return true end
+        if writefileasync then pcall(writefileasync, path, data) return true end
+        return false
+    end
+
+    Exec.ReadFile = function(path)
+        if readfile and isfile and isfile(path) then
+            local ok, data = pcall(readfile, path)
+            if ok then return data end
+        end
+        return nil
+    end
+
+    Exec.SetClipboard = function(text)
+        pcall(function()
+            if setclipboard then setclipboard(text)
+            elseif toclipboard then toclipboard(text) end
+        end)
+    end
+
+    Exec.LoadCharacter = function()
+        pcall(function()
+            if loadcharacter then loadcharacter()
+            elseif LocalPlayer.LoadCharacter then LocalPlayer:LoadCharacter() end
+        end)
+    end
+
+    Exec.SetSimRadius = function()
+        pcall(function()
+            if setsimulationradius then setsimulationradius(1e9, 1e9) end
+        end)
+        pcall(function()
+            if sethiddenproperty then
+                sethiddenproperty(LocalPlayer, "SimulationRadius", 1e9)
+                sethiddenproperty(LocalPlayer, "MaxSimulationRadius", 1e9)
+            end
+        end)
+    end
+
+    -- Single __namecall chain (anti-detection + remote spy) — avoids double-hook crashes
+    local NamecallHooks = {}
+    local OldNamecall = nil
+    local NamecallInstalled = false
+
+    function Exec.OnNamecall(fn)
+        table.insert(NamecallHooks, fn)
+        if not NamecallInstalled and Exec.HasHookMeta then
+            NamecallInstalled = true
+            pcall(function()
+                OldNamecall = hookmetamethod(game, "__namecall", Exec.SafeCClosure(function(self, ...)
+                    local method = Exec.GetNamecallMethod()
+                    local args = {...}
+                    for _, hook in ipairs(NamecallHooks) do
+                        local block, ret = hook(self, method, args)
+                        if block then return ret end
+                    end
                     return OldNamecall(self, ...)
+                end))
+            end)
+        end
+    end
+
+    Exec.NamecallHooks = NamecallHooks
+
+    -- Legacy flags used throughout script
+    HasHookMeta = Exec.HasHookMeta
+    HasNewCClosure = Exec.HasNewCClosure
+    HasFireClick = Exec.HasFireClick
+    HasFireProximity = Exec.HasFireProximity
+    HasFireTouch = Exec.HasFireTouch
+    HasSetSimRadius = Exec.HasSetSimRadius
+    HasCheckCaller = Exec.HasCheckCaller
+    HasProtectGui = true
+    IsExecutor = getgenv ~= nil
+    GetGEnv = genv
+end
+
+-- ========== ANTI-DETECTION + REMOTE SPY (unified hook) ==========
+local RemoteSpyActive = false
+
+pcall(function()
+    if Exec.HasHookMeta and Exec.GetNamecallMethod then
+        Exec.OnNamecall(function(self, method, args)
+            -- Remote spy
+            if RemoteSpyActive and (method == "FireServer" or method == "InvokeServer") then
+                if self:IsA("RemoteEvent") or self:IsA("RemoteFunction") then
+                    pcall(function() AddRemoteSpyLog(self.Name, method, args) end)
                 end
             end
-            
-            -- Prevent kick
+            -- Anti kick
             if method == "Kick" and self == LocalPlayer then
-                return nil
+                return true, nil
             end
-            
-            return OldNamecall(self, ...)
-        end))
-        
-        -- Hook __index to spoof WalkSpeed and JumpPower checks
-        local OldIndex
-        OldIndex = hookmetamethod(game, "__index", newcclosure(function(self, key)
-            if Humanoid and self == Humanoid then
-                if key == "WalkSpeed" and Config.SpeedBoost then
-                    return 16
-                end
-                if key == "JumpPower" and Config.JumpPower > 50 then
-                    return 50
+            -- Block fake anti-cheat services
+            if method == "FindService" then
+                local svc = args[1]
+                if svc == "ExploitService" or svc == "CheatService" then
+                    return true, nil
                 end
             end
-            return OldIndex(self, key)
-        end))
-        
-        -- Hook __newindex to allow setting WalkSpeed/JumpPower without detection
-        local OldNewIndex
-        OldNewIndex = hookmetamethod(game, "__newindex", newcclosure(function(self, key, value)
-            if Humanoid and self == Humanoid then
-                if key == "WalkSpeed" then
-                    if Config.SpeedBoost then
+            return false
+        end)
+    end
+end)
+
+-- WalkSpeed / JumpPower hooks (separate — optional, wrapped in pcall)
+do
+    if Exec.HasHookMeta and Exec.HasNewCClosure then
+        pcall(function()
+            local OldIndex = hookmetamethod(game, "__index", Exec.SafeCClosure(function(self, key)
+                if Humanoid and self == Humanoid then
+                    if key == "WalkSpeed" and Config.SpeedBoost then return 16 end
+                    if key == "JumpPower" and Config.JumpPower > 50 then return 50 end
+                end
+                return OldIndex(self, key)
+            end))
+        end)
+        pcall(function()
+            local OldNewIndex = hookmetamethod(game, "__newindex", Exec.SafeCClosure(function(self, key, value)
+                if Humanoid and self == Humanoid then
+                    if key == "WalkSpeed" and Config.SpeedBoost then
                         return OldNewIndex(self, key, Config.WalkSpeed)
                     end
                 end
-                if key == "JumpPower" then
-                    return OldNewIndex(self, key, value)
-                end
-            end
-            return OldNewIndex(self, key, value)
-        end))
+                return OldNewIndex(self, key, value)
+            end))
+        end)
     end
 end
 
@@ -405,9 +590,9 @@ local function CollectNearbyDrops()
         local drop = drops[i]
         TeleportTo(drop.Part.Position)
         if HasFireTouch then
-            firetouchinterest(HumanoidRootPart, drop.Part, 0)
+            Exec.FireTouch(HumanoidRootPart, drop.Part, 0)
             task.wait(0.01)
-            firetouchinterest(HumanoidRootPart, drop.Part, 1)
+            Exec.FireTouch(HumanoidRootPart, drop.Part, 1)
         end
         FireRemote("pickup")
         FireRemote("collect")
@@ -539,9 +724,9 @@ local function FireRemote(namePattern, ...)
         if string.find(rName, pattern) then
             pcall(function()
                 if remote.Type == "RemoteEvent" then
-                    remote.Instance:FireServer(unpack(args))
+                    remote.Instance:FireServer(Exec.Unpack(args))
                 elseif remote.Type == "RemoteFunction" then
-                    remote.Instance:InvokeServer(unpack(args))
+                    remote.Instance:InvokeServer(Exec.Unpack(args))
                 end
             end)
         end
@@ -554,9 +739,9 @@ local function FireRemoteExact(name, ...)
         if remote.Name == name then
             pcall(function()
                 if remote.Type == "RemoteEvent" then
-                    remote.Instance:FireServer(unpack(args))
+                    remote.Instance:FireServer(Exec.Unpack(args))
                 elseif remote.Type == "RemoteFunction" then
-                    remote.Instance:InvokeServer(unpack(args))
+                    remote.Instance:InvokeServer(Exec.Unpack(args))
                 end
             end)
             return true
@@ -708,21 +893,19 @@ local function MineRock(rockData)
         -- Method 1: Fire click detector
         if HasFireClick then
             local clickDetector = rock:FindFirstChildOfClass("ClickDetector") or part:FindFirstChildOfClass("ClickDetector")
-            if clickDetector then fireclickdetector(clickDetector) end
+            if clickDetector then Exec.FireClick(clickDetector) end
         end
-        -- Method 2: Fire proximity prompt
         if HasFireProximity then
             local prompt = rock:FindFirstChildOfClass("ProximityPrompt") or part:FindFirstChildOfClass("ProximityPrompt")
             if prompt then
                 if Config.BypassPromptHold then prompt.HoldDuration = 0 end
-                fireproximityprompt(prompt)
+                Exec.FireProximity(prompt)
             end
         end
-        -- Method 3: Fire touch interest
         if HasFireTouch then
-            firetouchinterest(HumanoidRootPart, part, 0)
+            Exec.FireTouch(HumanoidRootPart, part, 0)
             task.wait(0.01)
-            firetouchinterest(HumanoidRootPart, part, 1)
+            Exec.FireTouch(HumanoidRootPart, part, 1)
         end
         -- Method 4: Use tool if equipped
         local tool = Character and Character:FindFirstChildOfClass("Tool")
@@ -775,24 +958,18 @@ local function SellItems(shopData)
     -- Method 1: Click detector
     if HasFireClick then
         local clickDetector = shop:FindFirstChildOfClass("ClickDetector") or part:FindFirstChildOfClass("ClickDetector")
-        if clickDetector then
-            fireclickdetector(clickDetector)
-        end
+        if clickDetector then Exec.FireClick(clickDetector) end
     end
     
-    -- Method 2: Proximity prompt
     if HasFireProximity then
         local prompt = shop:FindFirstChildOfClass("ProximityPrompt") or part:FindFirstChildOfClass("ProximityPrompt")
-        if prompt then
-            fireproximityprompt(prompt)
-        end
+        if prompt then Exec.FireProximity(prompt) end
     end
     
-    -- Method 3: Touch interest
     if HasFireTouch then
-        firetouchinterest(HumanoidRootPart, part, 0)
+        Exec.FireTouch(HumanoidRootPart, part, 0)
         task.wait(0.01)
-        firetouchinterest(HumanoidRootPart, part, 1)
+        Exec.FireTouch(HumanoidRootPart, part, 1)
     end
     
     -- Method 4: Fire sell remotes
@@ -1385,8 +1562,6 @@ local function StopSmartLoop()
 end
 
 -- ========== REMOTE SPY ==========
-local RemoteSpyHook = nil
-
 local function SerializeArg(arg)
     local t = typeof(arg)
     if t == "Instance" then return arg:GetFullName()
@@ -1427,27 +1602,18 @@ local function AddRemoteSpyLog(remoteName, remoteType, args)
 end
 
 local function StartRemoteSpy()
-    if RemoteSpyHook or not HasHookMeta or not HasNewCClosure or not getnamecallmethod then
-        if not RemoteSpyHook then AddLog("Remote Spy unavailable on this executor") end
+    if not Exec.HasHookMeta then
+        AddLog("Remote Spy unavailable on this executor")
         return
     end
+    RemoteSpyActive = true
     AddLog("Remote Spy ENABLED")
-    local old
-    old = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-        local method = getnamecallmethod()
-        if Config.RemoteSpy and (method == "FireServer" or method == "InvokeServer") then
-            if self:IsA("RemoteEvent") or self:IsA("RemoteFunction") then
-                AddRemoteSpyLog(self.Name, method, {...})
-            end
-        end
-        return old(self, ...)
-    end))
-    RemoteSpyHook = old
 end
 
 local function StopRemoteSpy()
+    RemoteSpyActive = false
     Config.RemoteSpy = false
-    AddLog("Remote Spy DISABLED (re-execute to fully unhook)")
+    AddLog("Remote Spy DISABLED")
 end
 
 local function FireCustomRemote()
@@ -1471,10 +1637,10 @@ local function FireCustomRemote()
             end
         end
     end
-    if FireRemoteExact(Config.CustomRemoteName, unpack(args)) then
+    if FireRemoteExact(Config.CustomRemoteName, Exec.Unpack(args)) then
         AddLog("Fired exact: " .. Config.CustomRemoteName)
     else
-        FireRemote(Config.CustomRemoteName, unpack(args))
+        FireRemote(Config.CustomRemoteName, Exec.Unpack(args))
         AddLog("Fired pattern: " .. Config.CustomRemoteName)
     end
 end
@@ -1507,8 +1673,13 @@ local function StartClickTeleport()
             if not cam then return end
             local ray = cam:ScreenPointToRay(input.Position.X, input.Position.Y)
             local params = RaycastParams.new()
-            params.FilterType = Enum.RaycastFilterType.Blacklist
             if Character then params.FilterDescendantsInstances = {Character} end
+            local usedExclude = pcall(function()
+                params.FilterType = Enum.RaycastFilterType.Exclude
+            end)
+            if not usedExclude then
+                params.FilterType = Enum.RaycastFilterType.Blacklist
+            end
             local hit = Workspace:Raycast(ray.Origin, ray.Direction * 2000, params)
             if hit then
                 TeleportTo(hit.Position)
@@ -1782,11 +1953,10 @@ end
 local function SaveConfig()
     local ok, json = pcall(function() return HttpService:JSONEncode(ConfigToTable()) end)
     if not ok then AddLog("Config save failed") return end
-    if writefile then
-        pcall(function() writefile("MineaMountain_Config.json", json) end)
+    if Exec.WriteFile("MineaMountain_Config.json", json) then
         AddLog("Config saved to file")
-    elseif setclipboard then
-        pcall(function() setclipboard(json) end)
+    elseif Exec.HasClipboard then
+        Exec.SetClipboard(json)
         AddLog("Config copied to clipboard")
     else
         AddLog("Save unavailable (no writefile/clipboard)")
@@ -1794,10 +1964,7 @@ local function SaveConfig()
 end
 
 local function LoadConfig()
-    local json = nil
-    if readfile and isfile and isfile("MineaMountain_Config.json") then
-        json = readfile("MineaMountain_Config.json")
-    end
+    local json = Exec.ReadFile("MineaMountain_Config.json")
     if json then
         local ok, data = pcall(function() return HttpService:JSONDecode(json) end)
         if ok and ApplyConfigTable(data) then
@@ -1813,7 +1980,9 @@ end
 local function DoServerHop()
     AddLog("Server hopping...")
     pcall(function()
-        local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+        local body = Exec.HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100")
+        if not body then error("HttpGet failed") end
+        local servers = HttpService:JSONDecode(body)
         if servers and servers.data then
             for _, srv in ipairs(servers.data) do
                 if srv.id ~= game.JobId and srv.playing < srv.maxPlayers then
@@ -1862,17 +2031,7 @@ local function SendWebhook(data)
     if not Config.WebhookEnabled or Config.WebhookURL == "" then return end
     pcall(function()
         local body = HttpService:JSONEncode(data)
-        local reqFn = (syn and syn.request) or (http and http.request) or request
-        if reqFn then
-            reqFn({
-                Url = Config.WebhookURL,
-                Method = "POST",
-                Headers = {["Content-Type"] = "application/json"},
-                Body = body,
-            })
-        else
-            HttpService:PostAsync(Config.WebhookURL, body)
-        end
+        Exec.Post(Config.WebhookURL, body)
     end)
 end
 
@@ -1904,31 +2063,14 @@ ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.IgnoreGuiInset = true
 
-if HasProtectGui then
-    pcall(function() syn.protect_gui(ScreenGui) end)
-end
+Exec.ProtectGui(ScreenGui)
 
--- Robust GUI parenting for all executors (Delta/Synapse/KRNL/Fluxus/etc.)
-local guiParented = false
--- 1) Try gethui() (Delta, Synapse) - protected container
 pcall(function()
-    if gethui then
-        ScreenGui.Parent = gethui()
-        guiParented = true
-    end
+    ScreenGui.Parent = Exec.GetGuiParent()
 end)
--- 2) Fall back to CoreGui
-if not guiParented then
-    pcall(function()
-        ScreenGui.Parent = game:GetService("CoreGui")
-        guiParented = true
-    end)
-end
--- 3) Last resort: PlayerGui (always works)
-if not guiParented then
+if not ScreenGui.Parent then
     pcall(function()
         ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
-        guiParented = true
     end)
 end
 
@@ -2013,11 +2155,11 @@ TitleLabel.Parent = Header
 
 -- Version badge
 local VersionBadge = Instance.new("TextLabel")
-VersionBadge.Size = UDim2.new(0, 28, 0, 18)
+VersionBadge.Size = UDim2.new(0, 42, 0, 18)
 VersionBadge.Position = UDim2.new(0.65, 0, 0.5, -9)
 VersionBadge.BackgroundColor3 = Color3.fromRGB(60, 100, 255)
 VersionBadge.BorderSizePixel = 0
-VersionBadge.Text = "v7"
+VersionBadge.Text = Exec.Name:sub(1, 6)
 VersionBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
 VersionBadge.Font = Enum.Font.GothamBold
 VersionBadge.TextSize = 10
@@ -3146,7 +3288,7 @@ local infoLabel = Instance.new("TextLabel")
 infoLabel.Size = UDim2.new(1, 0, 0, 50)
 infoLabel.BackgroundColor3 = Color3.fromRGB(22, 22, 38)
 infoLabel.BorderSizePixel = 0
-infoLabel.Text = "Minea Mountain v7 Ultimate\nSmart Loop | Remote Spy | ESP+ | Waypoints\nDelta, Synapse, KRNL, Fluxus, Wave, Codex"
+infoLabel.Text = "Minea Mountain v7 | Executor: " .. Exec.Name .. "\nSmart Loop | Remote Spy | ESP+ | Waypoints\nDelta · Synapse · KRNL · Fluxus · Wave · Codex"
 infoLabel.TextColor3 = Color3.fromRGB(140, 160, 200)
 infoLabel.Font = Enum.Font.Gotham
 infoLabel.TextSize = IsMobile and 9 or 10
@@ -3376,8 +3518,8 @@ LocalPlayer.CharacterRemoving:Connect(function()
     if Config.AutoRespawn then
         task.delay(3, function()
             pcall(function()
-                if not LocalPlayer.Character and loadcharacter then
-                    loadcharacter()
+                if not LocalPlayer.Character then
+                    Exec.LoadCharacter()
                 end
             end)
         end)
@@ -3398,17 +3540,13 @@ if Camera then
 end
 
 -- ========== SIMULATION RADIUS (see further) ==========
-if HasSetSimRadius then
-    pcall(function()
-        setsimulationradius(1e9, 1e9)
-    end)
-end
+Exec.SetSimRadius()
 
 -- ========== STARTUP ==========
 pcall(function()
-    AddLog("Minea Mountain v7 ULTIMATE Loaded!")
-    AddLog("Smart Loop | Remote Spy | ESP+ | Waypoints")
-    AddLog("Press RightShift to toggle GUI | Cache remotes first!")
+    AddLog("Minea Mountain v7 loaded on " .. Exec.Name)
+    AddLog("Executor APIs: HTTP=" .. tostring(Exec.Request ~= nil) .. " Hook=" .. tostring(Exec.HasHookMeta) .. " Click=" .. tostring(Exec.HasFireClick))
+    AddLog("RightShift = GUI | Cache remotes first!")
     BypassPromptsIn(Workspace)
 end)
 
