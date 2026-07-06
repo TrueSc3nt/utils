@@ -1,5 +1,5 @@
 --[[ Minea Hub v7 Loader | TrueSc3nt ]]
-local VERSION = "8"
+local VERSION = "9"
 local URL = "https://raw.githubusercontent.com/TrueSc3nt/utils/main/minea_clean_test_obf.lua?v=" .. VERSION
 
 local StarterGui = game:GetService("StarterGui")
