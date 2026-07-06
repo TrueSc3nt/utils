@@ -6,10 +6,9 @@
     ██║██║ ╚████║██║   ██║   ██║  ██║███████╗██║███████╗██████╔╝
     ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚═════╝ 
     
-    Mine a Mountain ULTIMATE v6
-    Features: Auto Farm, Auto Sell, Auto Upgrade, ESP, Unlimited Backpack,
-              Unlimited Luck, Remote Exploits, Item Dupe, Anti-Detection,
-              Glassmorphism GUI, Mobile-First Design
+    Mine a Mountain ULTIMATE v7
+    Features: Smart Loop, Ore Filter, Remote Spy, ESP+, Waypoints,
+              Auto Farm/Sell/Upgrade, Exploits, Config Save, Keybinds
     
     Compatible: Delta, Synapse X, KRNL, Fluxus, Wave, Codex
     Usage: Execute in any Roblox executor
@@ -25,6 +24,8 @@ local UserInputService = game:GetService("UserInputService")
 local HttpService = game:GetService("HttpService")
 local StarterGui = game:GetService("StarterGui")
 local Lighting = game:GetService("Lighting")
+local TeleportService = game:GetService("TeleportService")
+local CollectionService = game:GetService("CollectionService")
 
 -- ========== PLAYER ==========
 local LocalPlayer = Players.LocalPlayer
@@ -61,7 +62,54 @@ local Config = {
     WebhookFarm = true,
     WebhookSell = true,
     WebhookStats = true,
+    -- Smart automation
+    SmartLoop = false,
+    OreFilterEnabled = false,
+    OreFilter = "diamond,ruby,gold,emerald,sapphire,starsapphire,platinum",
+    OreBlacklist = "coal,stone,rock",
+    RapidMine = false,
+    RapidMineCount = 3,
+    AutoEquipPickaxe = false,
+    AutoCollectDrops = false,
+    BypassPromptHold = true,
+    TweenTeleport = false,
+    TweenTeleportSpeed = 80,
+    -- Sell / progression
+    SellWhenFull = true,
+    SellMinCash = 0,
+    AutoBuyPickaxe = false,
+    AutoBuyBackpack = false,
+    AutoBuyLuck = false,
+    AutoBuyWarmth = false,
+    AutoRebirth = false,
+    RebirthCashThreshold = 50000,
+    AutoClaimDaily = false,
+    PromoCode = "",
+    -- Movement / QoL
+    InfiniteJump = false,
+    ClickTeleport = false,
+    AntiAFK = false,
+    AutoRespawn = false,
+    WarmthKeeper = false,
+    StaminaKeeper = false,
+    -- Visual
+    Tracers = false,
+    PlayerESP = false,
+    Fullbright = false,
+    ChestESP = false,
+    HideOtherPlayers = false,
+    FPSBooster = false,
+    -- Remote tools
+    RemoteSpy = false,
+    CustomRemoteName = "",
+    CustomRemoteArgs = "",
+    -- Settings
+    ServerHopInterval = 0,
+    PanicEnabled = true,
 }
+
+-- ========== GUI REFERENCES (forward-declared) ==========
+local LogList, ShopList, RockList, RemoteSpyList, CashLabel, StatsLabel
 
 -- ========== STATE ==========
 local State = {
@@ -83,6 +131,22 @@ local State = {
     ESPHighlights = {},
     RemoteCache = {},
     TabOpen = "Farm",
+    SmartLoopConn = nil,
+    InfiniteJumpConn = nil,
+    ClickTPConn = nil,
+    AntiAFKConn = nil,
+    WarmthKeeperConn = nil,
+    TracerObjects = {},
+    PlayerESPObjects = {},
+    ChestESPObjects = {},
+    RemoteSpyLogs = {},
+    Waypoints = {},
+    SavedLighting = {},
+    LastRemoteFire = nil,
+    GUIHidden = false,
+    ServerHopConn = nil,
+    DropCollectConn = nil,
+    FullbrightApplied = false,
 }
 
 -- ========== ENVIRONMENT CHECK ==========
@@ -106,7 +170,7 @@ local AntiDetection = {}
 
 do
     -- Hook __namecall to intercept security checks
-    if HasHookMeta and HasNewCClosure and HasRawMeta and HasSetReadonly then
+    if HasHookMeta and HasNewCClosure and HasRawMeta and HasSetReadonly and getnamecallmethod then
         local OldNamecall
         OldNamecall = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
             local method = getnamecallmethod()
@@ -138,7 +202,7 @@ do
         -- Hook __index to spoof WalkSpeed and JumpPower checks
         local OldIndex
         OldIndex = hookmetamethod(game, "__index", newcclosure(function(self, key)
-            if self == Humanoid then
+            if Humanoid and self == Humanoid then
                 if key == "WalkSpeed" and Config.SpeedBoost then
                     return 16
                 end
@@ -152,7 +216,7 @@ do
         -- Hook __newindex to allow setting WalkSpeed/JumpPower without detection
         local OldNewIndex
         OldNewIndex = hookmetamethod(game, "__newindex", newcclosure(function(self, key, value)
-            if self == Humanoid then
+            if Humanoid and self == Humanoid then
                 if key == "WalkSpeed" then
                     if Config.SpeedBoost then
                         return OldNewIndex(self, key, Config.WalkSpeed)
@@ -163,18 +227,6 @@ do
                 end
             end
             return OldNewIndex(self, key, value)
-        end))
-    end
-    
-    -- Anti-kick protection
-    if HasHookMeta and HasNewCClosure then
-        local oldKick
-        oldKick = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
-            local method = getnamecallmethod()
-            if method == "Kick" and self == LocalPlayer then
-                return nil
-            end
-            return oldKick(self, ...)
         end))
     end
 end
@@ -196,9 +248,229 @@ end
 
 local function TeleportTo(position)
     if not GetCharacter() then return false end
-    HumanoidRootPart.CFrame = CFrame.new(position + Vector3.new(0, 3, 0))
-    task.wait(Config.TeleportDelay)
+    local targetCF = CFrame.new(position + Vector3.new(0, 3, 0))
+    if Config.TweenTeleport then
+        local dist = (HumanoidRootPart.Position - position).Magnitude
+        local dur = math.clamp(dist / Config.TweenTeleportSpeed, 0.08, 2.5)
+        TweenService:Create(HumanoidRootPart, TweenInfo.new(dur, Enum.EasingStyle.Linear), {CFrame = targetCF}):Play()
+        task.wait(dur)
+    else
+        HumanoidRootPart.CFrame = targetCF
+        task.wait(Config.TeleportDelay)
+    end
     return true
+end
+
+local function ParseCSVList(str)
+    local list = {}
+    for part in string.gmatch(string.lower(str or ""), "[^,%s]+") do
+        table.insert(list, part)
+    end
+    return list
+end
+
+local function MatchesOreFilter(nameLower)
+    if not Config.OreFilterEnabled then return true end
+    local blacklist = ParseCSVList(Config.OreBlacklist)
+    for _, word in ipairs(blacklist) do
+        if string.find(nameLower, word, 1, true) then return false end
+    end
+    local whitelist = ParseCSVList(Config.OreFilter)
+    if #whitelist == 0 then return true end
+    for _, word in ipairs(whitelist) do
+        if string.find(nameLower, word, 1, true) then return true end
+    end
+    return false
+end
+
+local function GetLeaderstatValue(patterns)
+    local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
+    if not leaderstats then return 0 end
+    for _, stat in ipairs(leaderstats:GetChildren()) do
+        local n = string.lower(stat.Name)
+        for _, p in ipairs(patterns) do
+            if string.find(n, p) and stat:IsA("ValueBase") then
+                return stat.Value
+            end
+        end
+    end
+    return 0
+end
+
+local function GetPlayerCash()
+    return GetLeaderstatValue({"cash", "money", "coin", "gold", "balance", "bucks"})
+end
+
+local function GetBackpackWeight()
+    return GetLeaderstatValue({"weight", "carry", "kg", "load", "backpack"})
+end
+
+local function GetBackpackCapacity()
+    local cap = GetLeaderstatValue({"capacity", "maxcarry", "max", "limit", "backpack"})
+    if cap > 0 then return cap end
+    local obj = LocalPlayer:FindFirstChild("BackpackCapacity") or LocalPlayer:FindFirstChild("MaxCarry")
+    if obj and obj:IsA("ValueBase") then return obj.Value end
+    return 100
+end
+
+local function IsBackpackFull()
+    if Config.UnlimitedBackpack then return false end
+    local weight = GetBackpackWeight()
+    local cap = GetBackpackCapacity()
+    if cap > 0 and weight > 0 then return weight >= cap * 0.92 end
+    return false
+end
+
+local function BypassPromptsIn(root)
+    if not Config.BypassPromptHold or not root then return end
+    pcall(function()
+        for _, d in ipairs(root:GetDescendants()) do
+            if d:IsA("ProximityPrompt") then
+                d.HoldDuration = 0
+                d.MaxActivationDistance = math.max(d.MaxActivationDistance, 20)
+            end
+        end
+    end)
+end
+
+local function EquipBestPickaxe()
+    if not Config.AutoEquipPickaxe then return end
+    pcall(function()
+        local bestTool, bestScore = nil, -1
+        local function scoreTool(tool)
+            if not tool:IsA("Tool") then return -1 end
+            local n = string.lower(tool.Name)
+            if not (string.find(n, "pick") or string.find(n, "axe") or string.find(n, "drill") or string.find(n, "tool") or string.find(n, "hammer")) then
+                return 0
+            end
+            local s = 0
+            if string.find(n, "diamond") then s = s + 100
+            elseif string.find(n, "gold") then s = s + 80
+            elseif string.find(n, "iron") then s = s + 50
+            elseif string.find(n, "stone") then s = s + 20 end
+            for _, d in ipairs(tool:GetDescendants()) do
+                if d:IsA("ValueBase") and (string.find(string.lower(d.Name), "level") or string.find(string.lower(d.Name), "tier")) then
+                    s = s + d.Value * 10
+                end
+            end
+            return s
+        end
+        local function scan(container)
+            if not container then return end
+            for _, t in ipairs(container:GetChildren()) do
+                local sc = scoreTool(t)
+                if sc > bestScore then bestScore, bestTool = sc, t end
+            end
+        end
+        scan(LocalPlayer.Backpack)
+        scan(Character)
+        if bestTool and Character and not Character:FindFirstChild(bestTool.Name) then
+            Humanoid:EquipTool(bestTool)
+        end
+    end)
+end
+
+local function GetDropItems()
+    local drops = {}
+    local patterns = {"drop", "loot", "item", "pickup", "collect", "ore", "gem", "crystal"}
+    local function scan(parent)
+        for _, child in ipairs(parent:GetChildren()) do
+            local nl = string.lower(child.Name)
+            if child:IsA("BasePart") or child:IsA("Model") then
+                for _, p in ipairs(patterns) do
+                    if string.find(nl, p) then
+                        local part = child:IsA("BasePart") and child or child:FindFirstChildWhichIsA("BasePart")
+                        if part then
+                            local dist = GetDistance(part)
+                            if dist <= Config.FarmRadius then
+                                table.insert(drops, {Instance = child, Part = part, Distance = dist, Name = child.Name})
+                            end
+                        end
+                        break
+                    end
+                end
+            end
+            if #child:GetChildren() > 0 then scan(child) end
+        end
+    end
+    scan(Workspace)
+    table.sort(drops, function(a, b) return a.Distance < b.Distance end)
+    return drops
+end
+
+local function CollectNearbyDrops()
+    if not Config.AutoCollectDrops then return end
+    local drops = GetDropItems()
+    for i = 1, math.min(3, #drops) do
+        local drop = drops[i]
+        TeleportTo(drop.Part.Position)
+        if HasFireTouch then
+            firetouchinterest(HumanoidRootPart, drop.Part, 0)
+            task.wait(0.01)
+            firetouchinterest(HumanoidRootPart, drop.Part, 1)
+        end
+        FireRemote("pickup")
+        FireRemote("collect")
+        FireRemote("loot")
+    end
+end
+
+local function FireUpgradePurchases()
+    if Config.AutoBuyPickaxe then
+        FireRemote("pickaxe"); FireRemote("buy_pickaxe"); FireRemote("upgrade_pickaxe")
+    end
+    if Config.AutoBuyBackpack then
+        FireRemote("backpack"); FireRemote("capacity"); FireRemote("upgrade_backpack")
+    end
+    if Config.AutoBuyLuck then
+        FireRemote("luck"); FireRemote("dig_luck"); FireRemote("lucky")
+    end
+    if Config.AutoBuyWarmth then
+        FireRemote("warmth"); FireRemote("heat"); FireRemote("campfire")
+    end
+    if Config.AutoUpgrade then
+        FireRemote("upgrade"); FireRemote("buy"); FireRemote("purchase")
+    end
+end
+
+local function TryAutoRebirth()
+    if not Config.AutoRebirth then return end
+    if GetPlayerCash() >= Config.RebirthCashThreshold then
+        FireRemote("rebirth"); FireRemote("prestige"); FireRemote("reset"); FireRemote("ascend")
+        AddLog("Auto rebirth attempted at " .. GetPlayerCash() .. " cash")
+    end
+end
+
+local function TryAutoClaimDaily()
+    if not Config.AutoClaimDaily then return end
+    FireRemote("daily"); FireRemote("reward"); FireRemote("claim"); FireRemote("login")
+    FireRemote("code"); FireRemote("redeem")
+    if Config.PromoCode ~= "" then
+        FireRemote("code", Config.PromoCode)
+        FireRemote("redeem", Config.PromoCode)
+    end
+end
+
+local function ShouldSellNow()
+    if IsBackpackFull() and Config.SellWhenFull then return true end
+    if Config.SellMinCash > 0 and GetPlayerCash() >= Config.SellMinCash then return true end
+    return false
+end
+
+local function DupeViaDrop()
+    AddLog("Drop dupe: pickup spam...")
+    pcall(function()
+        local tool = Character and Character:FindFirstChildOfClass("Tool")
+        if tool then
+            tool.Parent = LocalPlayer.Backpack
+            task.wait(0.1)
+            Humanoid:EquipTool(tool)
+        end
+        for i = 1, Config.DupeAmount do
+            FireRemote("drop"); FireRemote("pickup"); FireRemote("collect")
+            task.wait(0.05)
+        end
+    end)
 end
 
 local function TeleportToCFrame(cframe)
@@ -206,6 +478,14 @@ local function TeleportToCFrame(cframe)
     HumanoidRootPart.CFrame = cframe + Vector3.new(0, 3, 0)
     task.wait(Config.TeleportDelay)
     return true
+end
+
+local function ClearScrollList(scrollingFrame)
+    for _, child in ipairs(scrollingFrame:GetChildren()) do
+        if not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
+            child:Destroy()
+        end
+    end
 end
 
 local function AddLog(message)
@@ -216,7 +496,7 @@ local function AddLog(message)
     end
     if LogList then
         pcall(function()
-            LogList:ClearAllChildren()
+            ClearScrollList(LogList)
             for i, log in ipairs(State.Logs) do
                 if i > 15 then break end
                 local label = Instance.new("TextLabel")
@@ -227,6 +507,7 @@ local function AddLog(message)
                 label.TextXAlignment = Enum.TextXAlignment.Left
                 label.Font = Enum.Font.Gotham
                 label.TextSize = 11
+                label.LayoutOrder = i
                 label.Parent = LogList
             end
         end)
@@ -309,7 +590,7 @@ local function GetAllRocks()
                         break
                     end
                 end
-                if matched then
+                if matched and MatchesOreFilter(nameLower) then
                     local part = child:IsA("BasePart") and child or child:FindFirstChildWhichIsA("BasePart")
                     if part then
                         local dist = GetDistance(part)
@@ -414,66 +695,66 @@ local function MineRock(rockData)
     
     if not rock or not rock.Parent then return false end
     
+    EquipBestPickaxe()
+    BypassPromptsIn(rock)
+    
     AddLog("Mining: " .. rockData.Name)
     
     -- Teleport to rock
     TeleportTo(part.Position)
     task.wait(0.05)
     
-    -- Method 1: Fire click detector
-    if HasFireClick then
-        local clickDetector = rock:FindFirstChildOfClass("ClickDetector") or part:FindFirstChildOfClass("ClickDetector")
-        if clickDetector then
-            fireclickdetector(clickDetector)
+    local function doMineOnce()
+        -- Method 1: Fire click detector
+        if HasFireClick then
+            local clickDetector = rock:FindFirstChildOfClass("ClickDetector") or part:FindFirstChildOfClass("ClickDetector")
+            if clickDetector then fireclickdetector(clickDetector) end
+        end
+        -- Method 2: Fire proximity prompt
+        if HasFireProximity then
+            local prompt = rock:FindFirstChildOfClass("ProximityPrompt") or part:FindFirstChildOfClass("ProximityPrompt")
+            if prompt then
+                if Config.BypassPromptHold then prompt.HoldDuration = 0 end
+                fireproximityprompt(prompt)
+            end
+        end
+        -- Method 3: Fire touch interest
+        if HasFireTouch then
+            firetouchinterest(HumanoidRootPart, part, 0)
+            task.wait(0.01)
+            firetouchinterest(HumanoidRootPart, part, 1)
+        end
+        -- Method 4: Use tool if equipped
+        local tool = Character and Character:FindFirstChildOfClass("Tool")
+        if tool then tool:Activate() end
+        -- Method 5: Fire remote events for mining
+        FireRemote("mine"); FireRemote("harvest"); FireRemote("collect")
+        FireRemote("break"); FireRemote("gather"); FireRemote("dig")
+        FireRemote("pick"); FireRemote("swing")
+        -- Method 6: Direct remote with rock as argument
+        for _, remote in ipairs(State.RemoteCache) do
+            local rName = string.lower(remote.Name)
+            if string.find(rName, "mine") or string.find(rName, "dig") or string.find(rName, "harvest") then
+                pcall(function()
+                    if remote.Type == "RemoteEvent" then
+                        remote.Instance:FireServer(rock, part)
+                    elseif remote.Type == "RemoteFunction" then
+                        remote.Instance:InvokeServer(rock, part)
+                    end
+                end)
+            end
         end
     end
     
-    -- Method 2: Fire proximity prompt
-    if HasFireProximity then
-        local prompt = rock:FindFirstChildOfClass("ProximityPrompt") or part:FindFirstChildOfClass("ProximityPrompt")
-        if prompt then
-            fireproximityprompt(prompt)
-        end
+    local hits = Config.RapidMine and Config.RapidMineCount or 1
+    for _ = 1, hits do
+        doMineOnce()
+        if hits > 1 then task.wait(0.03) end
     end
     
-    -- Method 3: Fire touch interest
-    if HasFireTouch then
-        firetouchinterest(HumanoidRootPart, part, 0)
-        task.wait(0.01)
-        firetouchinterest(HumanoidRootPart, part, 1)
-    end
-    
-    -- Method 4: Use tool if equipped
-    local tool = Character and Character:FindFirstChildOfClass("Tool")
-    if tool then
-        tool:Activate()
-    end
-    
-    -- Method 5: Fire remote events for mining
-    FireRemote("mine")
-    FireRemote("harvest")
-    FireRemote("collect")
-    FireRemote("break")
-    FireRemote("gather")
-    FireRemote("dig")
-    FireRemote("pick")
-    FireRemote("swing")
-    
-    -- Method 6: Direct remote with rock as argument
-    for _, remote in ipairs(State.RemoteCache) do
-        local rName = string.lower(remote.Name)
-        if string.find(rName, "mine") or string.find(rName, "dig") or string.find(rName, "harvest") then
-            pcall(function()
-                if remote.Type == "RemoteEvent" then
-                    remote.Instance:FireServer(rock, part)
-                elseif remote.Type == "RemoteFunction" then
-                    remote.Instance:InvokeServer(rock, part)
-                end
-            end)
-        end
-    end
-    
+    CollectNearbyDrops()
     State.FarmCount = State.FarmCount + 1
+    pcall(function() SendFarmLog(rockData.Name) end)
     
     return true
 end
@@ -534,27 +815,26 @@ local function StartAutoFarm()
     if State.FarmConnection then return end
     AddLog("Auto Farm STARTED")
     
-    State.FarmConnection = RunService.Heartbeat:Connect(function()
-        if not Config.AutoFarm then return end
-        if not GetCharacter() then return end
-        
-        local rocks = GetAllRocks()
-        if #rocks > 0 then
-            local target = rocks[1]
-            State.CurrentTarget = target.Name
-            MineRock(target)
+    State.FarmConnection = true
+    task.spawn(function()
+        while Config.AutoFarm and State.FarmConnection do
+            if GetCharacter() then
+                local rocks = GetAllRocks()
+                if #rocks > 0 then
+                    local target = rocks[1]
+                    State.CurrentTarget = target.Name
+                    MineRock(target)
+                else
+                    State.CurrentTarget = "Searching..."
+                end
+            end
             task.wait(Config.FarmDelay)
-        else
-            State.CurrentTarget = "Searching..."
         end
     end)
 end
 
 local function StopAutoFarm()
-    if State.FarmConnection then
-        State.FarmConnection:Disconnect()
-        State.FarmConnection = nil
-    end
+    State.FarmConnection = nil
     State.CurrentTarget = "None"
     AddLog("Auto Farm STOPPED")
 end
@@ -564,23 +844,28 @@ local function StartAutoSell()
     if State.SellConnection then return end
     AddLog("Auto Sell STARTED")
     
-    State.SellConnection = RunService.Heartbeat:Connect(function()
-        if not Config.AutoSell then return end
-        if not GetCharacter() then return end
-        
-        local shops = GetAllShops()
-        if #shops > 0 then
-            SellItems(shops[1])
+    State.SellConnection = true
+    task.spawn(function()
+        while Config.AutoSell and State.SellConnection do
+            if GetCharacter() then
+                local canSell = true
+                if Config.SellWhenFull and not IsBackpackFull() then canSell = false end
+                if Config.SellMinCash > 0 and GetPlayerCash() < Config.SellMinCash then canSell = false end
+                if canSell then
+                    local shops = GetAllShops()
+                    if #shops > 0 then
+                        SellItems(shops[1])
+                        pcall(SendSellLog)
+                    end
+                end
+            end
             task.wait(Config.SellDelay)
         end
     end)
 end
 
 local function StopAutoSell()
-    if State.SellConnection then
-        State.SellConnection:Disconnect()
-        State.SellConnection = nil
-    end
+    State.SellConnection = nil
     AddLog("Auto Sell STOPPED")
 end
 
@@ -589,29 +874,26 @@ local function StartAutoUpgrade()
     if State.UpgradeConn then return end
     AddLog("Auto Upgrade STARTED")
     
-    State.UpgradeConn = RunService.Heartbeat:Connect(function()
-        if not Config.AutoUpgrade then return end
-        
-        -- Fire upgrade remotes
-        FireRemote("upgrade")
-        FireRemote("buy")
-        FireRemote("purchase")
-        FireRemote("warmth")
-        FireRemote("pickaxe")
-        FireRemote("backpack")
-        FireRemote("speed")
-        FireRemote("dig")
-        
-        State.UpgradeCount = State.UpgradeCount + 1
-        task.wait(1)
+    State.UpgradeConn = true
+    task.spawn(function()
+        while Config.AutoUpgrade and State.UpgradeConn do
+            FireRemote("upgrade")
+            FireRemote("buy")
+            FireRemote("purchase")
+            FireRemote("warmth")
+            FireRemote("pickaxe")
+            FireRemote("backpack")
+            FireRemote("speed")
+            FireRemote("dig")
+            
+            State.UpgradeCount = State.UpgradeCount + 1
+            task.wait(1)
+        end
     end)
 end
 
 local function StopAutoUpgrade()
-    if State.UpgradeConn then
-        State.UpgradeConn:Disconnect()
-        State.UpgradeConn = nil
-    end
+    State.UpgradeConn = nil
     AddLog("Auto Upgrade STOPPED")
 end
 
@@ -651,7 +933,7 @@ local function CreateESP()
             label.Size = UDim2.new(1, 0, 1, 0)
             label.BackgroundTransparency = 0.4
             label.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            label.Text = rock.Name .. (rock.Value > 0 and (" | $" .. tostring(rock.Value)) or "")
+            label.Text = rock.Name .. " [" .. math.floor(rock.Distance) .. "m]" .. (rock.Value > 0 and (" | $" .. tostring(rock.Value)) or "")
             label.TextColor3 = rock.Value > 0 and Color3.fromRGB(255, 215, 0) or Color3.fromRGB(100, 200, 255)
             label.Font = Enum.Font.GothamBold
             label.TextSize = 11
@@ -1033,6 +1315,545 @@ local function ApplySpeedBoost()
     end
 end
 
+-- ========== PANIC / STOP ALL ==========
+local function PanicStopAll()
+    Config.AutoFarm = false
+    Config.AutoSell = false
+    Config.AutoUpgrade = false
+    Config.SmartLoop = false
+    Config.ESPEnabled = false
+    Config.FlyEnabled = false
+    Config.Noclip = false
+    Config.RapidMine = false
+    Config.RemoteSpy = false
+    StopAutoFarm()
+    StopAutoSell()
+    StopAutoUpgrade()
+    State.SmartLoopConn = nil
+    StopFly()
+    StopNoclip()
+    StopESP()
+    ClearTracers()
+    ClearPlayerESP()
+    ClearChestESP()
+    if State.InfiniteJumpConn then State.InfiniteJumpConn:Disconnect() State.InfiniteJumpConn = nil end
+    if State.ClickTPConn then State.ClickTPConn:Disconnect() State.ClickTPConn = nil end
+    if State.WarmthKeeperConn then State.WarmthKeeperConn:Disconnect() State.WarmthKeeperConn = nil end
+    if State.DropCollectConn then State.DropCollectConn = nil end
+    AddLog("PANIC: All features stopped")
+end
+
+-- ========== SMART LOOP ==========
+local function StartSmartLoop()
+    if State.SmartLoopConn then return end
+    AddLog("Smart Loop STARTED (Farm → Sell → Upgrade)")
+    State.SmartLoopConn = true
+    task.spawn(function()
+        while Config.SmartLoop and State.SmartLoopConn do
+            if GetCharacter() then
+                EquipBestPickaxe()
+                BypassPromptsIn(Workspace)
+                if ShouldSellNow() then
+                    local shops = GetAllShops()
+                    if #shops > 0 then
+                        State.CurrentTarget = "Selling..."
+                        SellItems(shops[1])
+                        pcall(SendSellLog)
+                        FireUpgradePurchases()
+                        TryAutoRebirth()
+                    end
+                else
+                    local rocks = GetAllRocks()
+                    if #rocks > 0 then
+                        State.CurrentTarget = rocks[1].Name
+                        MineRock(rocks[1])
+                    else
+                        State.CurrentTarget = "Searching..."
+                        CollectNearbyDrops()
+                    end
+                end
+                TryAutoClaimDaily()
+            end
+            task.wait(Config.FarmDelay)
+        end
+    end)
+end
+
+local function StopSmartLoop()
+    State.SmartLoopConn = nil
+    AddLog("Smart Loop STOPPED")
+end
+
+-- ========== REMOTE SPY ==========
+local RemoteSpyHook = nil
+
+local function SerializeArg(arg)
+    local t = typeof(arg)
+    if t == "Instance" then return arg:GetFullName()
+    elseif t == "Vector3" then return string.format("Vector3(%.1f,%.1f,%.1f)", arg.X, arg.Y, arg.Z)
+    elseif t == "CFrame" then return "CFrame"
+    elseif t == "table" then return "table"
+    else return tostring(arg) end
+end
+
+local function AddRemoteSpyLog(remoteName, remoteType, args)
+    local argStr = ""
+    for i, a in ipairs(args) do
+        argStr = argStr .. (i > 1 and ", " or "") .. SerializeArg(a)
+    end
+    local entry = os.date("%H:%M:%S") .. " | " .. remoteType .. " | " .. remoteName .. "(" .. argStr .. ")"
+    table.insert(State.RemoteSpyLogs, 1, entry)
+    if #State.RemoteSpyLogs > 40 then table.remove(State.RemoteSpyLogs) end
+    State.LastRemoteFire = entry
+    if RemoteSpyList then
+        pcall(function()
+            ClearScrollList(RemoteSpyList)
+            for i, log in ipairs(State.RemoteSpyLogs) do
+                if i > 20 then break end
+                local lbl = Instance.new("TextLabel")
+                lbl.Size = UDim2.new(1, 0, 0, 32)
+                lbl.BackgroundTransparency = 1
+                lbl.Text = log
+                lbl.TextColor3 = Color3.fromRGB(180, 220, 255)
+                lbl.TextXAlignment = Enum.TextXAlignment.Left
+                lbl.TextWrapped = true
+                lbl.Font = Enum.Font.Code
+                lbl.TextSize = 9
+                lbl.LayoutOrder = i
+                lbl.Parent = RemoteSpyList
+            end
+        end)
+    end
+end
+
+local function StartRemoteSpy()
+    if RemoteSpyHook or not HasHookMeta or not HasNewCClosure or not getnamecallmethod then
+        if not RemoteSpyHook then AddLog("Remote Spy unavailable on this executor") end
+        return
+    end
+    AddLog("Remote Spy ENABLED")
+    local old
+    old = hookmetamethod(game, "__namecall", newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        if Config.RemoteSpy and (method == "FireServer" or method == "InvokeServer") then
+            if self:IsA("RemoteEvent") or self:IsA("RemoteFunction") then
+                AddRemoteSpyLog(self.Name, method, {...})
+            end
+        end
+        return old(self, ...)
+    end))
+    RemoteSpyHook = old
+end
+
+local function StopRemoteSpy()
+    Config.RemoteSpy = false
+    AddLog("Remote Spy DISABLED (re-execute to fully unhook)")
+end
+
+local function FireCustomRemote()
+    if Config.CustomRemoteName == "" then
+        AddLog("Enter a remote name first")
+        return
+    end
+    local args = {}
+    if Config.CustomRemoteArgs ~= "" then
+        for part in string.gmatch(Config.CustomRemoteArgs, "[^,]+") do
+            part = string.gsub(part, "^%s*(.-)%s*$", "%1")
+            local num = tonumber(part)
+            if num then
+                table.insert(args, num)
+            elseif part == "true" then
+                table.insert(args, true)
+            elseif part == "false" then
+                table.insert(args, false)
+            else
+                table.insert(args, part)
+            end
+        end
+    end
+    if FireRemoteExact(Config.CustomRemoteName, unpack(args)) then
+        AddLog("Fired exact: " .. Config.CustomRemoteName)
+    else
+        FireRemote(Config.CustomRemoteName, unpack(args))
+        AddLog("Fired pattern: " .. Config.CustomRemoteName)
+    end
+end
+
+-- ========== INFINITE JUMP ==========
+local function StartInfiniteJump()
+    if State.InfiniteJumpConn then return end
+    State.InfiniteJumpConn = UserInputService.JumpRequest:Connect(function()
+        if Config.InfiniteJump and GetCharacter() and Humanoid then
+            Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+        end
+    end)
+    AddLog("Infinite Jump ENABLED")
+end
+
+local function StopInfiniteJump()
+    if State.InfiniteJumpConn then
+        State.InfiniteJumpConn:Disconnect()
+        State.InfiniteJumpConn = nil
+    end
+end
+
+-- ========== CLICK TELEPORT ==========
+local function StartClickTeleport()
+    if State.ClickTPConn then return end
+    State.ClickTPConn = UserInputService.InputBegan:Connect(function(input, processed)
+        if processed or not Config.ClickTeleport then return end
+        if input.UserInputType == Enum.UserInputType.MouseButton1 and UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+            local cam = Workspace.CurrentCamera
+            if not cam then return end
+            local ray = cam:ScreenPointToRay(input.Position.X, input.Position.Y)
+            local params = RaycastParams.new()
+            params.FilterType = Enum.RaycastFilterType.Blacklist
+            if Character then params.FilterDescendantsInstances = {Character} end
+            local hit = Workspace:Raycast(ray.Origin, ray.Direction * 2000, params)
+            if hit then
+                TeleportTo(hit.Position)
+                AddLog("Click TP → " .. math.floor(hit.Position.X) .. "," .. math.floor(hit.Position.Y))
+            end
+        end
+    end)
+    AddLog("Click TP ENABLED (Ctrl+Click)")
+end
+
+local function StopClickTeleport()
+    if State.ClickTPConn then
+        State.ClickTPConn:Disconnect()
+        State.ClickTPConn = nil
+    end
+end
+
+-- ========== WAYPOINTS ==========
+local function SaveWaypoint(name)
+    if not GetCharacter() then return end
+    State.Waypoints[name] = HumanoidRootPart.Position
+    AddLog("Saved waypoint: " .. name)
+end
+
+local function TeleportToWaypoint(name)
+    local pos = State.Waypoints[name]
+    if pos then
+        TeleportTo(pos)
+        AddLog("TP waypoint: " .. name)
+    else
+        AddLog("Waypoint not found: " .. name)
+    end
+end
+
+-- ========== ANTI-AFK ==========
+local function StartAntiAFK()
+    if State.AntiAFKConn then return end
+    local vu = game:GetService("VirtualUser")
+    State.AntiAFKConn = LocalPlayer.Idled:Connect(function()
+        if Config.AntiAFK then
+            pcall(function() vu:CaptureController(); vu:ClickButton2(Vector2.new(0, 0)) end)
+        end
+    end)
+    AddLog("Anti-AFK ENABLED")
+end
+
+local function StopAntiAFK()
+    if State.AntiAFKConn then
+        State.AntiAFKConn:Disconnect()
+        State.AntiAFKConn = nil
+    end
+end
+
+-- ========== WARMTH / STAMINA KEEPER ==========
+local function StartWarmthKeeper()
+    if State.WarmthKeeperConn then return end
+    State.WarmthKeeperConn = RunService.Heartbeat:Connect(function()
+        if not Config.WarmthKeeper and not Config.StaminaKeeper then return end
+        if not GetCharacter() then return end
+        pcall(function()
+            if Config.WarmthKeeper then
+                for _, name in ipairs({"Warmth", "Temperature", "Cold", "Heat", "Warm"}) do
+                    local v = Character:FindFirstChild(name) or LocalPlayer:FindFirstChild(name)
+                    if v and v:IsA("ValueBase") then v.Value = 100 end
+                end
+                FireRemote("warmth"); FireRemote("heat"); FireRemote("campfire")
+            end
+            if Config.StaminaKeeper then
+                for _, name in ipairs({"Stamina", "Energy", "Climb", "Oxygen", "Breath"}) do
+                    local v = Character:FindFirstChild(name) or LocalPlayer:FindFirstChild(name)
+                    if v and v:IsA("ValueBase") then v.Value = 100 end
+                end
+            end
+        end)
+    end)
+    AddLog("Warmth/Stamina Keeper ENABLED")
+end
+
+local function StopWarmthKeeper()
+    if State.WarmthKeeperConn then
+        State.WarmthKeeperConn:Disconnect()
+        State.WarmthKeeperConn = nil
+    end
+end
+
+-- ========== TRACERS ==========
+local function ClearTracers()
+    for _, obj in ipairs(State.TracerObjects) do
+        pcall(function() obj:Destroy() end)
+    end
+    State.TracerObjects = {}
+end
+
+local function UpdateTracers()
+    if not Config.Tracers then ClearTracers() return end
+    if not GetCharacter() then return end
+    ClearTracers()
+    local targets = {}
+    for _, r in ipairs(GetAllRocks()) do
+        if #targets >= 8 then break end
+        table.insert(targets, {Part = r.Part, Color = Color3.fromRGB(100, 200, 255)})
+    end
+    for _, s in ipairs(GetAllShops()) do
+        if #targets >= 10 then break end
+        table.insert(targets, {Part = s.Part, Color = Color3.fromRGB(0, 255, 100)})
+    end
+    for _, t in ipairs(targets) do
+        local att0 = Instance.new("Attachment")
+        att0.Parent = HumanoidRootPart
+        local att1 = Instance.new("Attachment")
+        att1.Parent = t.Part
+        local beam = Instance.new("Beam")
+        beam.Attachment0 = att0
+        beam.Attachment1 = att1
+        beam.Color = ColorSequence.new(t.Color)
+        beam.Width0 = 0.15
+        beam.Width1 = 0.15
+        beam.FaceCamera = true
+        beam.Parent = HumanoidRootPart
+        table.insert(State.TracerObjects, att0)
+        table.insert(State.TracerObjects, att1)
+        table.insert(State.TracerObjects, beam)
+    end
+end
+
+-- ========== PLAYER ESP ==========
+local function ClearPlayerESP()
+    for _, obj in ipairs(State.PlayerESPObjects) do
+        pcall(function() obj:Destroy() end)
+    end
+    State.PlayerESPObjects = {}
+end
+
+local function UpdatePlayerESP()
+    if not Config.PlayerESP then ClearPlayerESP() return end
+    ClearPlayerESP()
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            local hrp = plr.Character:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local hl = Instance.new("Highlight")
+                hl.FillTransparency = 0.7
+                hl.OutlineColor = Color3.fromRGB(255, 80, 80)
+                hl.FillColor = Color3.fromRGB(255, 50, 50)
+                hl.Parent = plr.Character
+                local bb = Instance.new("BillboardGui")
+                bb.Size = UDim2.new(0, 100, 0, 24)
+                bb.StudsOffset = Vector3.new(0, 3, 0)
+                bb.AlwaysOnTop = true
+                bb.Parent = hrp
+                local lbl = Instance.new("TextLabel")
+                lbl.Size = UDim2.new(1, 0, 1, 0)
+                lbl.BackgroundTransparency = 0.5
+                lbl.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+                lbl.Text = plr.Name .. " [" .. math.floor(GetDistance(hrp)) .. "m]"
+                lbl.TextColor3 = Color3.fromRGB(255, 100, 100)
+                lbl.Font = Enum.Font.GothamBold
+                lbl.TextSize = 10
+                lbl.Parent = bb
+                table.insert(State.PlayerESPObjects, hl)
+                table.insert(State.PlayerESPObjects, bb)
+            end
+        end
+    end
+end
+
+-- ========== CHEST / EVENT ESP ==========
+local function ClearChestESP()
+    for _, obj in ipairs(State.ChestESPObjects) do
+        pcall(function() obj:Destroy() end)
+    end
+    State.ChestESPObjects = {}
+end
+
+local function UpdateChestESP()
+    if not Config.ChestESP then ClearChestESP() return end
+    ClearChestESP()
+    local patterns = {"chest", "crate", "event", "gift", "present", "treasure", "reward"}
+    for _, d in ipairs(Workspace:GetDescendants()) do
+        if d:IsA("Model") or d:IsA("BasePart") then
+            local nl = string.lower(d.Name)
+            for _, p in ipairs(patterns) do
+                if string.find(nl, p) then
+                    local part = d:IsA("BasePart") and d or d:FindFirstChildWhichIsA("BasePart")
+                    if part then
+                        local hl = Instance.new("Highlight")
+                        hl.FillColor = Color3.fromRGB(255, 200, 50)
+                        hl.OutlineColor = Color3.fromRGB(255, 215, 0)
+                        hl.FillTransparency = 0.5
+                        hl.Parent = d
+                        table.insert(State.ChestESPObjects, hl)
+                    end
+                    break
+                end
+            end
+        end
+    end
+end
+
+-- ========== FULLBRIGHT ==========
+local function ApplyFullbright()
+    if State.FullbrightApplied then return end
+    State.SavedLighting = {
+        Brightness = Lighting.Brightness,
+        ClockTime = Lighting.ClockTime,
+        FogEnd = Lighting.FogEnd,
+        GlobalShadows = Lighting.GlobalShadows,
+        Ambient = Lighting.Ambient,
+        OutdoorAmbient = Lighting.OutdoorAmbient,
+    }
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 100000
+    Lighting.GlobalShadows = false
+    Lighting.Ambient = Color3.fromRGB(180, 180, 180)
+    Lighting.OutdoorAmbient = Color3.fromRGB(180, 180, 180)
+    State.FullbrightApplied = true
+    AddLog("Fullbright ON")
+end
+
+local function RestoreFullbright()
+    if not State.FullbrightApplied then return end
+    for k, v in pairs(State.SavedLighting) do
+        pcall(function() Lighting[k] = v end)
+    end
+    State.FullbrightApplied = false
+    AddLog("Fullbright OFF")
+end
+
+-- ========== HIDE PLAYERS ==========
+local function ApplyHidePlayers()
+    for _, plr in ipairs(Players:GetPlayers()) do
+        if plr ~= LocalPlayer and plr.Character then
+            for _, p in ipairs(plr.Character:GetDescendants()) do
+                if p:IsA("BasePart") then p.LocalTransparencyModifier = Config.HideOtherPlayers and 1 or 0 end
+            end
+        end
+    end
+end
+
+-- ========== FPS BOOSTER ==========
+local function ApplyFPSBooster()
+    if not Config.FPSBooster then return end
+    pcall(function()
+        settings().Rendering.QualityLevel = Enum.QualityLevel.Level01
+        for _, d in ipairs(Workspace:GetDescendants()) do
+            if d:IsA("ParticleEmitter") or d:IsA("Trail") or d:IsA("Smoke") or d:IsA("Fire") then
+                d.Enabled = false
+            end
+        end
+        Lighting.GlobalShadows = false
+    end)
+    AddLog("FPS Booster applied")
+end
+
+-- ========== CONFIG SAVE / LOAD ==========
+local function ConfigToTable()
+    local t = {}
+    for k, v in pairs(Config) do t[k] = v end
+    return t
+end
+
+local function ApplyConfigTable(t)
+    if type(t) ~= "table" then return false end
+    for k, v in pairs(t) do
+        if Config[k] ~= nil then Config[k] = v end
+    end
+    return true
+end
+
+local function SaveConfig()
+    local ok, json = pcall(function() return HttpService:JSONEncode(ConfigToTable()) end)
+    if not ok then AddLog("Config save failed") return end
+    if writefile then
+        pcall(function() writefile("MineaMountain_Config.json", json) end)
+        AddLog("Config saved to file")
+    elseif setclipboard then
+        pcall(function() setclipboard(json) end)
+        AddLog("Config copied to clipboard")
+    else
+        AddLog("Save unavailable (no writefile/clipboard)")
+    end
+end
+
+local function LoadConfig()
+    local json = nil
+    if readfile and isfile and isfile("MineaMountain_Config.json") then
+        json = readfile("MineaMountain_Config.json")
+    end
+    if json then
+        local ok, data = pcall(function() return HttpService:JSONDecode(json) end)
+        if ok and ApplyConfigTable(data) then
+            AddLog("Config loaded from file")
+            return true
+        end
+    end
+    AddLog("No saved config found")
+    return false
+end
+
+-- ========== SERVER HOP ==========
+local function DoServerHop()
+    AddLog("Server hopping...")
+    pcall(function()
+        local servers = HttpService:JSONDecode(game:HttpGet("https://games.roblox.com/v1/games/" .. game.PlaceId .. "/servers/Public?sortOrder=Asc&limit=100"))
+        if servers and servers.data then
+            for _, srv in ipairs(servers.data) do
+                if srv.id ~= game.JobId and srv.playing < srv.maxPlayers then
+                    TeleportService:TeleportToPlaceInstance(game.PlaceId, srv.id, LocalPlayer)
+                    return
+                end
+            end
+        end
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+    end)
+end
+
+local function StartServerHopTimer()
+    if State.ServerHopConn then return end
+    if Config.ServerHopInterval <= 0 then return end
+    State.ServerHopConn = true
+    task.spawn(function()
+        while Config.ServerHopInterval > 0 and State.ServerHopConn do
+            task.wait(Config.ServerHopInterval * 60)
+            if Config.ServerHopInterval > 0 then DoServerHop() end
+        end
+    end)
+end
+
+local function StopServerHopTimer()
+    State.ServerHopConn = nil
+end
+
+-- ========== AUTO DROP COLLECT LOOP ==========
+local function StartDropCollectLoop()
+    if State.DropCollectConn then return end
+    State.DropCollectConn = true
+    task.spawn(function()
+        while Config.AutoCollectDrops and State.DropCollectConn do
+            CollectNearbyDrops()
+            task.wait(1.5)
+        end
+    end)
+end
+
 -- ========== DISCORD WEBHOOK ==========
 local WebhookQueue = {}
 local WebhookProcessing = false
@@ -1040,7 +1861,18 @@ local WebhookProcessing = false
 local function SendWebhook(data)
     if not Config.WebhookEnabled or Config.WebhookURL == "" then return end
     pcall(function()
-        HttpService:PostAsync(Config.WebhookURL, HttpService:JSONEncode(data))
+        local body = HttpService:JSONEncode(data)
+        local reqFn = (syn and syn.request) or (http and http.request) or request
+        if reqFn then
+            reqFn({
+                Url = Config.WebhookURL,
+                Method = "POST",
+                Headers = {["Content-Type"] = "application/json"},
+                Body = body,
+            })
+        else
+            HttpService:PostAsync(Config.WebhookURL, body)
+        end
     end)
 end
 
@@ -1067,7 +1899,7 @@ end
 
 -- ========== GUI CREATION ==========
 local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Name = "MineaMountainV6"
+ScreenGui.Name = "MineaMountainV7"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.IgnoreGuiInset = true
@@ -1101,9 +1933,10 @@ if not guiParented then
 end
 
 -- Responsive sizing (compact)
-local ViewSize = Workspace.CurrentCamera.ViewportSize
+local Camera = Workspace.CurrentCamera or Workspace:WaitForChild("Camera", 10)
+local ViewSize = Camera and Camera.ViewportSize or Vector2.new(1920, 1080)
 local IsMobile = ViewSize.X < 800
-local GUIWidth = IsMobile and UDim2.new(0, 300, 0, 360) or UDim2.new(0, 340, 0, 440)
+local GUIWidth = IsMobile and UDim2.new(0, 310, 0, 400) or UDim2.new(0, 360, 0, 480)
 local MinimizedSize = UDim2.new(0, 140, 0, 38)
 local GUIPosition = UDim2.new(0, 12, 0, 60)
 local MinimizedPosition = UDim2.new(0, 12, 0, 60)
@@ -1150,6 +1983,7 @@ Header.Size = UDim2.new(1, 0, 0, 48)
 Header.BackgroundColor3 = Color3.fromRGB(20, 20, 35)
 Header.BackgroundTransparency = 0.1
 Header.BorderSizePixel = 0
+Header.ZIndex = 2
 Header.Parent = MainFrame
 
 local HeaderCorner = Instance.new("UICorner")
@@ -1169,11 +2003,12 @@ local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(0.65, 0, 1, 0)
 TitleLabel.Position = UDim2.new(0.04, 0, 0, 0)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "⛏ Minea Mountain v6"
+TitleLabel.Text = "⛏ Minea Mountain v7"
 TitleLabel.TextColor3 = Color3.fromRGB(130, 170, 255)
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.TextSize = IsMobile and 13 or 15
 TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+TitleLabel.ZIndex = 3
 TitleLabel.Parent = Header
 
 -- Version badge
@@ -1182,7 +2017,7 @@ VersionBadge.Size = UDim2.new(0, 28, 0, 18)
 VersionBadge.Position = UDim2.new(0.65, 0, 0.5, -9)
 VersionBadge.BackgroundColor3 = Color3.fromRGB(60, 100, 255)
 VersionBadge.BorderSizePixel = 0
-VersionBadge.Text = "v6"
+VersionBadge.Text = "v7"
 VersionBadge.TextColor3 = Color3.fromRGB(255, 255, 255)
 VersionBadge.Font = Enum.Font.GothamBold
 VersionBadge.TextSize = 10
@@ -1202,6 +2037,7 @@ MinimizeBtn.Text = "—"
 MinimizeBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 MinimizeBtn.Font = Enum.Font.GothamBold
 MinimizeBtn.TextSize = 14
+MinimizeBtn.ZIndex = 3
 MinimizeBtn.Parent = Header
 
 local minCorner = Instance.new("UICorner")
@@ -1268,20 +2104,22 @@ TabLayout.SortOrder = Enum.SortOrder.LayoutOrder
 TabLayout.Padding = UDim.new(0, 3)
 TabLayout.Parent = TabBar
 
-local Tabs = {"Farm", "Sell", "ESP", "Exploit", "Misc"}
+local Tabs = {"Farm", "Sell", "ESP", "Exploit", "Tools", "Misc"}
 local TabButtons = {}
 local TabFrames = {}
+local TabCount = #Tabs
+local TabScale = 1 / TabCount
 
 for i, tabName in ipairs(Tabs) do
     local tabBtn = Instance.new("TextButton")
     tabBtn.Name = tabName .. "Tab"
-    tabBtn.Size = UDim2.new(0.2, 0, 1, 0)
+    tabBtn.Size = UDim2.new(TabScale, -math.ceil(3 * (TabCount - 1) / TabCount), 1, 0)
     tabBtn.BackgroundColor3 = (tabName == "Farm") and Color3.fromRGB(50, 90, 200) or Color3.fromRGB(30, 30, 50)
     tabBtn.BorderSizePixel = 0
     tabBtn.Text = tabName
     tabBtn.TextColor3 = Color3.fromRGB(220, 230, 255)
     tabBtn.Font = Enum.Font.GothamBold
-    tabBtn.TextSize = IsMobile and 10 or 11
+    tabBtn.TextSize = IsMobile and 9 or 10
     tabBtn.LayoutOrder = i
     tabBtn.Parent = TabBar
     
@@ -1567,8 +2405,14 @@ local function CreateInput(parent, name, defaultText, callback)
     return frame, input
 end
 
+-- Reset layout order per tab so items sort correctly within each tab
+local function ResetLayoutOrder()
+    layoutOrder = 0
+end
+
 -- ========== BUILD FARM TAB ==========
 local farmTab = TabFrames["Farm"]
+ResetLayoutOrder()
 
 CreateSectionHeader(farmTab, "📊 STATS")
 layoutOrder = layoutOrder + 1
@@ -1585,7 +2429,7 @@ statsCorner.Parent = StatsFrame
 
 local StatsLabel = Instance.new("TextLabel")
 StatsLabel.Name = "StatsText"
-StatsLabel.Size = UDim2.new(1, -12, 1, 0)
+StatsLabel.Size = UDim2.new(1, -12, 0, 28)
 StatsLabel.Position = UDim2.new(0, 6, 0, 0)
 StatsLabel.BackgroundTransparency = 1
 StatsLabel.Text = "Mined: 0 | Sells: 0 | Target: None"
@@ -1596,9 +2440,72 @@ StatsLabel.TextXAlignment = Enum.TextXAlignment.Left
 StatsLabel.TextWrapped = true
 StatsLabel.Parent = StatsFrame
 
+CashLabel = Instance.new("TextLabel")
+CashLabel.Name = "CashText"
+CashLabel.Size = UDim2.new(1, -12, 0, 18)
+CashLabel.Position = UDim2.new(0, 6, 0, 28)
+CashLabel.BackgroundTransparency = 1
+CashLabel.Text = "Cash: 0 | Weight: 0/100"
+CashLabel.TextColor3 = Color3.fromRGB(255, 215, 100)
+CashLabel.Font = Enum.Font.GothamBold
+CashLabel.TextSize = IsMobile and 9 or 10
+CashLabel.TextXAlignment = Enum.TextXAlignment.Left
+CashLabel.Parent = StatsFrame
+
+StatsFrame.Size = UDim2.new(1, 0, 0, 52)
+
 local function UpdateStats()
     StatsLabel.Text = "Mined: " .. State.FarmCount .. " | Sells: " .. State.SellCount .. " | Dupe: " .. State.DupeCount .. " | Target: " .. (State.CurrentTarget or "None")
+    if CashLabel then
+        CashLabel.Text = "Cash: " .. GetPlayerCash() .. " | Weight: " .. math.floor(GetBackpackWeight()) .. "/" .. math.floor(GetBackpackCapacity())
+    end
 end
+
+CreateSectionHeader(farmTab, "🔄 SMART LOOP")
+
+CreateToggle(farmTab, "Smart Loop (Farm→Sell→Upgrade)", false, function(val)
+    Config.SmartLoop = val
+    if val then StartSmartLoop() else StopSmartLoop() end
+end)
+
+CreateToggle(farmTab, "Auto Equip Best Pickaxe", false, function(val)
+    Config.AutoEquipPickaxe = val
+end)
+
+CreateToggle(farmTab, "Rapid Mine (multi-hit)", false, function(val)
+    Config.RapidMine = val
+end)
+
+CreateSlider(farmTab, "Rapid Mine Hits", 1, 10, 3, function(val)
+    Config.RapidMineCount = val
+end)
+
+CreateToggle(farmTab, "Auto Collect Drops", false, function(val)
+    Config.AutoCollectDrops = val
+    if val then StartDropCollectLoop() else State.DropCollectConn = nil end
+end)
+
+CreateToggle(farmTab, "Bypass Prompt Hold", true, function(val)
+    Config.BypassPromptHold = val
+end)
+
+CreateToggle(farmTab, "Tween Teleport", false, function(val)
+    Config.TweenTeleport = val
+end)
+
+CreateSectionHeader(farmTab, "🎯 ORE FILTER")
+
+CreateToggle(farmTab, "Enable Ore Filter", false, function(val)
+    Config.OreFilterEnabled = val
+end)
+
+CreateInput(farmTab, "Whitelist Ores", Config.OreFilter, function(text)
+    Config.OreFilter = text
+end)
+
+CreateInput(farmTab, "Blacklist Ores", Config.OreBlacklist, function(text)
+    Config.OreBlacklist = text
+end)
 
 CreateSectionHeader(farmTab, "⛏ AUTO FARM")
 
@@ -1645,8 +2552,17 @@ end)
 
 -- ========== BUILD SELL TAB ==========
 local sellTab = TabFrames["Sell"]
+ResetLayoutOrder()
 
 CreateSectionHeader(sellTab, "💰 AUTO SELL")
+
+CreateToggle(sellTab, "Sell When Backpack Full", true, function(val)
+    Config.SellWhenFull = val
+end)
+
+CreateSlider(sellTab, "Sell Min Cash Threshold", 0, 500000, 0, function(val)
+    Config.SellMinCash = val
+end)
 
 CreateToggle(sellTab, "Auto Sell", false, function(val)
     Config.AutoSell = val
@@ -1678,6 +2594,28 @@ CreateButton(sellTab, "🏠 Go Home / Teleport to Shop", Color3.fromRGB(80, 50, 
     end
 end)
 
+CreateSectionHeader(sellTab, "🛒 AUTO BUY UPGRADES")
+
+CreateToggle(sellTab, "Auto Buy Pickaxe", false, function(val) Config.AutoBuyPickaxe = val end)
+CreateToggle(sellTab, "Auto Buy Backpack", false, function(val) Config.AutoBuyBackpack = val end)
+CreateToggle(sellTab, "Auto Buy Luck", false, function(val) Config.AutoBuyLuck = val end)
+CreateToggle(sellTab, "Auto Buy Warmth", false, function(val) Config.AutoBuyWarmth = val end)
+
+CreateToggle(sellTab, "Auto Rebirth", false, function(val) Config.AutoRebirth = val end)
+
+CreateSlider(sellTab, "Rebirth Cash Threshold", 1000, 1000000, 50000, function(val)
+    Config.RebirthCashThreshold = val
+end)
+
+CreateToggle(sellTab, "Auto Claim Daily/Code", false, function(val) Config.AutoClaimDaily = val end)
+
+CreateInput(sellTab, "Promo Code", "", function(text) Config.PromoCode = text end)
+
+CreateButton(sellTab, "🎁 Claim Daily Now", Color3.fromRGB(180, 130, 40), function()
+    TryAutoClaimDaily()
+    AddLog("Claimed daily rewards")
+end)
+
 CreateSectionHeader(sellTab, "🔄 AUTO UPGRADE")
 
 CreateToggle(sellTab, "Auto Upgrade", false, function(val)
@@ -1698,7 +2636,8 @@ end)
 
 CreateSectionHeader(sellTab, "🏪 DETECTED SHOPS")
 
-ShopList = Instance.new("ScrollingFrame")
+local shopListFrame = Instance.new("ScrollingFrame")
+ShopList = shopListFrame
 ShopList.Name = "ShopList"
 ShopList.Size = UDim2.new(1, 0, 0, 90)
 ShopList.BackgroundColor3 = Color3.fromRGB(18, 18, 30)
@@ -1729,12 +2668,38 @@ shopLPad.Parent = ShopList
 
 -- ========== BUILD ESP TAB ==========
 local espTab = TabFrames["ESP"]
+ResetLayoutOrder()
 
 CreateSectionHeader(espTab, "👁 ESP / VISUALS")
 
 CreateToggle(espTab, "Crystal / Rock ESP", false, function(val)
     Config.ESPEnabled = val
     if val then StartESP() else StopESP() end
+end)
+
+CreateToggle(espTab, "Tracers (Rocks/Shops)", false, function(val)
+    Config.Tracers = val
+    if not val then ClearTracers() end
+end)
+
+CreateToggle(espTab, "Player ESP", false, function(val)
+    Config.PlayerESP = val
+    if not val then ClearPlayerESP() end
+end)
+
+CreateToggle(espTab, "Chest / Event ESP", false, function(val)
+    Config.ChestESP = val
+    if not val then ClearChestESP() end
+end)
+
+CreateToggle(espTab, "Fullbright", false, function(val)
+    Config.Fullbright = val
+    if val then ApplyFullbright() else RestoreFullbright() end
+end)
+
+CreateToggle(espTab, "Hide Other Players", false, function(val)
+    Config.HideOtherPlayers = val
+    ApplyHidePlayers()
 end)
 
 CreateButton(espTab, "🔄 Refresh ESP", Color3.fromRGB(50, 90, 160), function()
@@ -1751,7 +2716,8 @@ end)
 
 CreateSectionHeader(espTab, "🪨 DETECTED ROCKS")
 
-RockList = Instance.new("ScrollingFrame")
+local rockListFrame = Instance.new("ScrollingFrame")
+RockList = rockListFrame
 RockList.Name = "RockList"
 RockList.Size = UDim2.new(1, 0, 0, 120)
 RockList.BackgroundColor3 = Color3.fromRGB(18, 18, 30)
@@ -1782,6 +2748,7 @@ rLPad.Parent = RockList
 
 -- ========== BUILD EXPLOIT TAB ==========
 local exploitTab = TabFrames["Exploit"]
+ResetLayoutOrder()
 
 CreateSectionHeader(exploitTab, "🎒 EXPLOITS")
 
@@ -1806,6 +2773,16 @@ CreateToggle(exploitTab, "Anti Freeze (Warmth)", false, function(val)
         Config.AntiDamage = true
         StartAntiDamage()
     end
+end)
+
+CreateToggle(exploitTab, "Warmth Keeper", false, function(val)
+    Config.WarmthKeeper = val
+    if val or Config.StaminaKeeper then StartWarmthKeeper() else StopWarmthKeeper() end
+end)
+
+CreateToggle(exploitTab, "Stamina Keeper", false, function(val)
+    Config.StaminaKeeper = val
+    if val or Config.WarmthKeeper then StartWarmthKeeper() else StopWarmthKeeper() end
 end)
 
 CreateSectionHeader(exploitTab, "🎭 MOVEMENT")
@@ -1834,6 +2811,16 @@ CreateSlider(exploitTab, "Fly Speed", 10, 200, 60, function(val)
     Config.FlySpeed = val
 end)
 
+CreateToggle(exploitTab, "Infinite Jump", false, function(val)
+    Config.InfiniteJump = val
+    if val then StartInfiniteJump() else StopInfiniteJump() end
+end)
+
+CreateToggle(exploitTab, "Click Teleport (Ctrl+Click)", false, function(val)
+    Config.ClickTeleport = val
+    if val then StartClickTeleport() else StopClickTeleport() end
+end)
+
 CreateSectionHeader(exploitTab, "📦 ITEM DUPE")
 
 local dupeInput, dupeTextBox
@@ -1846,6 +2833,10 @@ end)
 
 CreateButton(exploitTab, "📦 Dupe Items (" .. Config.DupeAmount .. "x)", Color3.fromRGB(180, 60, 180), function()
     DupeItems(Config.DupeAmount)
+end)
+
+CreateButton(exploitTab, "📦 Drop Dupe Method", Color3.fromRGB(140, 50, 140), function()
+    DupeViaDrop()
 end)
 
 CreateSectionHeader(exploitTab, "📡 REMOTE EXPLOITS")
@@ -1899,12 +2890,156 @@ CreateButton(exploitTab, "💣 Fire ALL Remotes (Nuke)", Color3.fromRGB(200, 50,
     AddLog("NUKED all " .. #State.RemoteCache .. " remotes!")
 end)
 
+-- ========== BUILD TOOLS TAB ==========
+local toolsTab = TabFrames["Tools"]
+ResetLayoutOrder()
+
+CreateSectionHeader(toolsTab, "📡 REMOTE SPY")
+
+CreateToggle(toolsTab, "Remote Spy (Log FireServer)", false, function(val)
+    Config.RemoteSpy = val
+    if val then StartRemoteSpy() else StopRemoteSpy() end
+end)
+
+layoutOrder = layoutOrder + 1
+local spyListFrame = Instance.new("ScrollingFrame")
+RemoteSpyList = spyListFrame
+RemoteSpyList.Name = "RemoteSpyList"
+RemoteSpyList.Size = UDim2.new(1, 0, 0, 100)
+RemoteSpyList.BackgroundColor3 = Color3.fromRGB(12, 12, 22)
+RemoteSpyList.BorderSizePixel = 0
+RemoteSpyList.ScrollBarThickness = 2
+RemoteSpyList.ScrollBarImageColor3 = Color3.fromRGB(90, 130, 255)
+RemoteSpyList.CanvasSize = UDim2.new(0, 0, 0, 0)
+RemoteSpyList.AutomaticCanvasSize = Enum.AutomaticSize.Y
+RemoteSpyList.LayoutOrder = layoutOrder
+RemoteSpyList.Parent = toolsTab
+
+local spyCorner = Instance.new("UICorner")
+spyCorner.CornerRadius = UDim.new(0, 6)
+spyCorner.Parent = RemoteSpyList
+
+local spyLayout = Instance.new("UIListLayout")
+spyLayout.SortOrder = Enum.SortOrder.LayoutOrder
+spyLayout.Padding = UDim.new(0, 2)
+spyLayout.Parent = RemoteSpyList
+
+local spyPad = Instance.new("UIPadding")
+spyPad.PaddingTop = UDim.new(0, 2)
+spyPad.PaddingLeft = UDim.new(0, 2)
+spyPad.PaddingRight = UDim.new(0, 2)
+spyPad.Parent = RemoteSpyList
+
+CreateButton(toolsTab, "🗑 Clear Spy Log", Color3.fromRGB(100, 50, 50), function()
+    State.RemoteSpyLogs = {}
+    if RemoteSpyList then ClearScrollList(RemoteSpyList) end
+end)
+
+CreateSectionHeader(toolsTab, "🎯 CUSTOM REMOTE")
+
+CreateInput(toolsTab, "Remote Name", "", function(text)
+    Config.CustomRemoteName = text
+end)
+
+CreateInput(toolsTab, "Args (comma separated)", "", function(text)
+    Config.CustomRemoteArgs = text
+end)
+
+CreateButton(toolsTab, "🚀 Fire Custom Remote", Color3.fromRGB(160, 80, 40), function()
+    FireCustomRemote()
+end)
+
+CreateSectionHeader(toolsTab, "📍 WAYPOINTS")
+
+CreateButton(toolsTab, "💾 Save: Shop", Color3.fromRGB(50, 100, 160), function()
+    SaveWaypoint("Shop")
+end)
+
+CreateButton(toolsTab, "💾 Save: Farm Spot", Color3.fromRGB(50, 130, 80), function()
+    SaveWaypoint("Farm")
+end)
+
+CreateButton(toolsTab, "💾 Save: Spawn", Color3.fromRGB(80, 80, 140), function()
+    SaveWaypoint("Spawn")
+end)
+
+CreateButton(toolsTab, "📍 TP → Shop", Color3.fromRGB(40, 90, 140), function()
+    TeleportToWaypoint("Shop")
+end)
+
+CreateButton(toolsTab, "📍 TP → Farm Spot", Color3.fromRGB(40, 120, 70), function()
+    TeleportToWaypoint("Farm")
+end)
+
+CreateButton(toolsTab, "📍 TP → Spawn", Color3.fromRGB(70, 70, 130), function()
+    TeleportToWaypoint("Spawn")
+end)
+
 -- ========== BUILD MISC TAB ==========
 local miscTab = TabFrames["Misc"]
+ResetLayoutOrder()
+
+CreateSectionHeader(miscTab, "⚙ SETTINGS")
+
+CreateToggle(miscTab, "Anti-AFK", false, function(val)
+    Config.AntiAFK = val
+    if val then StartAntiAFK() else StopAntiAFK() end
+end)
+
+CreateToggle(miscTab, "Auto Respawn + Reapply", false, function(val)
+    Config.AutoRespawn = val
+end)
+
+CreateToggle(miscTab, "FPS Booster", false, function(val)
+    Config.FPSBooster = val
+    if val then ApplyFPSBooster() end
+end)
+
+CreateSlider(miscTab, "Server Hop (min, 0=off)", 0, 120, 0, function(val)
+    Config.ServerHopInterval = val
+    StopServerHopTimer()
+    if val > 0 then StartServerHopTimer() end
+end)
+
+CreateButton(miscTab, "🌐 Server Hop Now", Color3.fromRGB(60, 100, 160), function()
+    DoServerHop()
+end)
+
+CreateButton(miscTab, "💾 Save Config", Color3.fromRGB(50, 120, 80), function()
+    SaveConfig()
+end)
+
+CreateButton(miscTab, "📂 Load Config", Color3.fromRGB(80, 100, 160), function()
+    LoadConfig()
+end)
+
+CreateButton(miscTab, "🚨 PANIC (Stop All)", Color3.fromRGB(200, 40, 40), function()
+    PanicStopAll()
+end)
+
+CreateSectionHeader(miscTab, "⌨ KEYBINDS")
+layoutOrder = layoutOrder + 1
+local keybindInfo = Instance.new("TextLabel")
+keybindInfo.Size = UDim2.new(1, 0, 0, 70)
+keybindInfo.BackgroundColor3 = Color3.fromRGB(22, 22, 38)
+keybindInfo.BorderSizePixel = 0
+keybindInfo.Text = "  RightShift = Toggle GUI\n  F = Toggle Fly\n  G = Toggle Auto Farm\n  H = Toggle Smart Loop\n  P = Panic Stop All\n  Ctrl+Click = Click TP (if enabled)"
+keybindInfo.TextColor3 = Color3.fromRGB(160, 180, 210)
+keybindInfo.Font = Enum.Font.Gotham
+keybindInfo.TextSize = IsMobile and 9 or 10
+keybindInfo.TextXAlignment = Enum.TextXAlignment.Left
+keybindInfo.TextYAlignment = Enum.TextYAlignment.Top
+keybindInfo.TextWrapped = true
+keybindInfo.LayoutOrder = layoutOrder
+keybindInfo.Parent = miscTab
+local kbCorner = Instance.new("UICorner")
+kbCorner.CornerRadius = UDim.new(0, 6)
+kbCorner.Parent = keybindInfo
 
 CreateSectionHeader(miscTab, "📋 LOG")
 
-LogList = Instance.new("ScrollingFrame")
+local logListFrame = Instance.new("ScrollingFrame")
+LogList = logListFrame
 LogList.Name = "LogList"
 LogList.Size = UDim2.new(1, 0, 0, 100)
 LogList.BackgroundColor3 = Color3.fromRGB(12, 12, 20)
@@ -1959,7 +3094,7 @@ CreateButton(miscTab, "📨 Send Stats Now", Color3.fromRGB(50, 90, 160), functi
 end)
 
 CreateButton(miscTab, "🧪 Test Webhook", Color3.fromRGB(90, 60, 140), function()
-    SendWebhook({content = "**[Minea Mountain v6]** Webhook test successful! ✅"})
+    SendWebhook({content = "**[Minea Mountain v7]** Webhook test successful! ✅"})
     AddLog("Tested webhook")
 end)
 
@@ -2011,10 +3146,11 @@ local infoLabel = Instance.new("TextLabel")
 infoLabel.Size = UDim2.new(1, 0, 0, 50)
 infoLabel.BackgroundColor3 = Color3.fromRGB(22, 22, 38)
 infoLabel.BorderSizePixel = 0
-infoLabel.Text = "Minea Mountain v6 Ultimate\nAuto Farm | ESP | Exploits | Dupe\nWorks on Delta, Synapse, KRNL, Fluxus"
+infoLabel.Text = "Minea Mountain v7 Ultimate\nSmart Loop | Remote Spy | ESP+ | Waypoints\nDelta, Synapse, KRNL, Fluxus, Wave, Codex"
 infoLabel.TextColor3 = Color3.fromRGB(140, 160, 200)
 infoLabel.Font = Enum.Font.Gotham
 infoLabel.TextSize = IsMobile and 9 or 10
+infoLabel.TextWrapped = true
 infoLabel.LayoutOrder = layoutOrder
 infoLabel.Parent = miscTab
 
@@ -2104,15 +3240,17 @@ SetupDrag(Header)
 SetupDrag(MinimizedFrame)
 
 -- ========== PERIODIC UPDATES ==========
+local lastWebhookTime = 0
 task.spawn(function()
     while true do
-        task.wait(5)
-        if Config.AutoSell or Config.AutoFarm then
-            UpdateStats()
-        end
-        -- Periodic webhook stats
+        task.wait(1)
+        pcall(UpdateStats)
         if Config.WebhookEnabled and Config.WebhookStats then
-            pcall(SendStatsLog)
+            local now = tick()
+            if now - lastWebhookTime >= 30 then
+                lastWebhookTime = now
+                pcall(SendStatsLog)
+            end
         end
     end
 end)
@@ -2124,7 +3262,7 @@ task.spawn(function()
         pcall(function()
             local shops = GetAllShops()
             if ShopList then
-                ShopList:ClearAllChildren()
+                ClearScrollList(ShopList)
                 for i, shop in ipairs(shops) do
                     if i > 15 then break end
                     local btn = Instance.new("TextButton")
@@ -2135,6 +3273,7 @@ task.spawn(function()
                     btn.TextColor3 = Color3.fromRGB(200, 220, 255)
                     btn.Font = Enum.Font.Gotham
                     btn.TextSize = 11
+                    btn.LayoutOrder = i
                     btn.Parent = ShopList
                     local bCorner = Instance.new("UICorner")
                     bCorner.CornerRadius = UDim.new(0, 5)
@@ -2150,7 +3289,7 @@ task.spawn(function()
         pcall(function()
             local rocks = GetAllRocks()
             if RockList then
-                RockList:ClearAllChildren()
+                ClearScrollList(RockList)
                 for i, rock in ipairs(rocks) do
                     if i > 20 then break end
                     local btn = Instance.new("TextButton")
@@ -2161,6 +3300,7 @@ task.spawn(function()
                     btn.TextColor3 = rock.Value > 0 and Color3.fromRGB(255, 215, 100) or Color3.fromRGB(200, 255, 200)
                     btn.Font = Enum.Font.Gotham
                     btn.TextSize = 11
+                    btn.LayoutOrder = i
                     btn.Parent = RockList
                     local bCorner = Instance.new("UICorner")
                     bCorner.CornerRadius = UDim.new(0, 5)
@@ -2175,6 +3315,45 @@ task.spawn(function()
     end
 end)
 
+-- ========== KEYBINDS ==========
+UserInputService.InputBegan:Connect(function(input, processed)
+    if processed then return end
+    if input.KeyCode == Enum.KeyCode.RightShift then
+        ScreenGui.Enabled = not ScreenGui.Enabled
+        State.GUIHidden = not ScreenGui.Enabled
+    elseif input.KeyCode == Enum.KeyCode.F then
+        Config.FlyEnabled = not Config.FlyEnabled
+        if Config.FlyEnabled then StartFly() else StopFly() end
+        AddLog("Fly: " .. (Config.FlyEnabled and "ON" or "OFF"))
+    elseif input.KeyCode == Enum.KeyCode.G then
+        Config.AutoFarm = not Config.AutoFarm
+        if Config.AutoFarm then StartAutoFarm() else StopAutoFarm() end
+        AddLog("Auto Farm: " .. (Config.AutoFarm and "ON" or "OFF"))
+    elseif input.KeyCode == Enum.KeyCode.H then
+        Config.SmartLoop = not Config.SmartLoop
+        if Config.SmartLoop then StartSmartLoop() else StopSmartLoop() end
+        AddLog("Smart Loop: " .. (Config.SmartLoop and "ON" or "OFF"))
+    elseif input.KeyCode == Enum.KeyCode.P and Config.PanicEnabled then
+        PanicStopAll()
+        ScreenGui.Enabled = false
+        State.GUIHidden = true
+    end
+end)
+
+-- ========== VISUAL UPDATE LOOP ==========
+task.spawn(function()
+    while true do
+        task.wait(3)
+        pcall(function()
+            if Config.Tracers then UpdateTracers() end
+            if Config.PlayerESP then UpdatePlayerESP() end
+            if Config.ChestESP then UpdateChestESP() end
+            if Config.HideOtherPlayers then ApplyHidePlayers() end
+            if Config.BypassPromptHold then BypassPromptsIn(Workspace) end
+        end)
+    end
+end)
+
 -- ========== HANDLE RESPAWN ==========
 LocalPlayer.CharacterAdded:Connect(function(char)
     Character = char
@@ -2182,23 +3361,41 @@ LocalPlayer.CharacterAdded:Connect(function(char)
     Humanoid = char:WaitForChild("Humanoid")
     AddLog("Character respawned")
     
-    -- Re-apply speed boost if enabled
-    if Config.SpeedBoost then
-        task.delay(1, function()
-            ApplySpeedBoost()
+    task.delay(1, function()
+        if Config.SpeedBoost then ApplySpeedBoost() end
+        if Config.FlyEnabled then StopFly() StartFly() end
+        if Config.InfiniteJump then StopInfiniteJump() StartInfiniteJump() end
+        if Config.AutoEquipPickaxe then EquipBestPickaxe() end
+        if Config.AutoFarm and not State.FarmConnection then StartAutoFarm() end
+        if Config.SmartLoop and not State.SmartLoopConn then StartSmartLoop() end
+        if Config.WarmthKeeper or Config.StaminaKeeper then StartWarmthKeeper() end
+    end)
+end)
+
+LocalPlayer.CharacterRemoving:Connect(function()
+    if Config.AutoRespawn then
+        task.delay(3, function()
+            pcall(function()
+                if not LocalPlayer.Character and loadcharacter then
+                    loadcharacter()
+                end
+            end)
         end)
     end
 end)
 
 -- ========== HANDLE SCREEN RESIZE ==========
-Workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
-    local newSize = Workspace.CurrentCamera.ViewportSize
-    local isMob = newSize.X < 800
-    GUIWidth = isMob and UDim2.new(0, 300, 0, 360) or UDim2.new(0, 340, 0, 440)
-    if not State.IsMinimized then
-        MainFrame.Size = GUIWidth
-    end
-end)
+if Camera then
+    Camera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
+        local newSize = Camera.ViewportSize
+        local isMob = newSize.X < 800
+        GUIWidth = isMob and UDim2.new(0, 310, 0, 400) or UDim2.new(0, 360, 0, 480)
+        if not State.IsMinimized then
+            MainFrame.Size = GUIWidth
+        end
+        TitleLabel.TextSize = isMob and 13 or 15
+    end)
+end
 
 -- ========== SIMULATION RADIUS (see further) ==========
 if HasSetSimRadius then
@@ -2208,11 +3405,14 @@ if HasSetSimRadius then
 end
 
 -- ========== STARTUP ==========
-AddLog("Minea Mountain v6 ULTIMATE Loaded!")
-AddLog("Auto Farm | ESP | Exploits | Dupe")
-AddLog("Cache remotes first for best results!")
+pcall(function()
+    AddLog("Minea Mountain v7 ULTIMATE Loaded!")
+    AddLog("Smart Loop | Remote Spy | ESP+ | Waypoints")
+    AddLog("Press RightShift to toggle GUI | Cache remotes first!")
+    BypassPromptsIn(Workspace)
+end)
 
 -- Initial remote cache
 task.delay(3, function()
-    CacheRemotes()
+    pcall(CacheRemotes)
 end)
