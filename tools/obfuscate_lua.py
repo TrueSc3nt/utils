@@ -156,9 +156,8 @@ def obfuscate(source: str) -> str:
     code = strip_comments(source)
     code = re.sub(r"^--\s*=+.*=+\s*$", "", code, flags=re.MULTILINE)
     code = re.sub(r"\n{3,}", "\n\n", code)
-    # Strings first so literals are safe; then rename locals only
+    # Strings only — local renaming breaks Luau 200-register limit on large scripts
     code = encode_strings(code)
-    code = rename_locals(code)
     code = insert_junk(code)
     header = (
         "--[[ Minea v7 protected | TrueSc3nt ]]\n"
