@@ -37,7 +37,7 @@ local Character = LocalPlayer.Character
 local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPart")
 local Humanoid = Character and Character:FindFirstChild("Humanoid")
 if not Character then
-    task.spawn(function()
+    spawn(function()
         local char = LocalPlayer.CharacterAdded:Wait()
         Character = char
         HumanoidRootPart = char:WaitForChild("HumanoidRootPart")
@@ -416,7 +416,123 @@ do
     end
 end
 
--- ========== UTILITY FUNCTIONS (scope A — keeps main chunk under Luau 200-local limit) ==========
+-- ========== UTILITY FUNCTIONS ==========
+
+local function ClearScrollList(scrollingFrame)
+    for _, child in ipairs(scrollingFrame:GetChildren()) do
+        if not child:IsA("UIListLayout") and not child:IsA("UIPadding") then
+            child:Destroy()
+        end
+    end
+end
+
+local function AddLog(message)
+    local timestamp = os.date("%H:%M:%S")
+    table.insert(State.Logs, 1, "[" .. timestamp .. "] " .. message)
+    if #State.Logs > 50 then
+        table.remove(State.Logs)
+    end
+    if LogList then
+        pcall(function()
+            ClearScrollList(LogList)
+            for i, log in ipairs(State.Logs) do
+                if i > 15 then break end
+                local label = Instance.new("TextLabel")
+                label.Size = UDim2.new(1, 0, 0, 18)
+                label.BackgroundTransparency = 1
+                label.Text = log
+                label.TextColor3 = Theme.SubText
+                label.TextXAlignment = Enum.TextXAlignment.Left
+                label.Font = Enum.Font.Gotham
+                label.TextSize = 11
+                label.LayoutOrder = i
+                label.Parent = LogList
+            end
+        end)
+    end
+end
+
+local function CacheRemotes()
+    State.RemoteCache = {}
+    pcall(function()
+        for _, remote in ipairs(ReplicatedStorage:GetDescendants()) do
+            if remote:IsA("RemoteEvent") or remote:IsA("RemoteFunction") then
+                table.insert(State.RemoteCache, {
+                    Instance = remote,
+                    Name = remote.Name,
+                    Type = remote.ClassName,
+                })
+            end
+        end
+    end)
+    AddLog("Cached " .. #State.RemoteCache .. " remotes")
+end
+
+local function FireRemote(namePattern, ...)
+    local args = {...}
+    for _, remote in ipairs(State.RemoteCache) do
+        local rName = string.lower(remote.Name)
+        local pattern = string.lower(namePattern)
+        if string.find(rName, pattern) then
+            pcall(function()
+                if remote.Type == "RemoteEvent" then
+                    remote.Instance:FireServer(Exec.Unpack(args))
+                elseif remote.Type == "RemoteFunction" then
+                    remote.Instance:InvokeServer(Exec.Unpack(args))
+                end
+            end)
+        end
+    end
+end
+
+local function FireRemoteExact(name, ...)
+    local args = {...}
+    for _, remote in ipairs(State.RemoteCache) do
+        if remote.Name == name then
+            pcall(function()
+                if remote.Type == "RemoteEvent" then
+                    remote.Instance:FireServer(Exec.Unpack(args))
+                elseif remote.Type == "RemoteFunction" then
+                    remote.Instance:InvokeServer(Exec.Unpack(args))
+                end
+            end)
+            return true
+        end
+    end
+    return false
+end
+
+local WebhookQueue = {}
+local WebhookProcessing = false
+
+local function SendWebhook(data)
+    if not Config.WebhookEnabled or Config.WebhookURL == "" then return end
+    pcall(function()
+        local body = HttpService:JSONEncode(data)
+        Exec.Post(Config.WebhookURL, body)
+    end)
+end
+
+local function SendFarmLog(itemName)
+    if not Config.WebhookFarm then return end
+    SendWebhook({
+        content = "**[Minea Mountain]** Mined: " .. itemName .. " | Total: " .. State.FarmCount,
+    })
+end
+
+local function SendSellLog()
+    if not Config.WebhookSell then return end
+    SendWebhook({
+        content = "**[Minea Mountain]** Sold items | Total sells: " .. State.SellCount,
+    })
+end
+
+local function SendStatsLog()
+    if not Config.WebhookStats then return end
+    SendWebhook({
+        content = "**[Minea Mountain Stats]** Mined: " .. State.FarmCount .. " | Sells: " .. State.SellCount .. " | Dupes: " .. State.DupeCount .. " | Target: " .. State.CurrentTarget,
+    })
+end
 
 local function GetCharacter()
     Character = LocalPlayer.Character
@@ -439,10 +555,10 @@ local function TeleportTo(position)
         local dist = (HumanoidRootPart.Position - position).Magnitude
         local dur = math.clamp(dist / Config.TweenTeleportSpeed, 0.08, 2.5)
         TweenService:Create(HumanoidRootPart, TweenInfo.new(dur, Enum.EasingStyle.Linear), {CFrame = targetCF}):Play()
-        task.wait(dur)
+        wait(dur)
     else
         HumanoidRootPart.CFrame = targetCF
-        task.wait(Config.TeleportDelay)
+        wait(Config.TeleportDelay)
     end
     return true
 end
@@ -592,7 +708,7 @@ local function CollectNearbyDrops()
         TeleportTo(drop.Part.Position)
         if HasFireTouch then
             Exec.FireTouch(HumanoidRootPart, drop.Part, 0)
-            task.wait(0.01)
+            wait(0.01)
             Exec.FireTouch(HumanoidRootPart, drop.Part, 1)
         end
         FireRemote("pickup")
@@ -649,12 +765,12 @@ local function DupeViaDrop()
         local tool = Character and Character:FindFirstChildOfClass("Tool")
         if tool then
             tool.Parent = LocalPlayer.Backpack
-            task.wait(0.1)
+            wait(0.1)
             Humanoid:EquipTool(tool)
         end
         for i = 1, Config.DupeAmount do
             FireRemote("drop"); FireRemote("pickup"); FireRemote("collect")
-            task.wait(0.05)
+            wait(0.05)
         end
     end)
 end
@@ -662,12 +778,10 @@ end
 local function TeleportToCFrame(cframe)
     if not GetCharacter() then return false end
     HumanoidRootPart.CFrame = cframe + Vector3.new(0, 3, 0)
-    task.wait(Config.TeleportDelay)
+    wait(Config.TeleportDelay)
     return true
 end
--- ========== DISCORD WEBHOOK ==========
 
--- ========== DISCORD WEBHOOK ==========
 -- ========== ROCK / CRYSTAL DETECTION ==========
 local CrystalPatterns = {
     "rock", "ore", "stone", "mineral", "crystal", "gem", "coal", "iron",
@@ -805,7 +919,7 @@ local function MineRock(rockData)
     
     -- Teleport to rock
     TeleportTo(part.Position)
-    task.wait(0.05)
+    wait(0.05)
     
     local function doMineOnce()
         -- Method 1: Fire click detector
@@ -822,7 +936,7 @@ local function MineRock(rockData)
         end
         if HasFireTouch then
             Exec.FireTouch(HumanoidRootPart, part, 0)
-            task.wait(0.01)
+            wait(0.01)
             Exec.FireTouch(HumanoidRootPart, part, 1)
         end
         -- Method 4: Use tool if equipped
@@ -850,7 +964,7 @@ local function MineRock(rockData)
     local hits = Config.RapidMine and Config.RapidMineCount or 1
     for _ = 1, hits do
         doMineOnce()
-        if hits > 1 then task.wait(0.03) end
+        if hits > 1 then wait(0.03) end
     end
     
     CollectNearbyDrops()
@@ -871,7 +985,7 @@ local function SellItems(shopData)
     
     -- Teleport to shop
     TeleportTo(part.Position)
-    task.wait(0.1)
+    wait(0.1)
     
     -- Method 1: Click detector
     if HasFireClick then
@@ -886,7 +1000,7 @@ local function SellItems(shopData)
     
     if HasFireTouch then
         Exec.FireTouch(HumanoidRootPart, part, 0)
-        task.wait(0.01)
+        wait(0.01)
         Exec.FireTouch(HumanoidRootPart, part, 1)
     end
     
@@ -911,7 +1025,7 @@ local function StartAutoFarm()
     AddLog("Auto Farm STARTED")
     
     State.FarmConnection = true
-    task.spawn(function()
+    spawn(function()
         while Config.AutoFarm and State.FarmConnection do
             if GetCharacter() then
                 local rocks = GetAllRocks()
@@ -923,7 +1037,7 @@ local function StartAutoFarm()
                     State.CurrentTarget = "Searching..."
                 end
             end
-            task.wait(Config.FarmDelay)
+            wait(Config.FarmDelay)
         end
     end)
 end
@@ -940,7 +1054,7 @@ local function StartAutoSell()
     AddLog("Auto Sell STARTED")
     
     State.SellConnection = true
-    task.spawn(function()
+    spawn(function()
         while Config.AutoSell and State.SellConnection do
             if GetCharacter() then
                 local canSell = true
@@ -954,7 +1068,7 @@ local function StartAutoSell()
                     end
                 end
             end
-            task.wait(Config.SellDelay)
+            wait(Config.SellDelay)
         end
     end)
 end
@@ -970,7 +1084,7 @@ local function StartAutoUpgrade()
     AddLog("Auto Upgrade STARTED")
     
     State.UpgradeConn = true
-    task.spawn(function()
+    spawn(function()
         while Config.AutoUpgrade and State.UpgradeConn do
             FireRemote("upgrade")
             FireRemote("buy")
@@ -982,7 +1096,7 @@ local function StartAutoUpgrade()
             FireRemote("dig")
             
             State.UpgradeCount = State.UpgradeCount + 1
-            task.wait(1)
+            wait(1)
         end
     end)
 end
@@ -1084,13 +1198,11 @@ end
 local function StartESP()
     if Config.ESPEnabled then
         CreateESP()
-        if State.ESPRefreshThread then
-            task.cancel(State.ESPRefreshThread)
-        end
-        State.ESPRefreshThread = task.spawn(function()
-            while Config.ESPEnabled do
-                task.wait(5)
-                if Config.ESPEnabled then
+        State.ESPRefreshThread = true
+        spawn(function()
+            while Config.ESPEnabled and State.ESPRefreshThread do
+                wait(5)
+                if Config.ESPEnabled and State.ESPRefreshThread then
                     CreateESP()
                 end
             end
@@ -1100,10 +1212,7 @@ local function StartESP()
 end
 
 local function StopESP()
-    if State.ESPRefreshThread then
-        task.cancel(State.ESPRefreshThread)
-        State.ESPRefreshThread = nil
-    end
+    State.ESPRefreshThread = nil
     ClearESP()
 end
 
@@ -1185,9 +1294,9 @@ local function ApplyUnlimitedBackpack()
     end)
     
     -- Keep applying
-    task.spawn(function()
+    spawn(function()
         while Config.UnlimitedBackpack do
-            task.wait(2)
+            wait(2)
             pcall(function()
                 local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
                 if leaderstats then
@@ -1237,9 +1346,9 @@ local function ApplyUnlimitedLuck()
     end)
     
     -- Keep applying
-    task.spawn(function()
+    spawn(function()
         while Config.UnlimitedLuck do
-            task.wait(2)
+            wait(2)
             pcall(function()
                 local leaderstats = LocalPlayer:FindFirstChild("leaderstats")
                 if leaderstats then
@@ -1270,7 +1379,7 @@ local function DupeItems(amount)
             FireRemote("obtain")
             FireRemote("grant")
             FireRemote("reward")
-            task.wait(0.05)
+            wait(0.05)
         end
         
         -- Method 2: Direct inventory manipulation
@@ -1289,9 +1398,9 @@ local function DupeItems(amount)
         -- Method 3: Re-fire sell remote then collect remote (sell-buy loop)
         for i = 1, amount do
             FireRemote("sell")
-            task.wait(0.02)
+            wait(0.02)
             FireRemote("buy")
-            task.wait(0.02)
+            wait(0.02)
         end
         
         -- Method 4: Fire with specific item arguments
@@ -1309,7 +1418,7 @@ local function DupeItems(amount)
                         end)
                     end
                 end
-                task.wait(0.05)
+                wait(0.05)
             end
         end
     end)
@@ -1543,7 +1652,7 @@ local function StartSmartLoop()
     if State.SmartLoopConn then return end
     AddLog("Smart Loop STARTED (Farm → Sell → Upgrade)")
     State.SmartLoopConn = true
-    task.spawn(function()
+    spawn(function()
         while Config.SmartLoop and State.SmartLoopConn do
             if GetCharacter() then
                 EquipBestPickaxe()
@@ -1569,7 +1678,7 @@ local function StartSmartLoop()
                 end
                 TryAutoClaimDaily()
             end
-            task.wait(Config.FarmDelay)
+            wait(Config.FarmDelay)
         end
     end)
 end
@@ -1981,9 +2090,9 @@ local function StartServerHopTimer()
     if State.ServerHopConn then return end
     if Config.ServerHopInterval <= 0 then return end
     State.ServerHopConn = true
-    task.spawn(function()
+    spawn(function()
         while Config.ServerHopInterval > 0 and State.ServerHopConn do
-            task.wait(Config.ServerHopInterval * 60)
+            wait(Config.ServerHopInterval * 60)
             if Config.ServerHopInterval > 0 then DoServerHop() end
         end
     end)
@@ -1997,10 +2106,10 @@ end
 local function StartDropCollectLoop()
     if State.DropCollectConn then return end
     State.DropCollectConn = true
-    task.spawn(function()
+    spawn(function()
         while Config.AutoCollectDrops and State.DropCollectConn do
             CollectNearbyDrops()
-            task.wait(1.5)
+            wait(1.5)
         end
     end)
 end
@@ -3507,7 +3616,7 @@ end)
 CreateButton(miscTab, "🔄 Rejoin Server", Color3.fromRGB(100, 100, 50), function()
     pcall(function()
         LocalPlayer:Kick("Rejoining...")
-        task.wait(1)
+        wait(1)
         game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer)
     end)
 end)
@@ -3676,14 +3785,14 @@ if not guiOk then
         local corner = Instance.new("UICorner")
         corner.CornerRadius = UDim.new(0, 8)
         corner.Parent = errLabel
-        task.delay(15, function() errGui:Destroy() end)
+        delay(15, function() errGui:Destroy() end)
     end)
 end
 
 local lastWebhookTime = 0
-task.spawn(function()
+spawn(function()
     while true do
-        task.wait(1)
+        wait(1)
         pcall(UpdateStats)
         if Config.WebhookEnabled and Config.WebhookStats then
             local now = tick()
@@ -3696,9 +3805,9 @@ task.spawn(function()
 end)
 
 -- Auto-detect shops and rocks periodically
-task.spawn(function()
+spawn(function()
     while true do
-        task.wait(10)
+        wait(10)
         pcall(function()
             local shops = GetAllShops()
             if ShopList then
@@ -3780,9 +3889,9 @@ UserInputService.InputBegan:Connect(function(input, processed)
 end)
 
 -- ========== VISUAL UPDATE LOOP ==========
-task.spawn(function()
+spawn(function()
     while true do
-        task.wait(3)
+        wait(3)
         pcall(function()
             if Config.Tracers then UpdateTracers() end
             if Config.PlayerESP then UpdatePlayerESP() end
@@ -3800,7 +3909,7 @@ LocalPlayer.CharacterAdded:Connect(function(char)
     Humanoid = char:WaitForChild("Humanoid")
     AddLog("Character respawned")
     
-    task.delay(1, function()
+    delay(1, function()
         if Config.SpeedBoost then ApplySpeedBoost() end
         if Config.FlyEnabled then StopFly() StartFly() end
         if Config.InfiniteJump then StopInfiniteJump() StartInfiniteJump() end
@@ -3813,7 +3922,7 @@ end)
 
 LocalPlayer.CharacterRemoving:Connect(function()
     if Config.AutoRespawn then
-        task.delay(3, function()
+        delay(3, function()
             pcall(function()
                 if not LocalPlayer.Character then
                     Exec.LoadCharacter()
@@ -3884,7 +3993,7 @@ pcall(function()
     ss.Thickness = 1
     ss.Transparency = 0.4
     ss.Parent = splashLabel
-    task.delay(3, function()
+    delay(3, function()
         pcall(function()
             local ts = TweenService:Create(splashLabel, TweenInfo.new(0.5), {BackgroundTransparency = 1, TextTransparency = 1})
             ss.Transparency = 1
@@ -3896,7 +4005,7 @@ pcall(function()
 end)
 
 -- Initial remote cache
-task.delay(3, function()
+delay(3, function()
     pcall(CacheRemotes)
 end)
 
