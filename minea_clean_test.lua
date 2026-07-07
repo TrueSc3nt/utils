@@ -3729,6 +3729,8 @@ local function SetupGUIControls()
     end)
 end
 
+local _traceback = (debug and debug.traceback) or function(e) return tostring(e) end
+
 local guiOk, guiErr = xpcall(function()
     BuildGUIShell()
     if not TabFrames or not TabFrames.Farm then
@@ -3748,7 +3750,7 @@ local guiOk, guiErr = xpcall(function()
         Misc = BuildMiscTab,
     }
     for tabName, buildFn in pairs(tabBuilders) do
-        local ok, err = xpcall(buildFn, debug.traceback)
+        local ok, err = xpcall(buildFn, _traceback)
         if not ok then
             error("Tab " .. tabName .. ": " .. tostring(err))
         end
@@ -3759,7 +3761,7 @@ local guiOk, guiErr = xpcall(function()
         if MainFrame then MainFrame.Visible = true end
         State.GUIHidden = false
     end
-end, debug.traceback)
+end, _traceback)
 if not guiOk then
     warn("[Minea Hub] GUI error:", guiErr)
     pcall(function()
