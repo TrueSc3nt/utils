@@ -417,7 +417,7 @@ do
 end
 
 -- ========== UTILITY FUNCTIONS (scope A — keeps main chunk under Luau 200-local limit) ==========
-do
+
 local function GetCharacter()
     Character = LocalPlayer.Character
     if Character then
@@ -1648,7 +1648,7 @@ local function PanicStopAll()
 end
 
 -- ========== SMART LOOP + GUI + RUNTIME (scope B) ==========
-do
+
 local ScreenGui, MainFrame, MinimizedFrame, IsMobile, ToggleGUI
 local GUIWidth, MinimizedSize, MinimizedPosition, HeaderH, ContentTitle
 local TabFrames, TabButtons, TabIndicators, MinimizeBtn, ExpandBtn
@@ -2131,7 +2131,7 @@ local function UpdateStats()
 end
 
 -- ========== GUI CREATION (scope C) ==========
-do
+
 local function BuildGUIShell()
     ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MineaMountainV7"
@@ -3795,7 +3795,6 @@ if not guiOk then
         task.delay(15, function() errGui:Destroy() end)
     end)
 end
-end -- GUI scope C
 
 local lastWebhookTime = 0
 task.spawn(function()
@@ -4017,5 +4016,3 @@ task.delay(3, function()
     pcall(CacheRemotes)
 end)
 
-end -- scope B
-end -- scope A
