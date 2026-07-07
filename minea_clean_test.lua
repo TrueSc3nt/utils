@@ -1555,6 +1555,44 @@ local function ClearChestESP()
     State.ChestESPObjects = {}
 end
 
+-- ========== STOP FUNCTIONS (scope A — needed by PanicStopAll) ==========
+local function StopInfiniteJump()
+    if State.InfiniteJumpConn then
+        State.InfiniteJumpConn:Disconnect()
+        State.InfiniteJumpConn = nil
+    end
+end
+
+local function StopClickTeleport()
+    if State.ClickTPConn then
+        State.ClickTPConn:Disconnect()
+        State.ClickTPConn = nil
+    end
+end
+
+local function StopAntiAFK()
+    if State.AntiAFKConn then
+        State.AntiAFKConn:Disconnect()
+        State.AntiAFKConn = nil
+    end
+end
+
+local function StopWarmthKeeper()
+    if State.WarmthKeeperConn then
+        State.WarmthKeeperConn:Disconnect()
+        State.WarmthKeeperConn = nil
+    end
+end
+
+local function RestoreFullbright()
+    if not State.FullbrightApplied then return end
+    for k, v in pairs(State.SavedLighting) do
+        pcall(function() Lighting[k] = v end)
+    end
+    State.FullbrightApplied = false
+    AddLog("Fullbright OFF")
+end
+
 -- ========== PANIC / STOP ALL ==========
 local function PanicStopAll()
     Config.AutoFarm = false
@@ -1774,13 +1812,6 @@ local function StartInfiniteJump()
     AddLog("Infinite Jump ENABLED")
 end
 
-local function StopInfiniteJump()
-    if State.InfiniteJumpConn then
-        State.InfiniteJumpConn:Disconnect()
-        State.InfiniteJumpConn = nil
-    end
-end
-
 -- ========== CLICK TELEPORT ==========
 local function StartClickTeleport()
     if State.ClickTPConn then return end
@@ -1806,13 +1837,6 @@ local function StartClickTeleport()
         end
     end)
     AddLog("Click TP ENABLED (Ctrl+Click)")
-end
-
-local function StopClickTeleport()
-    if State.ClickTPConn then
-        State.ClickTPConn:Disconnect()
-        State.ClickTPConn = nil
-    end
 end
 
 -- ========== WAYPOINTS ==========
@@ -1844,13 +1868,6 @@ local function StartAntiAFK()
     AddLog("Anti-AFK ENABLED")
 end
 
-local function StopAntiAFK()
-    if State.AntiAFKConn then
-        State.AntiAFKConn:Disconnect()
-        State.AntiAFKConn = nil
-    end
-end
-
 -- ========== WARMTH / STAMINA KEEPER ==========
 local function StartWarmthKeeper()
     if State.WarmthKeeperConn then return end
@@ -1874,13 +1891,6 @@ local function StartWarmthKeeper()
         end)
     end)
     AddLog("Warmth/Stamina Keeper ENABLED")
-end
-
-local function StopWarmthKeeper()
-    if State.WarmthKeeperConn then
-        State.WarmthKeeperConn:Disconnect()
-        State.WarmthKeeperConn = nil
-    end
 end
 
 -- ========== TRACERS ==========
@@ -1995,15 +2005,6 @@ local function ApplyFullbright()
     Lighting.OutdoorAmbient = Color3.fromRGB(180, 180, 180)
     State.FullbrightApplied = true
     AddLog("Fullbright ON")
-end
-
-local function RestoreFullbright()
-    if not State.FullbrightApplied then return end
-    for k, v in pairs(State.SavedLighting) do
-        pcall(function() Lighting[k] = v end)
-    end
-    State.FullbrightApplied = false
-    AddLog("Fullbright OFF")
 end
 
 -- ========== HIDE PLAYERS ==========
