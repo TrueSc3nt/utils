@@ -1,17 +1,17 @@
 --[[
-    ██╗███╗   ██╗██╗████████╗ █████╗ ██╗     ██╗███████╗██████╗ 
-    ██║████╗  ██║██║╚══██╔══╝██╔══██╗██║     ██║██╔════╝██╔══██╗
-    ██║██╔██╗ ██║██║   ██║   ███████║██║     ██║█████╗  ██║  ██║
-    ██║██║╚██╗██║██║   ██║   ██╔══██║██║     ██║██╔══╝  ██║  ██║
-    ██║██║ ╚████║██║   ██║   ██║  ██║███████╗██║███████╗██████╔╝
-    ╚═╝╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝  ╚═╝╚══════╝╚═╝╚══════╝╚═════╝ 
+    ???????   ??????????????? ?????? ???     ?????????????????? 
+    ????????  ??????????????????????????     ???????????????????
+    ????????? ??????   ???   ???????????     ?????????  ???  ???
+    ????????????????   ???   ???????????     ?????????  ???  ???
+    ?????? ?????????   ???   ???  ??????????????????????????????
+    ??????  ????????   ???   ???  ????????????????????????????? 
     
     Mine a Mountain ULTIMATE v7
     Features: Smart Loop, Ore Filter, Remote Spy, ESP+, Waypoints,
               Auto Farm/Sell/Upgrade, Exploits, Config Save, Keybinds
     
     Compatible: Delta, Synapse X/Z, KRNL, Fluxus, Wave, Codex, Solara, Hydrogen
-    Universal executor compatibility layer — auto-detects APIs per executor
+    Universal executor compatibility layer - auto-detects APIs per executor
 ]]
 
 -- ========== SERVICES ==========
@@ -120,7 +120,7 @@ local Config = {
     PanicEnabled = true,
 }
 
--- GUI theme (main chunk — shared by AddLog + GUI builders)
+-- GUI theme (main chunk - shared by AddLog + GUI builders)
 local Theme = {
     Bg = Color3.fromRGB(15, 15, 17),
     Panel = Color3.fromRGB(22, 22, 26),
@@ -348,7 +348,7 @@ do
         end)
     end
 
-    -- Single __namecall chain (anti-detection + remote spy) — avoids double-hook crashes
+    -- Single __namecall chain (anti-detection + remote spy) - avoids double-hook crashes
     local NamecallHooks = {}
     local OldNamecall = nil
     local NamecallInstalled = false
@@ -388,7 +388,7 @@ end
 -- ========== ANTI-DETECTION + REMOTE SPY (unified hook) ==========
 local RemoteSpyActive = false
 
--- WalkSpeed / JumpPower hooks (separate — optional, wrapped in pcall)
+-- WalkSpeed / JumpPower hooks (separate - optional, wrapped in pcall)
 do
     if Exec.HasHookMeta and Exec.HasNewCClosure then
         pcall(function()
@@ -1461,15 +1461,18 @@ local function StartFly()
     AddLog("Fly ENABLED")
     
     -- Create fly body
+    pcall(function()
     flyBody = Instance.new("BodyVelocity")
     flyBody.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
     flyBody.Velocity = Vector3.new(0, 0, 0)
     flyBody.Parent = HumanoidRootPart
-    
+    end)
+    pcall(function()
     flySpeed = Instance.new("BodyGyro")
     flySpeed.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
     flySpeed.P = 9e4
     flySpeed.Parent = HumanoidRootPart
+    end)
     
     State.FlyConn = RunService.RenderStepped:Connect(function()
         if not Config.FlyEnabled then return end
@@ -1526,7 +1529,7 @@ local function ApplySpeedBoost()
     end
 end
 
--- ========== CLEAR ESP / TRACERS (scope A — needed by PanicStopAll) ==========
+-- ========== CLEAR ESP / TRACERS (scope A - needed by PanicStopAll) ==========
 local function ClearTracers()
     for _, obj in ipairs(State.TracerObjects) do
         pcall(function() obj:Destroy() end)
@@ -1548,7 +1551,7 @@ local function ClearChestESP()
     State.ChestESPObjects = {}
 end
 
--- ========== STOP FUNCTIONS (scope A — needed by PanicStopAll) ==========
+-- ========== STOP FUNCTIONS (scope A - needed by PanicStopAll) ==========
 local function StopInfiniteJump()
     if State.InfiniteJumpConn then
         State.InfiniteJumpConn:Disconnect()
@@ -1650,7 +1653,7 @@ IsMobile = UserInputService.TouchEnabled
 
 local function StartSmartLoop()
     if State.SmartLoopConn then return end
-    AddLog("Smart Loop STARTED (Farm → Sell → Upgrade)")
+    AddLog("Smart Loop STARTED (Farm -> Sell -> Upgrade)")
     State.SmartLoopConn = true
     spawn(function()
         while Config.SmartLoop and State.SmartLoopConn do
@@ -1820,12 +1823,12 @@ local function StartClickTeleport()
                 params.FilterType = Enum.RaycastFilterType.Exclude
             end)
             if not usedExclude then
-                params.FilterType = Enum.RaycastFilterType.Blacklist
+                params.FilterType = Enum.RaycastFilterType.Exclude
             end
             local hit = Workspace:Raycast(ray.Origin, ray.Direction * 2000, params)
             if hit then
                 TeleportTo(hit.Position)
-                AddLog("Click TP → " .. math.floor(hit.Position.X) .. "," .. math.floor(hit.Position.Y))
+                AddLog("Click TP -> " .. math.floor(hit.Position.X) .. "," .. math.floor(hit.Position.Y))
             end
         end
     end)
@@ -2234,7 +2237,7 @@ local SubtitleLabel = Instance.new("TextLabel")
 SubtitleLabel.Size = UDim2.new(0.55, 0, 0, 16)
 SubtitleLabel.Position = UDim2.new(0.28, 0, 0, 32)
 SubtitleLabel.BackgroundTransparency = 1
-SubtitleLabel.Text = "Mine a Mountain · " .. os.date("%A, %B %d %Y")
+SubtitleLabel.Text = "Mine a Mountain * " .. os.date("%A, %B %d %Y")
 SubtitleLabel.TextColor3 = Theme.SubText
 SubtitleLabel.Font = Enum.Font.Gotham
 SubtitleLabel.TextSize = 10
@@ -2248,7 +2251,7 @@ local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, IsMobile and 40 or 32, 0, IsMobile and 40 or 32)
 CloseBtn.Position = UDim2.new(1, IsMobile and -46 or -42, 0.5, IsMobile and -20 or -16)
 CloseBtn.BackgroundTransparency = 1
-CloseBtn.Text = "✕"
+CloseBtn.Text = "x"
 CloseBtn.TextColor3 = Theme.SubText
 CloseBtn.Font = Enum.Font.GothamBold
 CloseBtn.TextSize = 16
@@ -2267,7 +2270,7 @@ local MinimizeBtnSmall = Instance.new("TextButton")
 MinimizeBtnSmall.Size = UDim2.new(0, IsMobile and 40 or 32, 0, IsMobile and 40 or 32)
 MinimizeBtnSmall.Position = UDim2.new(1, IsMobile and -90 or -78, 0.5, IsMobile and -20 or -16)
 MinimizeBtnSmall.BackgroundTransparency = 1
-MinimizeBtnSmall.Text = "—"
+MinimizeBtnSmall.Text = "-"
 MinimizeBtnSmall.TextColor3 = Theme.SubText
 MinimizeBtnSmall.Font = Enum.Font.GothamBold
 MinimizeBtnSmall.TextSize = 18
@@ -2338,12 +2341,12 @@ ContentArea.Parent = MainFrame
 
 Tabs = {"Farm", "Sell", "ESP", "Exploit", "Tools", "Misc"}
 TabInfo = {
-    Farm = {Icon = "⚙", Title = "General", Sub = "Auto mine & farm"},
-    Sell = {Icon = "⚡", Title = "Automatic", Sub = "Sell & upgrades"},
-    ESP = {Icon = "👁", Title = "Visuals", Sub = "ESP & tracers"},
-    Exploit = {Icon = "🎭", Title = "Exploits", Sub = "Movement & dupes"},
-    Tools = {Icon = "🔧", Title = "Tools", Sub = "Spy & waypoints"},
-    Misc = {Icon = "⚙", Title = "Settings", Sub = "Config & misc"},
+    Farm = {Icon = "*", Title = "General", Sub = "Auto mine & farm"},
+    Sell = {Icon = "!", Title = "Automatic", Sub = "Sell & upgrades"},
+    ESP = {Icon = "i", Title = "Visuals", Sub = "ESP & tracers"},
+    Exploit = {Icon = ">", Title = "Exploits", Sub = "Movement & dupes"},
+    Tools = {Icon = "+", Title = "Tools", Sub = "Spy & waypoints"},
+    Misc = {Icon = "*", Title = "Settings", Sub = "Config & misc"},
 }
 TabButtons = {}
 TabFrames = {}
@@ -2446,7 +2449,7 @@ for i, tabName in ipairs(Tabs) do
     TabFrames[tabName] = tabFrame
 end
 
--- Mobile: bottom tab bar (sidebar hidden — no room on phone screens)
+-- Mobile: bottom tab bar (sidebar hidden - no room on phone screens)
 local BottomBar
 if IsMobile then
     BottomBar = Instance.new("Frame")
@@ -2553,7 +2556,7 @@ do
     MiniLabel.Size = UDim2.new(0.65, 0, 1, 0)
     MiniLabel.Position = UDim2.new(0.08, 0, 0, 0)
     MiniLabel.BackgroundTransparency = 1
-    MiniLabel.Text = "⛏ Minea Hub"
+    MiniLabel.Text = "> Minea Hub"
     MiniLabel.TextColor3 = Theme.Accent
     MiniLabel.Font = Enum.Font.GothamBold
     MiniLabel.TextSize = 12
@@ -2565,7 +2568,7 @@ ExpandBtn = Instance.new("TextButton")
 ExpandBtn.Size = UDim2.new(0, 36, 0, 26)
 ExpandBtn.Position = UDim2.new(1, -42, 0.5, -13)
 ExpandBtn.BackgroundColor3 = Theme.Accent
-ExpandBtn.Text = "□"
+ExpandBtn.Text = "[]"
 ExpandBtn.TextColor3 = Color3.fromRGB(10, 10, 12)
 ExpandBtn.Font = Enum.Font.GothamBold
 ExpandBtn.TextSize = 14
@@ -2615,7 +2618,7 @@ local function CreateSectionHeader(parent, title)
     keyIcon.Size = UDim2.new(0, 18, 0, 18)
     keyIcon.Position = UDim2.new(0, 0, 0, 8)
     keyIcon.BackgroundTransparency = 1
-    keyIcon.Text = "🔑"
+    keyIcon.Text = "#"
     keyIcon.TextSize = 12
     keyIcon.Parent = wrap
 
@@ -2668,7 +2671,7 @@ local function CreateToggle(parent, name, default, callback)
     check.Position = IsMobile and UDim2.new(1, -40, 0.5, -16) or UDim2.new(1, -30, 0.5, -10)
     check.BackgroundColor3 = default and Theme.Accent or Theme.Input
     check.BorderSizePixel = 0
-    check.Text = default and "✓" or ""
+    check.Text = default and "v" or ""
     check.TextColor3 = Color3.fromRGB(10, 10, 12)
     check.Font = Enum.Font.GothamBold
     check.TextSize = 14
@@ -2681,7 +2684,7 @@ local function CreateToggle(parent, name, default, callback)
     check.MouseButton1Click:Connect(function()
         toggled = not toggled
         check.BackgroundColor3 = toggled and Theme.Accent or Theme.Input
-        check.Text = toggled and "✓" or ""
+        check.Text = toggled and "v" or ""
         callback(toggled)
     end)
     return frame, check
@@ -2882,7 +2885,7 @@ local function BuildFarmTab()
 local farmTab = TabFrames["Farm"]
 ResetLayoutOrder()
 
-CreateSectionHeader(farmTab, "📊 STATS")
+CreateSectionHeader(farmTab, "? STATS")
 layoutOrder = layoutOrder + 1
 local StatsFrame = Instance.new("Frame")
 StatsFrame.Size = UDim2.new(1, 0, 0, 52)
@@ -2928,9 +2931,9 @@ CashLabel.TextSize = IsMobile and 9 or 10
 CashLabel.TextXAlignment = Enum.TextXAlignment.Left
 CashLabel.Parent = StatsFrame
 
-CreateSectionHeader(farmTab, "🔄 SMART LOOP")
+CreateSectionHeader(farmTab, "R SMART LOOP")
 
-CreateToggle(farmTab, "Smart Loop (Farm→Sell→Upgrade)", false, function(val)
+CreateToggle(farmTab, "Smart Loop (Farm->Sell->Upgrade)", false, function(val)
     Config.SmartLoop = val
     if val then StartSmartLoop() else StopSmartLoop() end
 end)
@@ -2960,7 +2963,7 @@ CreateToggle(farmTab, "Tween Teleport", false, function(val)
     Config.TweenTeleport = val
 end)
 
-CreateSectionHeader(farmTab, "🎯 ORE FILTER")
+CreateSectionHeader(farmTab, "? ORE FILTER")
 
 CreateToggle(farmTab, "Enable Ore Filter", false, function(val)
     Config.OreFilterEnabled = val
@@ -2974,7 +2977,7 @@ CreateInput(farmTab, "Blacklist Ores", Config.OreBlacklist, function(text)
     Config.OreBlacklist = text
 end)
 
-CreateSectionHeader(farmTab, "⛏ AUTO FARM")
+CreateSectionHeader(farmTab, "> AUTO FARM")
 
 CreateToggle(farmTab, "Auto Farm Rocks/Crystals", false, function(val)
     Config.AutoFarm = val
@@ -2999,12 +3002,12 @@ CreateSlider(farmTab, "Farm Delay", 1, 100, 5, function(val)
     Config.FarmDelay = val / 100
 end)
 
-CreateButton(farmTab, "🔍 Scan Rocks Now", Color3.fromRGB(40, 80, 160), function()
+CreateButton(farmTab, "? Scan Rocks Now", Color3.fromRGB(40, 80, 160), function()
     local rocks = GetAllRocks()
     AddLog("Found " .. #rocks .. " rocks/crystals")
 end)
 
-CreateButton(farmTab, "⛏ Mine Nearest Rock", Color3.fromRGB(40, 120, 60), function()
+CreateButton(farmTab, "> Mine Nearest Rock", Color3.fromRGB(40, 120, 60), function()
     local rocks = GetAllRocks()
     if #rocks > 0 then
         MineRock(rocks[1])
@@ -3013,7 +3016,7 @@ CreateButton(farmTab, "⛏ Mine Nearest Rock", Color3.fromRGB(40, 120, 60), func
     end
 end)
 
-CreateButton(farmTab, "⚡ Cache Remotes", Color3.fromRGB(100, 50, 150), function()
+CreateButton(farmTab, "! Cache Remotes", Color3.fromRGB(100, 50, 150), function()
     CacheRemotes()
 end)
 end
@@ -3023,7 +3026,7 @@ local function BuildSellTab()
 local sellTab = TabFrames["Sell"]
 ResetLayoutOrder()
 
-CreateSectionHeader(sellTab, "💰 AUTO SELL")
+CreateSectionHeader(sellTab, "? AUTO SELL")
 
 CreateToggle(sellTab, "Sell When Backpack Full", true, function(val)
     Config.SellWhenFull = val
@@ -3046,7 +3049,7 @@ CreateSlider(sellTab, "Sell Delay", 1, 50, 3, function(val)
     Config.SellDelay = val / 10
 end)
 
-CreateButton(sellTab, "💰 Sell at Nearest Shop", Color3.fromRGB(140, 100, 30), function()
+CreateButton(sellTab, "? Sell at Nearest Shop", Color3.fromRGB(140, 100, 30), function()
     local shops = GetAllShops()
     if #shops > 0 then
         SellItems(shops[1])
@@ -3055,7 +3058,7 @@ CreateButton(sellTab, "💰 Sell at Nearest Shop", Color3.fromRGB(140, 100, 30),
     end
 end)
 
-CreateButton(sellTab, "🏠 Go Home / Teleport to Shop", Color3.fromRGB(80, 50, 150), function()
+CreateButton(sellTab, "H Go Home / Teleport to Shop", Color3.fromRGB(80, 50, 150), function()
     local shops = GetAllShops()
     if #shops > 0 then
         TeleportTo(shops[1].Part.Position)
@@ -3063,7 +3066,7 @@ CreateButton(sellTab, "🏠 Go Home / Teleport to Shop", Color3.fromRGB(80, 50, 
     end
 end)
 
-CreateSectionHeader(sellTab, "🛒 AUTO BUY UPGRADES")
+CreateSectionHeader(sellTab, "? AUTO BUY UPGRADES")
 
 CreateToggle(sellTab, "Auto Buy Pickaxe", false, function(val) Config.AutoBuyPickaxe = val end)
 CreateToggle(sellTab, "Auto Buy Backpack", false, function(val) Config.AutoBuyBackpack = val end)
@@ -3080,19 +3083,19 @@ CreateToggle(sellTab, "Auto Claim Daily/Code", false, function(val) Config.AutoC
 
 CreateInput(sellTab, "Promo Code", "", function(text) Config.PromoCode = text end)
 
-CreateButton(sellTab, "🎁 Claim Daily Now", Color3.fromRGB(180, 130, 40), function()
+CreateButton(sellTab, "? Claim Daily Now", Color3.fromRGB(180, 130, 40), function()
     TryAutoClaimDaily()
     AddLog("Claimed daily rewards")
 end)
 
-CreateSectionHeader(sellTab, "🔄 AUTO UPGRADE")
+CreateSectionHeader(sellTab, "R AUTO UPGRADE")
 
 CreateToggle(sellTab, "Auto Upgrade", false, function(val)
     Config.AutoUpgrade = val
     if val then StartAutoUpgrade() else StopAutoUpgrade() end
 end)
 
-CreateButton(sellTab, "⬆ Upgrade All", Color3.fromRGB(50, 130, 180), function()
+CreateButton(sellTab, "? Upgrade All", Color3.fromRGB(50, 130, 180), function()
     FireRemote("upgrade")
     FireRemote("buy")
     FireRemote("purchase")
@@ -3103,7 +3106,7 @@ CreateButton(sellTab, "⬆ Upgrade All", Color3.fromRGB(50, 130, 180), function(
     AddLog("Fired upgrade remotes")
 end)
 
-CreateSectionHeader(sellTab, "🏪 DETECTED SHOPS")
+CreateSectionHeader(sellTab, "? DETECTED SHOPS")
 
 local shopListFrame = Instance.new("ScrollingFrame")
 ShopList = shopListFrame
@@ -3142,7 +3145,7 @@ local function BuildESPTab()
 local espTab = TabFrames["ESP"]
 ResetLayoutOrder()
 
-CreateSectionHeader(espTab, "👁 ESP / VISUALS")
+CreateSectionHeader(espTab, "i ESP / VISUALS")
 
 CreateToggle(espTab, "Crystal / Rock ESP", false, function(val)
     Config.ESPEnabled = val
@@ -3174,7 +3177,7 @@ CreateToggle(espTab, "Hide Other Players", false, function(val)
     ApplyHidePlayers()
 end)
 
-CreateButton(espTab, "🔄 Refresh ESP", Color3.fromRGB(50, 90, 160), function()
+CreateButton(espTab, "R Refresh ESP", Color3.fromRGB(50, 90, 160), function()
     if Config.ESPEnabled then
         CreateESP()
     else
@@ -3182,11 +3185,11 @@ CreateButton(espTab, "🔄 Refresh ESP", Color3.fromRGB(50, 90, 160), function()
     end
 end)
 
-CreateButton(espTab, "❌ Clear ESP", Color3.fromRGB(150, 50, 50), function()
+CreateButton(espTab, "? Clear ESP", Color3.fromRGB(150, 50, 50), function()
     StopESP()
 end)
 
-CreateSectionHeader(espTab, "🪨 DETECTED ROCKS")
+CreateSectionHeader(espTab, "? DETECTED ROCKS")
 
 local rockListFrame = Instance.new("ScrollingFrame")
 RockList = rockListFrame
@@ -3225,7 +3228,7 @@ local function BuildExploitTab()
 local exploitTab = TabFrames["Exploit"]
 ResetLayoutOrder()
 
-CreateSectionHeader(exploitTab, "🎒 EXPLOITS")
+CreateSectionHeader(exploitTab, "? EXPLOITS")
 
 CreateToggle(exploitTab, "Unlimited Backpack", false, function(val)
     Config.UnlimitedBackpack = val
@@ -3260,7 +3263,7 @@ CreateToggle(exploitTab, "Stamina Keeper", false, function(val)
     if val or Config.WarmthKeeper then StartWarmthKeeper() else StopWarmthKeeper() end
 end)
 
-CreateSectionHeader(exploitTab, "🎭 MOVEMENT")
+CreateSectionHeader(exploitTab, "> MOVEMENT")
 
 CreateToggle(exploitTab, "Speed Boost", false, function(val)
     Config.SpeedBoost = val
@@ -3296,7 +3299,7 @@ CreateToggle(exploitTab, "Click Teleport (Ctrl+Click)", false, function(val)
     if val then StartClickTeleport() else StopClickTeleport() end
 end)
 
-CreateSectionHeader(exploitTab, "📦 ITEM DUPE")
+CreateSectionHeader(exploitTab, "? ITEM DUPE")
 
 local dupeInput, dupeTextBox
 dupeInput, dupeTextBox = CreateInput(exploitTab, "Dupe Qty", "1", function(text)
@@ -3306,17 +3309,17 @@ dupeInput, dupeTextBox = CreateInput(exploitTab, "Dupe Qty", "1", function(text)
     end
 end)
 
-CreateButton(exploitTab, "📦 Dupe Items (" .. Config.DupeAmount .. "x)", Color3.fromRGB(180, 60, 180), function()
+CreateButton(exploitTab, "? Dupe Items (" .. Config.DupeAmount .. "x)", Color3.fromRGB(180, 60, 180), function()
     DupeItems(Config.DupeAmount)
 end)
 
-CreateButton(exploitTab, "📦 Drop Dupe Method", Color3.fromRGB(140, 50, 140), function()
+CreateButton(exploitTab, "? Drop Dupe Method", Color3.fromRGB(140, 50, 140), function()
     DupeViaDrop()
 end)
 
-CreateSectionHeader(exploitTab, "📡 REMOTE EXPLOITS")
+CreateSectionHeader(exploitTab, "? REMOTE EXPLOITS")
 
-CreateButton(exploitTab, "🔥 Fire All Mine Remotes", Color3.fromRGB(160, 40, 40), function()
+CreateButton(exploitTab, "? Fire All Mine Remotes", Color3.fromRGB(160, 40, 40), function()
     FireRemote("mine")
     FireRemote("dig")
     FireRemote("harvest")
@@ -3325,7 +3328,7 @@ CreateButton(exploitTab, "🔥 Fire All Mine Remotes", Color3.fromRGB(160, 40, 4
     AddLog("Fired mine remotes")
 end)
 
-CreateButton(exploitTab, "💰 Fire All Sell Remotes", Color3.fromRGB(40, 140, 40), function()
+CreateButton(exploitTab, "? Fire All Sell Remotes", Color3.fromRGB(40, 140, 40), function()
     FireRemote("sell")
     FireRemote("sellall")
     FireRemote("cash")
@@ -3334,7 +3337,7 @@ CreateButton(exploitTab, "💰 Fire All Sell Remotes", Color3.fromRGB(40, 140, 4
     AddLog("Fired sell remotes")
 end)
 
-CreateButton(exploitTab, "⬆ Fire All Upgrade Remotes", Color3.fromRGB(40, 100, 160), function()
+CreateButton(exploitTab, "? Fire All Upgrade Remotes", Color3.fromRGB(40, 100, 160), function()
     FireRemote("upgrade")
     FireRemote("buy")
     FireRemote("purchase")
@@ -3344,7 +3347,7 @@ CreateButton(exploitTab, "⬆ Fire All Upgrade Remotes", Color3.fromRGB(40, 100,
     AddLog("Fired upgrade remotes")
 end)
 
-CreateButton(exploitTab, "🎲 Fire All Luck Remotes", Color3.fromRGB(140, 140, 40), function()
+CreateButton(exploitTab, "? Fire All Luck Remotes", Color3.fromRGB(140, 140, 40), function()
     FireRemote("luck")
     FireRemote("lucky")
     FireRemote("fortune")
@@ -3352,7 +3355,7 @@ CreateButton(exploitTab, "🎲 Fire All Luck Remotes", Color3.fromRGB(140, 140, 
     AddLog("Fired luck remotes")
 end)
 
-CreateButton(exploitTab, "💣 Fire ALL Remotes (Nuke)", Color3.fromRGB(200, 50, 50), function()
+CreateButton(exploitTab, "? Fire ALL Remotes (Nuke)", Color3.fromRGB(200, 50, 50), function()
     for _, remote in ipairs(State.RemoteCache) do
         pcall(function()
             if remote.Type == "RemoteEvent" then
@@ -3371,7 +3374,7 @@ local function BuildToolsTab()
 local toolsTab = TabFrames["Tools"]
 ResetLayoutOrder()
 
-CreateSectionHeader(toolsTab, "📡 REMOTE SPY")
+CreateSectionHeader(toolsTab, "? REMOTE SPY")
 
 CreateToggle(toolsTab, "Remote Spy (Log FireServer)", false, function(val)
     Config.RemoteSpy = val
@@ -3408,12 +3411,12 @@ spyPad.PaddingLeft = UDim.new(0, 2)
 spyPad.PaddingRight = UDim.new(0, 2)
 spyPad.Parent = RemoteSpyList
 
-CreateButton(toolsTab, "🗑 Clear Spy Log", Color3.fromRGB(100, 50, 50), function()
+CreateButton(toolsTab, "? Clear Spy Log", Color3.fromRGB(100, 50, 50), function()
     State.RemoteSpyLogs = {}
     if RemoteSpyList then ClearScrollList(RemoteSpyList) end
 end)
 
-CreateSectionHeader(toolsTab, "🎯 CUSTOM REMOTE")
+CreateSectionHeader(toolsTab, "? CUSTOM REMOTE")
 
 CreateInput(toolsTab, "Remote Name", "", function(text)
     Config.CustomRemoteName = text
@@ -3423,33 +3426,33 @@ CreateInput(toolsTab, "Args (comma separated)", "", function(text)
     Config.CustomRemoteArgs = text
 end)
 
-CreateButton(toolsTab, "🚀 Fire Custom Remote", Color3.fromRGB(160, 80, 40), function()
+CreateButton(toolsTab, "? Fire Custom Remote", Color3.fromRGB(160, 80, 40), function()
     FireCustomRemote()
 end)
 
-CreateSectionHeader(toolsTab, "📍 WAYPOINTS")
+CreateSectionHeader(toolsTab, "? WAYPOINTS")
 
-CreateButton(toolsTab, "💾 Save: Shop", Color3.fromRGB(50, 100, 160), function()
+CreateButton(toolsTab, "? Save: Shop", Color3.fromRGB(50, 100, 160), function()
     SaveWaypoint("Shop")
 end)
 
-CreateButton(toolsTab, "💾 Save: Farm Spot", Color3.fromRGB(50, 130, 80), function()
+CreateButton(toolsTab, "? Save: Farm Spot", Color3.fromRGB(50, 130, 80), function()
     SaveWaypoint("Farm")
 end)
 
-CreateButton(toolsTab, "💾 Save: Spawn", Color3.fromRGB(80, 80, 140), function()
+CreateButton(toolsTab, "? Save: Spawn", Color3.fromRGB(80, 80, 140), function()
     SaveWaypoint("Spawn")
 end)
 
-CreateButton(toolsTab, "📍 TP → Shop", Color3.fromRGB(40, 90, 140), function()
+CreateButton(toolsTab, "? TP -> Shop", Color3.fromRGB(40, 90, 140), function()
     TeleportToWaypoint("Shop")
 end)
 
-CreateButton(toolsTab, "📍 TP → Farm Spot", Color3.fromRGB(40, 120, 70), function()
+CreateButton(toolsTab, "? TP -> Farm Spot", Color3.fromRGB(40, 120, 70), function()
     TeleportToWaypoint("Farm")
 end)
 
-CreateButton(toolsTab, "📍 TP → Spawn", Color3.fromRGB(70, 70, 130), function()
+CreateButton(toolsTab, "? TP -> Spawn", Color3.fromRGB(70, 70, 130), function()
     TeleportToWaypoint("Spawn")
 end)
 end
@@ -3459,7 +3462,7 @@ local function BuildMiscTab()
 local miscTab = TabFrames["Misc"]
 ResetLayoutOrder()
 
-CreateSectionHeader(miscTab, "⚙ SETTINGS")
+CreateSectionHeader(miscTab, "* SETTINGS")
 
 CreateToggle(miscTab, "Anti-AFK", false, function(val)
     Config.AntiAFK = val
@@ -3481,23 +3484,23 @@ CreateSlider(miscTab, "Server Hop (min, 0=off)", 0, 120, 0, function(val)
     if val > 0 then StartServerHopTimer() end
 end)
 
-CreateButton(miscTab, "🌐 Server Hop Now", Color3.fromRGB(60, 100, 160), function()
+CreateButton(miscTab, "W Server Hop Now", Color3.fromRGB(60, 100, 160), function()
     DoServerHop()
 end)
 
-CreateButton(miscTab, "💾 Save Config", Color3.fromRGB(50, 120, 80), function()
+CreateButton(miscTab, "? Save Config", Color3.fromRGB(50, 120, 80), function()
     SaveConfig()
 end)
 
-CreateButton(miscTab, "📂 Load Config", Color3.fromRGB(80, 100, 160), function()
+CreateButton(miscTab, "? Load Config", Color3.fromRGB(80, 100, 160), function()
     LoadConfig()
 end)
 
-CreateButton(miscTab, "🚨 PANIC (Stop All)", Color3.fromRGB(200, 40, 40), function()
+CreateButton(miscTab, "? PANIC (Stop All)", Color3.fromRGB(200, 40, 40), function()
     PanicStopAll()
 end)
 
-CreateSectionHeader(miscTab, "⌨ KEYBINDS")
+CreateSectionHeader(miscTab, "? KEYBINDS")
 layoutOrder = layoutOrder + 1
 local keybindInfo = Instance.new("TextLabel")
 keybindInfo.Size = UDim2.new(1, 0, 0, IsMobile and 56 or 70)
@@ -3517,7 +3520,7 @@ local kbCorner = Instance.new("UICorner")
 kbCorner.CornerRadius = UDim.new(0, 6)
 kbCorner.Parent = keybindInfo
 
-CreateSectionHeader(miscTab, "📋 LOG")
+CreateSectionHeader(miscTab, "? LOG")
 
 local logListFrame = Instance.new("ScrollingFrame")
 LogList = logListFrame
@@ -3548,7 +3551,7 @@ logPad.PaddingLeft = UDim.new(0, 3)
 logPad.PaddingRight = UDim.new(0, 3)
 logPad.Parent = LogList
 
-CreateSectionHeader(miscTab, "🔗 DISCORD WEBHOOK")
+CreateSectionHeader(miscTab, "? DISCORD WEBHOOK")
 
 CreateToggle(miscTab, "Enable Webhook", false, function(val)
     Config.WebhookEnabled = val
@@ -3570,19 +3573,19 @@ CreateToggle(miscTab, "Stats Logs", true, function(val)
     Config.WebhookStats = val
 end)
 
-CreateButton(miscTab, "📨 Send Stats Now", Color3.fromRGB(50, 90, 160), function()
+CreateButton(miscTab, "! Send Stats Now", Color3.fromRGB(50, 90, 160), function()
     SendStatsLog()
     AddLog("Sent stats to webhook")
 end)
 
-CreateButton(miscTab, "🧪 Test Webhook", Color3.fromRGB(90, 60, 140), function()
-    SendWebhook({content = "**[Minea Mountain v7]** Webhook test successful! ✅"})
+CreateButton(miscTab, "T Test Webhook", Color3.fromRGB(90, 60, 140), function()
+    SendWebhook({content = "**[Minea Mountain v7]** Webhook test successful! ?"})
     AddLog("Tested webhook")
 end)
 
-CreateSectionHeader(miscTab, "🔧 UTILITIES")
+CreateSectionHeader(miscTab, "+ UTILITIES")
 
-CreateButton(miscTab, "🏠 Teleport to Spawn", Color3.fromRGB(60, 90, 140), function()
+CreateButton(miscTab, "H Teleport to Spawn", Color3.fromRGB(60, 90, 140), function()
     local spawns = Workspace:FindFirstChild("SpawnLocation") or Workspace:FindFirstChild("Spawns") or Workspace:FindFirstChild("Lobby")
     if spawns then
         if spawns:IsA("BasePart") then
@@ -3596,7 +3599,7 @@ CreateButton(miscTab, "🏠 Teleport to Spawn", Color3.fromRGB(60, 90, 140), fun
     end
 end)
 
-CreateButton(miscTab, "🏔 Teleport to Mountain Top", Color3.fromRGB(100, 60, 140), function()
+CreateButton(miscTab, "M Teleport to Mountain Top", Color3.fromRGB(100, 60, 140), function()
     if GetCharacter() then
         local highestY = HumanoidRootPart.Position.Y
         local highestPart = nil
@@ -3613,7 +3616,7 @@ CreateButton(miscTab, "🏔 Teleport to Mountain Top", Color3.fromRGB(100, 60, 1
     end
 end)
 
-CreateButton(miscTab, "🔄 Rejoin Server", Color3.fromRGB(100, 100, 50), function()
+CreateButton(miscTab, "R Rejoin Server", Color3.fromRGB(100, 100, 50), function()
     pcall(function()
         LocalPlayer:Kick("Rejoining...")
         wait(1)
@@ -3621,14 +3624,14 @@ CreateButton(miscTab, "🔄 Rejoin Server", Color3.fromRGB(100, 100, 50), functi
     end)
 end)
 
-CreateSectionHeader(miscTab, "ℹ INFO")
+CreateSectionHeader(miscTab, "? INFO")
 
 layoutOrder = layoutOrder + 1
 local infoLabel = Instance.new("TextLabel")
 infoLabel.Size = UDim2.new(1, 0, 0, 50)
 infoLabel.BackgroundColor3 = Theme.Panel
 infoLabel.BackgroundTransparency = 0.1
-infoLabel.Text = "Minea Hub v7 | " .. Exec.Name .. "\nSmart Loop · Remote Spy · ESP+ · Waypoints"
+infoLabel.Text = "Minea Hub v7 | " .. Exec.Name .. "\nSmart Loop * Remote Spy * ESP+ * Waypoints"
 infoLabel.TextColor3 = Theme.SubText
 infoLabel.Font = Enum.Font.Gotham
 infoLabel.TextSize = IsMobile and 9 or 10
@@ -3728,7 +3731,7 @@ local _traceback = (debug and debug.traceback) or function(e) return tostring(e)
 local guiOk, guiErr = xpcall(function()
     BuildGUIShell()
     if not TabFrames or not TabFrames.Farm then
-        error("GUI shell failed — tab frames missing")
+        error("GUI shell failed - tab frames missing")
     end
     for tabName, btn in pairs(TabButtons or {}) do
         btn.MouseButton1Click:Connect(function()
@@ -3864,7 +3867,7 @@ spawn(function()
     end
 end)
 
--- ========== KEYBINDS (desktop only — mobile uses M button) ==========
+-- ========== KEYBINDS (desktop only - mobile uses M button) ==========
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed or IsMobile then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
@@ -3983,7 +3986,7 @@ pcall(function()
     splashLabel.TextColor3 = Theme.Accent
     splashLabel.Font = Enum.Font.GothamBold
     splashLabel.TextSize = 14
-    splashLabel.Text = "Minea Hub v7 — Loaded"
+    splashLabel.Text = "Minea Hub v7 - Loaded"
     splashLabel.Parent = splash
     local sc = Instance.new("UICorner")
     sc.CornerRadius = UDim.new(0, 8)
