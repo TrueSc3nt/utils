@@ -120,6 +120,19 @@ local Config = {
     PanicEnabled = true,
 }
 
+-- GUI theme (main chunk — shared by AddLog + GUI builders)
+local Theme = {
+    Bg = Color3.fromRGB(15, 15, 17),
+    Panel = Color3.fromRGB(22, 22, 26),
+    Sidebar = Color3.fromRGB(12, 12, 14),
+    Input = Color3.fromRGB(30, 30, 34),
+    Accent = Color3.fromRGB(0, 235, 120),
+    AccentDark = Color3.fromRGB(0, 170, 88),
+    Text = Color3.fromRGB(248, 248, 250),
+    SubText = Color3.fromRGB(125, 125, 132),
+    Muted = Color3.fromRGB(75, 75, 82),
+}
+
 -- ========== GUI REFERENCES (forward-declared) ==========
 local LogList, ShopList, RockList, RemoteSpyList, CashLabel, StatsLabel
 
@@ -128,6 +141,7 @@ local State = {
     FarmConnection = nil,
     SellConnection = nil,
     ESPConnections = {},
+    ESPRefreshThread = nil,
     AntiDamageConn = nil,
     NoclipConn = nil,
     FlyConn = nil,
@@ -342,7 +356,6 @@ do
     function Exec.OnNamecall(fn)
         table.insert(NamecallHooks, fn)
         if not NamecallInstalled and Exec.HasHookMeta then
-            NamecallInstalled = true
             pcall(function()
                 OldNamecall = hookmetamethod(game, "__namecall", Exec.SafeCClosure(function(self, ...)
                     local method = Exec.GetNamecallMethod()
@@ -353,6 +366,7 @@ do
                     end
                     return OldNamecall(self, ...)
                 end))
+                NamecallInstalled = true
             end)
         end
     end
@@ -369,36 +383,10 @@ do
     HasCheckCaller = Exec.HasCheckCaller
     HasProtectGui = true
     IsExecutor = getgenv ~= nil
-    GetGEnv = genv
 end
 
 -- ========== ANTI-DETECTION + REMOTE SPY (unified hook) ==========
 local RemoteSpyActive = false
-
-pcall(function()
-    if Exec.HasHookMeta and Exec.GetNamecallMethod then
-        Exec.OnNamecall(function(self, method, args)
-            -- Remote spy
-            if RemoteSpyActive and (method == "FireServer" or method == "InvokeServer") then
-                if self:IsA("RemoteEvent") or self:IsA("RemoteFunction") then
-                    pcall(function() AddRemoteSpyLog(self.Name, method, args) end)
-                end
-            end
-            -- Anti kick
-            if method == "Kick" and self == LocalPlayer then
-                return true, nil
-            end
-            -- Block fake anti-cheat services
-            if method == "FindService" then
-                local svc = args[1]
-                if svc == "ExploitService" or svc == "CheatService" then
-                    return true, nil
-                end
-            end
-            return false
-        end)
-    end
-end)
 
 -- WalkSpeed / JumpPower hooks (separate — optional, wrapped in pcall)
 do
@@ -418,6 +406,9 @@ do
                     if key == "WalkSpeed" and Config.SpeedBoost then
                         return OldNewIndex(self, key, Config.WalkSpeed)
                     end
+                    if key == "JumpPower" and Config.JumpPower > 50 then
+                        return OldNewIndex(self, key, Config.JumpPower)
+                    end
                 end
                 return OldNewIndex(self, key, value)
             end))
@@ -425,7 +416,8 @@ do
     end
 end
 
--- ========== UTILITY FUNCTIONS ==========
+-- ========== UTILITY FUNCTIONS (scope A — keeps main chunk under Luau 200-local limit) ==========
+do
 local function GetCharacter()
     Character = LocalPlayer.Character
     if Character then
@@ -757,6 +749,39 @@ local function FireRemoteExact(name, ...)
         end
     end
     return false
+end
+
+-- ========== DISCORD WEBHOOK ==========
+local WebhookQueue = {}
+local WebhookProcessing = false
+
+local function SendWebhook(data)
+    if not Config.WebhookEnabled or Config.WebhookURL == "" then return end
+    pcall(function()
+        local body = HttpService:JSONEncode(data)
+        Exec.Post(Config.WebhookURL, body)
+    end)
+end
+
+local function SendFarmLog(itemName)
+    if not Config.WebhookFarm then return end
+    SendWebhook({
+        content = "**[Minea Mountain]** Mined: " .. itemName .. " | Total: " .. State.FarmCount,
+    })
+end
+
+local function SendSellLog()
+    if not Config.WebhookSell then return end
+    SendWebhook({
+        content = "**[Minea Mountain]** Sold items | Total sells: " .. State.SellCount,
+    })
+end
+
+local function SendStatsLog()
+    if not Config.WebhookStats then return end
+    SendWebhook({
+        content = "**[Minea Mountain Stats]** Mined: " .. State.FarmCount .. " | Sells: " .. State.SellCount .. " | Dupes: " .. State.DupeCount .. " | Target: " .. State.CurrentTarget,
+    })
 end
 
 -- ========== ROCK / CRYSTAL DETECTION ==========
@@ -1175,19 +1200,26 @@ end
 local function StartESP()
     if Config.ESPEnabled then
         CreateESP()
-        -- Refresh ESP periodically
-        task.spawn(function()
+        if State.ESPRefreshThread then
+            task.cancel(State.ESPRefreshThread)
+        end
+        State.ESPRefreshThread = task.spawn(function()
             while Config.ESPEnabled do
                 task.wait(5)
                 if Config.ESPEnabled then
                     CreateESP()
                 end
             end
+            State.ESPRefreshThread = nil
         end)
     end
 end
 
 local function StopESP()
+    if State.ESPRefreshThread then
+        task.cancel(State.ESPRefreshThread)
+        State.ESPRefreshThread = nil
+    end
     ClearESP()
 end
 
@@ -1501,6 +1533,28 @@ local function ApplySpeedBoost()
     end
 end
 
+-- ========== CLEAR ESP / TRACERS (scope A — needed by PanicStopAll) ==========
+local function ClearTracers()
+    for _, obj in ipairs(State.TracerObjects) do
+        pcall(function() obj:Destroy() end)
+    end
+    State.TracerObjects = {}
+end
+
+local function ClearPlayerESP()
+    for _, obj in ipairs(State.PlayerESPObjects) do
+        pcall(function() obj:Destroy() end)
+    end
+    State.PlayerESPObjects = {}
+end
+
+local function ClearChestESP()
+    for _, obj in ipairs(State.ChestESPObjects) do
+        pcall(function() obj:Destroy() end)
+    end
+    State.ChestESPObjects = {}
+end
+
 -- ========== PANIC / STOP ALL ==========
 local function PanicStopAll()
     Config.AutoFarm = false
@@ -1512,6 +1566,24 @@ local function PanicStopAll()
     Config.Noclip = false
     Config.RapidMine = false
     Config.RemoteSpy = false
+    Config.InfiniteJump = false
+    Config.ClickTeleport = false
+    Config.AntiAFK = false
+    Config.AntiDamage = false
+    Config.AntiFreeze = false
+    Config.UnlimitedBackpack = false
+    Config.UnlimitedLuck = false
+    Config.SpeedBoost = false
+    Config.Tracers = false
+    Config.PlayerESP = false
+    Config.ChestESP = false
+    Config.Fullbright = false
+    Config.HideOtherPlayers = false
+    Config.WarmthKeeper = false
+    Config.StaminaKeeper = false
+    Config.AutoCollectDrops = false
+    Config.FPSBooster = false
+    Config.WebhookEnabled = false
     StopAutoFarm()
     StopAutoSell()
     StopAutoUpgrade()
@@ -1522,14 +1594,29 @@ local function PanicStopAll()
     ClearTracers()
     ClearPlayerESP()
     ClearChestESP()
+    RestoreFullbright()
     if State.InfiniteJumpConn then State.InfiniteJumpConn:Disconnect() State.InfiniteJumpConn = nil end
     if State.ClickTPConn then State.ClickTPConn:Disconnect() State.ClickTPConn = nil end
     if State.WarmthKeeperConn then State.WarmthKeeperConn:Disconnect() State.WarmthKeeperConn = nil end
     if State.DropCollectConn then State.DropCollectConn = nil end
+    if State.AntiAFKConn then State.AntiAFKConn:Disconnect() State.AntiAFKConn = nil end
+    if State.AntiDamageConn then State.AntiDamageConn:Disconnect() State.AntiDamageConn = nil end
+    StopAntiDamage()
+    StopWarmthKeeper()
+    StopInfiniteJump()
+    StopClickTeleport()
+    StopAntiAFK()
     AddLog("PANIC: All features stopped")
 end
 
--- ========== SMART LOOP ==========
+-- ========== SMART LOOP + GUI + RUNTIME (scope B) ==========
+do
+local ScreenGui, MainFrame, MinimizedFrame, IsMobile, ToggleGUI
+local GUIWidth, MinimizedSize, MinimizedPosition, HeaderH, ContentTitle
+local TabFrames, TabButtons, TabIndicators, MinimizeBtn, ExpandBtn
+local Tabs, TabInfo, layoutOrder, Header, TitleLabel
+IsMobile = UserInputService.TouchEnabled
+
 local function StartSmartLoop()
     if State.SmartLoopConn then return end
     AddLog("Smart Loop STARTED (Farm → Sell → Upgrade)")
@@ -1609,6 +1696,28 @@ local function AddRemoteSpyLog(remoteName, remoteType, args)
         end)
     end
 end
+
+pcall(function()
+    if Exec.HasHookMeta and Exec.GetNamecallMethod then
+        Exec.OnNamecall(function(self, method, args)
+            if RemoteSpyActive and (method == "FireServer" or method == "InvokeServer") then
+                if self:IsA("RemoteEvent") or self:IsA("RemoteFunction") then
+                    pcall(function() AddRemoteSpyLog(self.Name, method, args) end)
+                end
+            end
+            if method == "Kick" and self == LocalPlayer then
+                return true, nil
+            end
+            if method == "FindService" then
+                local svc = args[1]
+                if svc == "ExploitService" or svc == "CheatService" then
+                    return true, nil
+                end
+            end
+            return false
+        end)
+    end
+end)
 
 local function StartRemoteSpy()
     if not Exec.HasHookMeta then
@@ -1775,13 +1884,6 @@ local function StopWarmthKeeper()
 end
 
 -- ========== TRACERS ==========
-local function ClearTracers()
-    for _, obj in ipairs(State.TracerObjects) do
-        pcall(function() obj:Destroy() end)
-    end
-    State.TracerObjects = {}
-end
-
 local function UpdateTracers()
     if not Config.Tracers then ClearTracers() return end
     if not GetCharacter() then return end
@@ -1815,13 +1917,6 @@ local function UpdateTracers()
 end
 
 -- ========== PLAYER ESP ==========
-local function ClearPlayerESP()
-    for _, obj in ipairs(State.PlayerESPObjects) do
-        pcall(function() obj:Destroy() end)
-    end
-    State.PlayerESPObjects = {}
-end
-
 local function UpdatePlayerESP()
     if not Config.PlayerESP then ClearPlayerESP() return end
     ClearPlayerESP()
@@ -1856,13 +1951,6 @@ local function UpdatePlayerESP()
 end
 
 -- ========== CHEST / EVENT ESP ==========
-local function ClearChestESP()
-    for _, obj in ipairs(State.ChestESPObjects) do
-        pcall(function() obj:Destroy() end)
-    end
-    State.ChestESPObjects = {}
-end
-
 local function UpdateChestESP()
     if not Config.ChestESP then ClearChestESP() return end
     ClearChestESP()
@@ -2032,58 +2120,17 @@ local function StartDropCollectLoop()
     end)
 end
 
--- ========== DISCORD WEBHOOK ==========
-local WebhookQueue = {}
-local WebhookProcessing = false
-
-local function SendWebhook(data)
-    if not Config.WebhookEnabled or Config.WebhookURL == "" then return end
-    pcall(function()
-        local body = HttpService:JSONEncode(data)
-        Exec.Post(Config.WebhookURL, body)
-    end)
+local function UpdateStats()
+    if StatsLabel then
+        StatsLabel.Text = "Mined: " .. State.FarmCount .. " | Sells: " .. State.SellCount .. " | Dupe: " .. State.DupeCount .. " | Target: " .. (State.CurrentTarget or "None")
+    end
+    if CashLabel then
+        CashLabel.Text = "Cash: " .. GetPlayerCash() .. " | Weight: " .. math.floor(GetBackpackWeight()) .. "/" .. math.floor(GetBackpackCapacity())
+    end
 end
 
-local function SendFarmLog(itemName)
-    if not Config.WebhookFarm then return end
-    SendWebhook({
-        content = "**[Minea Mountain]** Mined: " .. itemName .. " | Total: " .. State.FarmCount,
-    })
-end
-
-local function SendSellLog()
-    if not Config.WebhookSell then return end
-    SendWebhook({
-        content = "**[Minea Mountain]** Sold items | Total sells: " .. State.SellCount,
-    })
-end
-
-local function SendStatsLog()
-    if not Config.WebhookStats then return end
-    SendWebhook({
-        content = "**[Minea Mountain Stats]** Mined: " .. State.FarmCount .. " | Sells: " .. State.SellCount .. " | Dupes: " .. State.DupeCount .. " | Target: " .. State.CurrentTarget,
-    })
-end
-
--- ========== GUI CREATION (Alchemy Hub style) ==========
-local Theme = {
-    Bg = Color3.fromRGB(15, 15, 17),
-    Panel = Color3.fromRGB(22, 22, 26),
-    Sidebar = Color3.fromRGB(12, 12, 14),
-    Input = Color3.fromRGB(30, 30, 34),
-    Accent = Color3.fromRGB(0, 235, 120),
-    AccentDark = Color3.fromRGB(0, 170, 88),
-    Text = Color3.fromRGB(248, 248, 250),
-    SubText = Color3.fromRGB(125, 125, 132),
-    Muted = Color3.fromRGB(75, 75, 82),
-}
-
--- Shared GUI refs (kept out of main chunk locals to avoid Luau 200-register limit)
-local ScreenGui, MainFrame, MinimizedFrame, IsMobile, ToggleGUI
-local GUIWidth, MinimizedSize, MinimizedPosition, HeaderH, ContentTitle
-local TabFrames, TabButtons, TabIndicators, MinimizeBtn, ExpandBtn
-local Tabs, TabInfo, layoutOrder, Header, TitleLabel
-
+-- ========== GUI CREATION (scope C) ==========
+do
 local function BuildGUIShell()
     ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "MineaMountainV7"
@@ -2733,7 +2780,8 @@ local function CreateSlider(parent, name, minVal, maxVal, defaultVal, callback)
     sCorner.CornerRadius = UDim.new(1, 0)
     sCorner.Parent = sliderFrame
 
-    local pct = (defaultVal - minVal) / (maxVal - minVal)
+    local range = maxVal - minVal
+    local pct = range > 0 and (defaultVal - minVal) / range or 0
     local fillBar = Instance.new("Frame")
     fillBar.Size = UDim2.new(pct, 0, 1, 0)
     fillBar.BackgroundColor3 = Theme.Accent
@@ -2758,15 +2806,19 @@ local function CreateSlider(parent, name, minVal, maxVal, defaultVal, callback)
             updateSlider(input)
         end
     end)
-    UserInputService.InputChanged:Connect(function(input)
+    local changedConn = UserInputService.InputChanged:Connect(function(input)
         if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             updateSlider(input)
         end
     end)
-    UserInputService.InputEnded:Connect(function(input)
+    local endedConn = UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             sliding = false
         end
+    end)
+    frame.Destroying:Connect(function()
+        changedConn:Disconnect()
+        endedConn:Disconnect()
     end)
     return frame
 end
@@ -2829,15 +2881,6 @@ end
 -- Reset layout order per tab so items sort correctly within each tab
 local function ResetLayoutOrder()
     layoutOrder = 0
-end
-
-local function UpdateStats()
-    if StatsLabel then
-        StatsLabel.Text = "Mined: " .. State.FarmCount .. " | Sells: " .. State.SellCount .. " | Dupe: " .. State.DupeCount .. " | Target: " .. (State.CurrentTarget or "None")
-    end
-    if CashLabel then
-        CashLabel.Text = "Cash: " .. GetPlayerCash() .. " | Weight: " .. math.floor(GetBackpackWeight()) .. "/" .. math.floor(GetBackpackCapacity())
-    end
 end
 
 -- ========== BUILD FARM TAB ==========
@@ -3688,18 +3731,34 @@ end
 
 local guiOk, guiErr = xpcall(function()
     BuildGUIShell()
+    if not TabFrames or not TabFrames.Farm then
+        error("GUI shell failed — tab frames missing")
+    end
     for tabName, btn in pairs(TabButtons or {}) do
         btn.MouseButton1Click:Connect(function()
             SwitchTab(tabName)
         end)
     end
-    BuildFarmTab()
-    BuildSellTab()
-    BuildESPTab()
-    BuildExploitTab()
-    BuildToolsTab()
-    BuildMiscTab()
+    local tabBuilders = {
+        Farm = BuildFarmTab,
+        Sell = BuildSellTab,
+        ESP = BuildESPTab,
+        Exploit = BuildExploitTab,
+        Tools = BuildToolsTab,
+        Misc = BuildMiscTab,
+    }
+    for tabName, buildFn in pairs(tabBuilders) do
+        local ok, err = xpcall(buildFn, debug.traceback)
+        if not ok then
+            error("Tab " .. tabName .. ": " .. tostring(err))
+        end
+    end
     SetupGUIControls()
+    if ScreenGui then
+        ScreenGui.Enabled = true
+        if MainFrame then MainFrame.Visible = true end
+        State.GUIHidden = false
+    end
 end, debug.traceback)
 if not guiOk then
     warn("[Minea Hub] GUI error:", guiErr)
@@ -3710,7 +3769,30 @@ if not guiOk then
             Duration = 12,
         })
     end)
+    pcall(function()
+        local errGui = Instance.new("ScreenGui")
+        errGui.Name = "MineaError"
+        errGui.ResetOnSpawn = false
+        errGui.DisplayOrder = 9999
+        errGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+        local errLabel = Instance.new("TextLabel")
+        errLabel.Size = UDim2.new(0, 500, 0, 80)
+        errLabel.Position = UDim2.new(0.5, -250, 0, 20)
+        errLabel.AnchorPoint = Vector2.new(0, 0)
+        errLabel.BackgroundColor3 = Color3.fromRGB(40, 10, 10)
+        errLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
+        errLabel.Font = Enum.Font.Code
+        errLabel.TextSize = 12
+        errLabel.TextWrapped = true
+        errLabel.Text = "[Minea Hub] GUI Error:\n" .. tostring(guiErr):sub(1, 300)
+        errLabel.Parent = errGui
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(0, 8)
+        corner.Parent = errLabel
+        task.delay(15, function() errGui:Destroy() end)
+    end)
 end
+end -- GUI scope C
 
 local lastWebhookTime = 0
 task.spawn(function()
@@ -3791,7 +3873,7 @@ end)
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed or IsMobile then return end
     if input.KeyCode == Enum.KeyCode.RightShift then
-        ToggleGUI()
+        if ToggleGUI then ToggleGUI() end
     elseif input.KeyCode == Enum.KeyCode.F then
         Config.FlyEnabled = not Config.FlyEnabled
         if Config.FlyEnabled then StartFly() else StopFly() end
@@ -3806,7 +3888,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
         AddLog("Smart Loop: " .. (Config.SmartLoop and "ON" or "OFF"))
     elseif input.KeyCode == Enum.KeyCode.P and Config.PanicEnabled then
         PanicStopAll()
-        ScreenGui.Enabled = false
+        if ScreenGui then ScreenGui.Enabled = false end
         State.GUIHidden = true
     end
 end)
@@ -3862,7 +3944,7 @@ if resizeCamera then
         local newSize = resizeCamera.ViewportSize
         local isMob = UserInputService.TouchEnabled or newSize.X < 900
         GUIWidth = isMob and UDim2.new(1, -20, 1, -36) or UDim2.new(0, 700, 0, 440)
-        if not State.IsMinimized then
+        if not State.IsMinimized and MainFrame then
             MainFrame.Size = GUIWidth
             MainFrame.AnchorPoint = isMob and Vector2.new(0.5, 0.5) or Vector2.new(0, 0)
             MainFrame.Position = isMob and UDim2.new(0.5, 0, 0.5, 0) or UDim2.new(0.5, -350, 0.5, -220)
@@ -3882,14 +3964,55 @@ pcall(function()
     AddLog("Executor APIs: HTTP=" .. tostring(Exec.Request ~= nil) .. " Hook=" .. tostring(Exec.HasHookMeta) .. " Click=" .. tostring(Exec.HasFireClick))
     AddLog(IsMobile and "Tap green M button to toggle GUI" or "RightShift = GUI | Cache remotes first!")
     BypassPromptsIn(Workspace)
-    StarterGui:SetCore("SendNotification", {
-        Title = "Minea Hub v7",
-        Text = IsMobile and "Loaded! Tap the green M button on the right." or "Loaded! Press RightShift to toggle GUI.",
-        Duration = 6,
-    })
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "Minea Hub v7",
+            Text = IsMobile and "Loaded! Tap the green M button on the right." or "Loaded! Press RightShift to toggle GUI.",
+            Duration = 6,
+        })
+    end)
+end)
+
+-- Visible startup flash (fallback if SetCore notifications don't work)
+pcall(function()
+    local splash = Instance.new("ScreenGui")
+    splash.Name = "MineaSplash"
+    splash.ResetOnSpawn = false
+    splash.DisplayOrder = 10000
+    splash.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    local splashLabel = Instance.new("TextLabel")
+    splashLabel.Size = UDim2.new(0, 220, 0, 40)
+    splashLabel.Position = UDim2.new(0.5, 0, 0, 12)
+    splashLabel.AnchorPoint = Vector2.new(0.5, 0)
+    splashLabel.BackgroundColor3 = Theme.Bg
+    splashLabel.TextColor3 = Theme.Accent
+    splashLabel.Font = Enum.Font.GothamBold
+    splashLabel.TextSize = 14
+    splashLabel.Text = "Minea Hub v7 — Loaded"
+    splashLabel.Parent = splash
+    local sc = Instance.new("UICorner")
+    sc.CornerRadius = UDim.new(0, 8)
+    sc.Parent = splashLabel
+    local ss = Instance.new("UIStroke")
+    ss.Color = Theme.Accent
+    ss.Thickness = 1
+    ss.Transparency = 0.4
+    ss.Parent = splashLabel
+    task.delay(3, function()
+        pcall(function()
+            local ts = TweenService:Create(splashLabel, TweenInfo.new(0.5), {BackgroundTransparency = 1, TextTransparency = 1})
+            ss.Transparency = 1
+            ts:Play()
+            ts.Completed:Wait()
+            splash:Destroy()
+        end)
+    end)
 end)
 
 -- Initial remote cache
 task.delay(3, function()
     pcall(CacheRemotes)
 end)
+
+end -- scope B
+end -- scope A
