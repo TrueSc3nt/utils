@@ -38,10 +38,12 @@ local HumanoidRootPart = Character and Character:FindFirstChild("HumanoidRootPar
 local Humanoid = Character and Character:FindFirstChild("Humanoid")
 if not Character then
     spawn(function()
-        local char = LocalPlayer.CharacterAdded:Wait()
-        Character = char
-        HumanoidRootPart = char:WaitForChild("HumanoidRootPart")
-        Humanoid = char:WaitForChild("Humanoid")
+        pcall(function()
+            local char = LocalPlayer.CharacterAdded:Wait()
+            Character = char
+            HumanoidRootPart = char:WaitForChild("HumanoidRootPart", 15)
+            Humanoid = char:WaitForChild("Humanoid", 15)
+        end)
     end)
 end
 
@@ -535,12 +537,14 @@ local function SendStatsLog()
 end
 
 local function GetCharacter()
-    Character = LocalPlayer.Character
-    if Character then
-        HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
-        Humanoid = Character:FindFirstChild("Humanoid")
-    end
-    return Character and HumanoidRootPart and Humanoid
+    pcall(function()
+        Character = LocalPlayer.Character
+        if Character then
+            HumanoidRootPart = Character:FindFirstChild("HumanoidRootPart")
+            Humanoid = Character:FindFirstChild("Humanoid")
+        end
+    end)
+    return (Character ~= nil and HumanoidRootPart ~= nil and Humanoid ~= nil) and true or false
 end
 
 local function GetDistance(part)
@@ -549,6 +553,7 @@ local function GetDistance(part)
 end
 
 local function TeleportTo(position)
+    if not position then return false end
     if not GetCharacter() then return false end
     local targetCF = CFrame.new(position + Vector3.new(0, 3, 0))
     if Config.TweenTeleport then
@@ -776,6 +781,7 @@ local function DupeViaDrop()
 end
 
 local function TeleportToCFrame(cframe)
+    if not cframe then return false end
     if not GetCharacter() then return false end
     HumanoidRootPart.CFrame = cframe + Vector3.new(0, 3, 0)
     wait(Config.TeleportDelay)
@@ -907,10 +913,12 @@ end
 
 -- ========== MINE ROCK ==========
 local function MineRock(rockData)
+    if not rockData then return false end
     local rock = rockData.Instance
     local part = rockData.Part
     
     if not rock or not rock.Parent then return false end
+    if not part then return false end
     
     EquipBestPickaxe()
     BypassPromptsIn(rock)
@@ -980,6 +988,7 @@ local function SellItems(shopData)
     
     local shop = shopData.Instance
     local part = shopData.Part
+    if not part then return false end
     
     AddLog("Selling at: " .. shopData.Name)
     
@@ -989,12 +998,12 @@ local function SellItems(shopData)
     
     -- Method 1: Click detector
     if HasFireClick then
-        local clickDetector = shop:FindFirstChildOfClass("ClickDetector") or part:FindFirstChildOfClass("ClickDetector")
+        local clickDetector = (shop and shop:FindFirstChildOfClass("ClickDetector")) or part:FindFirstChildOfClass("ClickDetector")
         if clickDetector then Exec.FireClick(clickDetector) end
     end
     
     if HasFireProximity then
-        local prompt = shop:FindFirstChildOfClass("ProximityPrompt") or part:FindFirstChildOfClass("ProximityPrompt")
+        local prompt = (shop and shop:FindFirstChildOfClass("ProximityPrompt")) or part:FindFirstChildOfClass("ProximityPrompt")
         if prompt then Exec.FireProximity(prompt) end
     end
     
@@ -1479,6 +1488,7 @@ local function StartFly()
         if not GetCharacter() then return end
         
         local cam = Workspace.CurrentCamera
+        if not cam or not flyBody or not flySpeed then return end
         local moveDir = Vector3.new(0, 0, 0)
         
         if UserInputService:IsKeyDown(Enum.KeyCode.W) then
@@ -3870,25 +3880,27 @@ end)
 -- ========== KEYBINDS (desktop only - mobile uses M button) ==========
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed or IsMobile then return end
-    if input.KeyCode == Enum.KeyCode.RightShift then
-        if ToggleGUI then ToggleGUI() end
-    elseif input.KeyCode == Enum.KeyCode.F then
-        Config.FlyEnabled = not Config.FlyEnabled
-        if Config.FlyEnabled then StartFly() else StopFly() end
-        AddLog("Fly: " .. (Config.FlyEnabled and "ON" or "OFF"))
-    elseif input.KeyCode == Enum.KeyCode.G then
-        Config.AutoFarm = not Config.AutoFarm
-        if Config.AutoFarm then StartAutoFarm() else StopAutoFarm() end
-        AddLog("Auto Farm: " .. (Config.AutoFarm and "ON" or "OFF"))
-    elseif input.KeyCode == Enum.KeyCode.H then
-        Config.SmartLoop = not Config.SmartLoop
-        if Config.SmartLoop then StartSmartLoop() else StopSmartLoop() end
-        AddLog("Smart Loop: " .. (Config.SmartLoop and "ON" or "OFF"))
-    elseif input.KeyCode == Enum.KeyCode.P and Config.PanicEnabled then
-        PanicStopAll()
-        if ScreenGui then ScreenGui.Enabled = false end
-        State.GUIHidden = true
-    end
+    pcall(function()
+        if input.KeyCode == Enum.KeyCode.RightShift then
+            if ToggleGUI then ToggleGUI() end
+        elseif input.KeyCode == Enum.KeyCode.F then
+            Config.FlyEnabled = not Config.FlyEnabled
+            if Config.FlyEnabled then StartFly() else StopFly() end
+            AddLog("Fly: " .. (Config.FlyEnabled and "ON" or "OFF"))
+        elseif input.KeyCode == Enum.KeyCode.G then
+            Config.AutoFarm = not Config.AutoFarm
+            if Config.AutoFarm then StartAutoFarm() else StopAutoFarm() end
+            AddLog("Auto Farm: " .. (Config.AutoFarm and "ON" or "OFF"))
+        elseif input.KeyCode == Enum.KeyCode.H then
+            Config.SmartLoop = not Config.SmartLoop
+            if Config.SmartLoop then StartSmartLoop() else StopSmartLoop() end
+            AddLog("Smart Loop: " .. (Config.SmartLoop and "ON" or "OFF"))
+        elseif input.KeyCode == Enum.KeyCode.P and Config.PanicEnabled then
+            PanicStopAll()
+            if ScreenGui then ScreenGui.Enabled = false end
+            State.GUIHidden = true
+        end
+    end)
 end)
 
 -- ========== VISUAL UPDATE LOOP ==========
@@ -3908,18 +3920,22 @@ end)
 -- ========== HANDLE RESPAWN ==========
 LocalPlayer.CharacterAdded:Connect(function(char)
     Character = char
-    HumanoidRootPart = char:WaitForChild("HumanoidRootPart")
-    Humanoid = char:WaitForChild("Humanoid")
+    pcall(function()
+        HumanoidRootPart = char:WaitForChild("HumanoidRootPart", 15)
+        Humanoid = char:WaitForChild("Humanoid", 15)
+    end)
     AddLog("Character respawned")
     
     delay(1, function()
-        if Config.SpeedBoost then ApplySpeedBoost() end
-        if Config.FlyEnabled then StopFly() StartFly() end
-        if Config.InfiniteJump then StopInfiniteJump() StartInfiniteJump() end
-        if Config.AutoEquipPickaxe then EquipBestPickaxe() end
-        if Config.AutoFarm and not State.FarmConnection then StartAutoFarm() end
-        if Config.SmartLoop and not State.SmartLoopConn then StartSmartLoop() end
-        if Config.WarmthKeeper or Config.StaminaKeeper then StartWarmthKeeper() end
+        pcall(function()
+            if Config.SpeedBoost then ApplySpeedBoost() end
+            if Config.FlyEnabled then StopFly() StartFly() end
+            if Config.InfiniteJump then StopInfiniteJump() StartInfiniteJump() end
+            if Config.AutoEquipPickaxe then EquipBestPickaxe() end
+            if Config.AutoFarm and not State.FarmConnection then StartAutoFarm() end
+            if Config.SmartLoop and not State.SmartLoopConn then StartSmartLoop() end
+            if Config.WarmthKeeper or Config.StaminaKeeper then StartWarmthKeeper() end
+        end)
     end)
 end)
 
@@ -3939,17 +3955,19 @@ end)
 local resizeCamera = Workspace.CurrentCamera
 if resizeCamera then
     resizeCamera:GetPropertyChangedSignal("ViewportSize"):Connect(function()
-        local newSize = resizeCamera.ViewportSize
-        local isMob = UserInputService.TouchEnabled or newSize.X < 900
-        GUIWidth = isMob and UDim2.new(1, -20, 1, -36) or UDim2.new(0, 700, 0, 440)
-        if not State.IsMinimized and MainFrame then
-            MainFrame.Size = GUIWidth
-            MainFrame.AnchorPoint = isMob and Vector2.new(0.5, 0.5) or Vector2.new(0, 0)
-            MainFrame.Position = isMob and UDim2.new(0.5, 0, 0.5, 0) or UDim2.new(0.5, -350, 0.5, -220)
-        end
-        if TitleLabel then
-            TitleLabel.TextSize = isMob and 14 or 17
-        end
+        pcall(function()
+            local newSize = resizeCamera.ViewportSize
+            local isMob = UserInputService.TouchEnabled or newSize.X < 900
+            GUIWidth = isMob and UDim2.new(1, -20, 1, -36) or UDim2.new(0, 700, 0, 440)
+            if not State.IsMinimized and MainFrame then
+                MainFrame.Size = GUIWidth
+                MainFrame.AnchorPoint = isMob and Vector2.new(0.5, 0.5) or Vector2.new(0, 0)
+                MainFrame.Position = isMob and UDim2.new(0.5, 0, 0.5, 0) or UDim2.new(0.5, -350, 0.5, -220)
+            end
+            if TitleLabel then
+                TitleLabel.TextSize = isMob and 14 or 17
+            end
+        end)
     end)
 end
 
