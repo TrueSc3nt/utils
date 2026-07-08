@@ -4025,6 +4025,11 @@ pcall(function()
     end)
 end)
 
+-- Integrity marker: the loader verifies this string exists to confirm the whole
+-- file downloaded. A truncated/stale copy (the real cause of random nil errors)
+-- won't contain it, so the loader will retry instead of running broken code.
+--[[MINEA_EOF]]
+
 -- Initial remote cache
 delay(3, function()
     pcall(CacheRemotes)
